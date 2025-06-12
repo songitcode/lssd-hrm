@@ -1,0 +1,239 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: url("../images/LSSD_HRM.lssdoznak.png") no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.group-login {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+    border-radius: 12px;
+    padding: 40px 30px;
+    width: 400px;
+    color: white;
+    text-align: center;
+}
+
+.logo-login-page img {
+    width: 90px;
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1.4;
+    margin-bottom: 25px;
+}
+
+h2 span {
+    font-size: 18px;
+    font-weight: normal;
+}
+
+.form-login {
+    display: flex;
+    flex-direction: column;
+}
+
+.lb-password {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.lb-username {
+    margin-bottom: 5px;
+}
+
+.lb-username,
+.lb-password {
+    font-size: 12px;
+    text-align: left;
+    color: #eee;
+    font-weight: bold;
+}
+
+.input-login {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+}
+
+.btn-login {
+    padding: 12px;
+    background-color: #fcb436;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 15px;
+    margin-top: 10px;
+    transition: background 0.3s ease;
+}
+
+.btn-login:hover {
+    background-color: #f9a826;
+}
+
+.footer-login-page {
+    margin-top: 25px;
+    font-size: 12px;
+    color: #ccc;
+}
+
+.version-login-page {
+    font-size: 11px;
+    color: #999;
+    margin-top: -10px;
+}
+
+/*  */
+.form__group {
+    position: relative;
+    padding: 20px 0 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+.form__field {
+    font-family: inherit;
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #9b9b9b;
+    outline: 0;
+    font-size: 17px;
+    color: #fff;
+    padding: 7px 0;
+    background: transparent;
+    transition: border-color 0.2s;
+}
+
+.form__field::placeholder {
+    color: transparent;
+}
+
+.form__field:placeholder-shown~.form__label {
+    font-size: 17px;
+    cursor: text;
+    top: 20px;
+}
+
+.form__label {
+    position: absolute;
+    top: 0;
+    display: block;
+    transition: 0.2s;
+    font-size: 17px;
+    color: #9b9b9b;
+    pointer-events: none;
+}
+
+.form__field:focus {
+    padding-bottom: 6px;
+    font-weight: 700;
+    border-width: 3px;
+    border-image: linear-gradient(to right, #EEAF36, #ffe7bb);
+    border-image-slice: 1;
+}
+
+.form__field:focus~.form__label {
+    top: 0;
+    font-size: 17px;
+    color: #EEAF36;
+    font-weight: 700;
+}
+
+.form__field:required,
+.form__field:invalid {
+    box-shadow: none;
+}
+
+/* Con mắt hiện/ẩn mật khẩu */
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ccc;
+    cursor: pointer;
+}
+
+/* Căn phải dòng "Chưa có tài khoản?" */
+.account-option {
+    text-align: right;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #eee;
+
+    .note-account-link {
+        color: white;
+        text-decoration: none;
+
+        &:hover {
+            color: #EEAF36;
+            text-decoration: underline;
+        }
+    }
+}
+
+/* ERROR CSS */
+.error {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    width: 320px;
+    padding: 12px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    background: #FCE8DB;
+    border-radius: 8px;
+    box-shadow: 0px 0px 5px -3px #111;
+}
+
+.error__icon {
+    width: 20px;
+    height: 20px;
+    transform: translateY(-2px);
+    margin-right: 8px;
+}
+
+.error__icon path {
+    fill: #EF665B;
+}
+
+.error__title {
+    font-weight: 500;
+    font-size: 14px;
+    color: #71192F;
+}
+
+.error__close {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.error__close path {
+    fill: #71192F;
+}
+
+/* RESPONSIVE */
+@media only screen and (max-width: 600px) {
+    .group-login {
+        scale: .7;
+    }
+}
