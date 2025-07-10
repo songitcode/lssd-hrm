@@ -23,10 +23,18 @@ class AppServiceProvider extends ServiceProvider
         // $this->registerPolicies();
 
         Paginator::useBootstrap(); // Để dùng phân trang với Bootstrap
+
         // Định nghĩa quyền quản lý lương
         Gate::define('manage_salary', function ($user) {
             $allowedRoles = ['admin', 'cục trưởng', 'phó cục trưởng'];
             return in_array($user->role, $allowedRoles);
         });
+
+        Gate::define('manage-attendance', function ($user) {
+            $allowedRoles = ['admin', 'cục trưởng', 'phó cục trưởng'];
+            return in_array($user->role, $allowedRoles);
+
+        });
+
     }
 }

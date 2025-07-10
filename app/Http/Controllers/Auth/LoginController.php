@@ -13,7 +13,19 @@ class LoginController extends Controller
     //
     public function showLoginForm()
     {
-        return view('auth.login');
+        $contacts = User::with('employee.position')
+            ->whereHas('employee.position', function ($query) {
+                $query->whereIn('name_positions', [
+                    'Cục Trưởng',
+                    'Phó Cục Trưởng',
+                    'Trợ Lý Cục Trưởng'
+                ]);
+            })
+            ->get();
+
+        return view('auth.login', compact('contacts'));
+        // return view('auth.login');
+
     }
     public function login(Request $request)
     {

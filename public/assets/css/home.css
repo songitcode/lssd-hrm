@@ -1,0 +1,385 @@
+.box_display_home {
+    border: 1px solid #e8a800;
+    border-radius: 7px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
+.card_table_employees {
+    padding: 25px;
+}
+
+.card_right_top {
+    /* background: #ff9500;
+    background: linear-gradient(90deg, rgba(255, 149, 0, 1) 0%, rgba(255, 180, 74, 1) 50%, rgba(255, 227, 179, 1) 100%); */
+    color: #fff;
+    padding: 22px;
+    background: url("../images/lssd_banner01.jpg") no-repeat center center;
+    background-size: cover;
+    text-shadow: 0 0 0px #fff, 0 0 5px #fff, 0 0 10px #ffaa00, 0 0 20px #ffaa00, 0 0 30px #ffaa00;
+}
+
+.card_right_bottom {
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        scale: 0.9;
+        transition: all 0.3s ease-in-out;
+    }
+
+    &:hover {
+        img {
+            scale: 1;
+        }
+
+        backdrop-filter: blur(10px);
+    }
+}
+
+/* body {
+    background: url("../images/LSSD_HRM.lssdoznak.png") no-repeat center center fixed;
+} */
+
+.table_employees {
+    width: 100%;
+    align-items: center;
+    border: #e8a800 1px solid;
+    border-radius: 5px;
+}
+
+.title_welcome_home {
+    position: relative;
+}
+
+.title_welcome_home::before {
+    content: ' ';
+    position: absolute;
+    border-bottom: 3px solid #fffefc;
+    border-radius: 20px;
+    top: inherit;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    width: 60%;
+    box-shadow: 0 0 0px #fff, 0 0 5px #fff, 0 0 10px #ffaa00, 0 0 20px #ffaa00, 0 0 30px #ffaa00;
+}
+
+.head-table-employees-home th {
+    background: #e8a800;
+    color: #fff;
+}
+
+.phan_trang {
+    scale: 0.8;
+}
+
+.glass-effect {
+    /* From https://css.glass */
+    /* background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(3.3px);
+    -webkit-backdrop-filter: blur(3.3px);
+    border: 1px solid rgba(255, 255, 255, 0.21); */
+
+    background: rgba(255, 255, 255, 0.11);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(3.7px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+        scale: 1.02;
+        backdrop-filter: blur(10px);
+    }
+}
+
+/* CSS CÁC THẺ HOME MAIN */
+.lssd {
+    --bg-color: #EFB036;
+    --bg-color-light: #f3cf88;
+    --text-color-hover: #fff;
+    --box-shadow-color: rgba(240, 200, 98, 0.48);
+}
+
+.card {
+    border: 1px solid #EFB036;
+    width: 220px;
+    height: 321px;
+    background: #fff;
+    border-top-right-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 14px 26px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease-out;
+    text-decoration: none;
+}
+
+.card:hover {
+    transform: translateY(-5px) scale(1.005) translateZ(0);
+    box-shadow: 0 24px 36px rgba(0, 0, 0, 0.11),
+        0 24px 46px var(--box-shadow-color);
+}
+
+.card:hover .overlay {
+    transform: scale(4) translateZ(0);
+}
+
+.card:hover .circle {
+    border-color: var(--bg-color-light);
+    background: var(--bg-color);
+}
+
+.card:hover .circle:after {
+    background: var(--bg-color-light);
+}
+
+.card:hover p {
+    color: var(--text-color-hover);
+}
+
+.card p {
+    font-size: 17px;
+    color: #4c5656;
+    margin-top: 30px;
+    z-index: 1000;
+    transition: color 0.3s ease-out;
+}
+
+.circle {
+    width: 135px;
+    height: 135px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease-out;
+}
+
+.circle:after {
+    content: "";
+    width: 118px;
+    height: 118px;
+    display: block;
+    position: absolute;
+    background: var(--bg-color);
+    border-radius: 50%;
+    top: 7px;
+    left: 7px;
+    transition: opacity 0.3s ease-out;
+}
+
+.circle img {
+    z-index: 10000;
+    transform: translateZ(0);
+}
+
+.overlay {
+    width: 118px;
+    position: absolute;
+    height: 118px;
+    border-radius: 50%;
+    background: var(--bg-color);
+    top: 70px;
+    left: 50px;
+    z-index: 0;
+    transition: transform 0.3s ease-out;
+}
+
+/* Loader */
+.loader {
+    display: flex;
+    width: 8rem;
+    height: 8rem;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    flex-direction: column;
+    z-index: 999;
+}
+
+.curve {
+    width: 180%;
+    height: 180%;
+    position: absolute;
+    animation: rotate 9s linear infinite;
+    fill: transparent;
+}
+
+.curve text {
+    letter-spacing: 10px;
+    text-transform: uppercase;
+    font: 1.5em "Fira Sans", sans-serif;
+    fill: white;
+    filter: drop-shadow(0 2px 8px black);
+}
+
+.blackhole {
+    z-index: -1;
+    display: flex;
+    position: absolute;
+    width: 8rem;
+    height: 8rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.blackhole-circle {
+    z-index: 0;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, black 25%, white 35%, white 100%);
+    box-shadow: 0px 0px 2rem #c2babb;
+    align-items: center;
+    justify-content: center;
+}
+
+.blackhole-circle::after {
+    z-index: 0;
+    position: absolute;
+    content: "";
+    display: flex;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 4px solid white;
+    background: radial-gradient(circle at center, black 35%, white 60%, white 100%);
+    box-shadow: 0px 0px 5rem #c2babb;
+    align-items: center;
+    justify-content: center;
+    filter: blur(4px);
+    animation: pulseAnimation linear infinite 2s alternate-reverse;
+}
+
+.blackhole-circle::before {
+    z-index: 1;
+    content: "";
+    display: flex;
+    width: 4rem;
+    height: 4rem;
+    border: 2px solid #ffffff;
+    box-shadow: 3px 3px 10px #c2babb, inset 0 0 1rem #ffffff;
+    border-radius: 50%;
+    top: 5rem;
+    filter: blur(0.5px);
+    animation: rotate linear infinite 3s;
+}
+
+.blackhole-disc {
+    position: absolute;
+    z-index: 0;
+    display: flex;
+    width: 5rem;
+    height: 10rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, #ffffff 80%, #353535 90%, white 100%);
+    filter: blur(1rem) brightness(130%);
+    border: 1rem solid white;
+    box-shadow: 0px 0px 3rem #d7c4be;
+    transform: rotate3d(1, 1, 1, 220deg);
+    animation: pulseAnimation2 linear infinite 2s alternate-reverse;
+    justify-content: center;
+    align-items: center;
+}
+
+.blackhole-disc::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    display: flex;
+    width: 5rem;
+    height: 10rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, #ffffff 80%, #353535 90%, white 100%);
+    filter: blur(3rem);
+    border: 1rem solid white;
+    box-shadow: 0px 0px 6rem #d7c4be;
+    animation: pulseAnimation linear infinite 2s alternate-reverse;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulseAnimation {
+    0% {
+        box-shadow: 0px 0px 3rem #c2babb;
+        transform: scale(1);
+    }
+
+    100% {
+        box-shadow: 0px 0px 5rem #c2babb;
+        transform: scale(1.09);
+    }
+}
+
+@keyframes pulseAnimation2 {
+    0% {
+        box-shadow: 0px 0px 3rem #c2babb;
+        transform: rotate3d(1, 1, 1, 220deg) scale(1);
+    }
+
+    100% {
+        box-shadow: 0px 0px 5rem #c2babb;
+        transform: rotate3d(1, 1, 1, 220deg) scale(.95);
+    }
+}
+
+/* ORTHER */
+.card-img {
+    position: relative;
+    cursor: pointer;
+}
+
+.card-img p {
+    position: absolute;
+    bottom: 0;
+
+}
+
+.card-img img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 300ms;
+}
+
+.card-img:hover img {
+    filter: blur(2px);
+}
+
+/* User count */
+.onl-user-count {
+    display: flex;
+    /* border: 1px solid; */
+    padding: 2px 10px;
+    color: green;
+    font-weight: bold;
+}
+
+
+/* Orther */
+.label-top,
+.label-center h4 {
+    border-bottom: 1px solid #4c565662;
+    width: 30%;
+}

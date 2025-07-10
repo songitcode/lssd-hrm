@@ -22,6 +22,7 @@ body {
     width: 400px;
     color: white;
     text-align: center;
+    scale: 0.95;
 }
 
 .logo-login-page img {
@@ -236,4 +237,62 @@ h2 span {
     .group-login {
         scale: .7;
     }
+}
+
+/* MODAL ACCOUNT */
+.glass-modal {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-modal .modal-header,
+.glass-modal .modal-body {
+    background-color: transparent;
+}
+
+.glass-modal .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* TABLE LOGIN */
+.table_login {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+/* 
+.info-contact {
+    text-shadow: 0 0 0px #fff, 0 0 5px #fff, 0 0 10px #ffaa00, 0 0 20px #ffaa00, 0 0 30px #ffaa00;
+} */
+
+.table_login_contact {
+    width: 100%;
+    text-align: center;
+
+    tbody,
+    td,
+    tfoot,
+    th,
+    thead,
+    tr {
+        padding: 10px;
+    }
+
+    tr {
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    }
+}
+
+.avatar_contact {
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
 }

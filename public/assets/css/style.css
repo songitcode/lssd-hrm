@@ -3,16 +3,6 @@ body {
     font-family: 'Segoe UI', sans-serif;
 }
 
-.navbar {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background: #e0e0e0;
-    padding: 0 20px;
-    height: 60px;
-    border-bottom: 2px solid #ccc;
-}
-
 .navbar-left {
     display: flex;
     align-items: center;
@@ -49,14 +39,20 @@ body {
     border-bottom: 2px solid #f8b400;
 }
 
-.nav-link:hover {
-    color: #000;
-    border-bottom: 2px solid #f8b400;
+.nav-link {
+    transition: scale 300ms;
+
+    &:hover {
+        color: #000;
+        border-bottom: 2px solid #f8b400;
+        scale: 1.02;
+    }
 }
 
 .active-link {
     color: #000;
     border-bottom: 2px solid #f8b400;
+    font-weight: bold;
 }
 
 .navbar-right {
@@ -164,9 +160,6 @@ body {
     color: var(--nav-text-color);
     border-radius: var(--nav-border-radius);
     box-shadow: var(--nav-shadow-width) var(--nav-shadow-color);
-    border: var(--nav-border-width) solid none
-        /*var(--nav-border-color)*/
-    ;
     top: calc(var(--burger-diameter) + var(--burger-enable-outline-width) + var(--burger-enable-outline-offset));
     left: var(--nav-position-left);
     right: var(--nav-position-right);
@@ -381,15 +374,138 @@ img.rounded-circle {
 /* high-level cấp cao */
 .high-level {
     background: #f5c645 !important;
-    text-shadow: 0 0 10px #fff, 0 0 20px #fff;
     color: #fff;
     font-weight: 900;
     font-size: large;
     border: none;
+    animation: glow 2s ease-in-out infinite alternate;
+    width: fit-content;
+}
+
+/* Profile CSS, Hồ Sơ Sĩ Quan */
+.profile-avatar {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 50%;
+    /* box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 14px #e8a800, 0 0 20px #e8a800, 0 0 25px #e8a800, 0 0 30px #e8a800, 0 0 35px #e8a800; */
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+.glow-box {
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@-webkit-keyframes glow {
+    from {
+        box-shadow: 0 0 3px #fff, 0 0 7px #fff, 0 0 14px #e8a800, 0 0 20px #e8a800, 0 0 25px #e8a800, 0 0 30px #e8a800, 0 0 35px #e8a800;
+    }
+
+    to {
+        box-shadow: 0 0 5px #fff, 0 0 10px #e9ff5b, 0 0 15px #e9ff5b, 0 0 20px #e9ff5b, 0 0 25px #e9ff5b, 0 0 30px #e9ff5b, 0 0 40px #e9ff5b;
+    }
+}
+
+.box-profile {
+    border: 1px solid #e8a800;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
+.btn-update-profile {
+    color: #6C757D;
+    border-radius: 10px;
+    padding: 8px 16px;
+    margin: 32px 0 16px;
+    font-weight: 300;
+    font-size: 16px;
+    border: 1px solid #e8a800;
+    background-color: none;
+
+    &:hover {
+        color: white;
+        background: #e8a800
+    }
 }
 
 /*  */
 
-.input__view {
-    /* width: 30%; */
+/* TIMEKEEPING CSS, Chấm công trang attendance.index */
+.title-attendance {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tb-timekeeping {
+    width: 100%;
+
+    th {
+
+        background-color: #ffc107;
+        /* vàng cảnh báo */
+        color: #000;
+        vertical-align: middle;
+    }
+}
+
+.tb-timekeeping td,
+.tb-timekeeping th {
+    padding: 0.5rem;
+    font-size: 14px;
+}
+
+.total-day-timekeeping {
+    background-color: #fff3cd;
+    /* vàng nhạt */
+    font-weight: bold;
+}
+
+.tb-timekeeping span.bg-primary,
+.tb-timekeeping span.bg-success,
+.tb-timekeeping span.bg-warning {
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+}
+
+.ket_noi_bang {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e8a800;
+    margin: 20px 50px 0;
+    background: #efc2512c;
+}
+
+.box_history_time {
+    border: 1px solid #e8a800;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    margin: 0 30px 0;
+    padding: 15px;
+
+    .tb_total_month {
+        width: 100%;
+
+        th,
+        td {
+            border-bottom: 1px solid #ddd;
+        }
+
+        text-align: center;
+
+    }
+}
+
+/* RESPONSIVE CSS */
+.table-responsive {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.logo_lssd:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
 }

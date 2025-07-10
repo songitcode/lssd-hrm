@@ -5,14 +5,11 @@
     <meta charset="UTF-8" name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap + Font Awesome -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- sweetalert2 -->
+    {{--  --}}
+    <link rel="stylesheet" href="{{ asset('assets/bootstrap-5.3.7-dist/css/bootstrap.min.css') }}">
+   <link rel="stylesheet" href="{{ asset('assets/fontawesome-6.5.0/css/all.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
-    <!-- Custom CSS -->
+    <link href="https://fonts.googleapis.com/css?family=Archivo+Black&display=swap" rel="stylesheet">
     @if (!View::hasSection('hide_css'))
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     @endif
@@ -20,7 +17,6 @@
 </head>
 
 <body>
-    {{-- Navbar --}}
     @if (!View::hasSection('hide_navbar'))
         @include('partials.navbar')
     @endif
@@ -37,27 +33,9 @@
 
     {{-- Footer chỉ hiển thị nếu view không có section hide_footer --}}
     @if (!View::hasSection('hide_footer'))
-        <div class="container">
-            <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-                <div class="col-md-4 d-flex align-items-center">
-                    <span class="mb-3 mb-md-0 text-body-secondary">
-                        © 2025 Designed and developed by @jebsoon - version 0.1
-                    </span>
-                </div>
-            </footer>
-        </div>
+        @include('partials.footer')
     @endif
     <script>
-        // Tự động ẩn alert sau 3 giây (3000 ms)
-        // setTimeout(() => {
-        //     const alerts = document.querySelectorAll('.alert');
-        //     alerts.forEach(alert => {
-        //         // Dùng Bootstrap 5 để đóng alert
-        //         const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
-        //         bsAlert.close();
-        //     });
-        // }, 3000);
-
         function previewAvatar(event) {
             const file = event.target.files[0];
             if (file) {
@@ -85,12 +63,9 @@
         }
     </script>
     <script src="{{ asset('assets/js/notification.js') }}"></script>
+    <script src="{{ asset('assets/bootstrap-5.3.7-dist/js/bootstrap.bundle.min.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- sweetalert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 </body>
 

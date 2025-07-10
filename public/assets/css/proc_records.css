@@ -1,0 +1,315 @@
+.group-function {
+    margin: 20px 17px 0;
+    padding: 15px;
+    border: 1px solid #e8a800;
+    border-radius: 20px 20px 0 0;
+    background: #efc2512c;
+    /* background: url("https://media.discordapp.net/attachments/1359915695722205455/1381149934484586526/image.png?ex=6863789c&is=6862271c&hm=76dc0dde940bf885535f28c4c112031056173a78c2cb2cdd581698afbc95aa7a&=&format=webp&quality=lossless&width=1173&height=660") no-repeat center center; */
+    background-size: cover;
+}
+
+.box-form-1 {
+    padding: 10px;
+    border: 1px solid #EFB036;
+    border-radius: 10px;
+    /* background: #212121; */
+    /* color: #fff; */
+    background: #fff;
+    color: #000;
+    width: 100%;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.box-law {
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid #EFB036;
+
+    &:hover>table td {
+        cursor: pointer;
+    }
+}
+
+.copy_frame {
+    width: 100%;
+    height: 100%;
+    border: 3px solid #e80000 !important;
+    border-radius: 20px 100px 300px 80px;
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    padding: 15px;
+
+    &:hover {
+        border: 1px solid #e8a800;
+    }
+}
+
+.copy_frame ul {
+    padding: 0;
+    margin: 0;
+}
+
+.copy_frame li {
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.copy_frame .text_show {
+    font-weight: normal;
+    color: #000;
+}
+
+#input-proc-4,
+#input-proc-5,
+#input-proc-6,
+#input-proc-7,
+#viPhamLuatTieuDungCheck {
+    width: 40px;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#input-proc-1 {
+    width: 70px;
+}
+
+.muc_do {
+    border: none;
+    font-weight: bold;
+    color: #333;
+
+    &:hover {
+        border-bottom: 1px solid #e8a800;
+    }
+}
+
+.function_law {
+    font-size: 13px;
+    gap: 10px;
+
+    li,
+    .input_func_01,
+    .input_func_02 {
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 5px;
+        border-radius: 10px;
+    }
+
+
+    label {
+        font-weight: 600;
+    }
+}
+
+.law_input_content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 0;
+
+    input {
+        width: 60px;
+        border: 1px solid #e8a800;
+        max-width: 100px;
+    }
+}
+
+.btn-copy,
+.btn-reset-toi-danh {
+    margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 5px 50px;
+    border-bottom-left-radius: 200px;
+    border-bottom-right-radius: 200px;
+
+    &:hover {
+        border-bottom: #EFB036 1.5px solid;
+        background: rgb(255, 190, 11);
+        color: #fff;
+    }
+}
+
+.btn-reset-toi-danh {
+    background: #e80000;
+}
+
+.btn-copy {
+    background: #36ef45;
+}
+
+.input_proc {
+    border: 1px solid #e8a800 !important;
+
+    &:checked {
+        background-color: #e8a800;
+    }
+}
+
+.input_proc[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* THÊM */
+.law-td {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.law-td.selected {
+    background-color: #f9c74f;
+    /* font-weight: bold; */
+}
+
+.checkbox_text {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.masonry-columns {
+    column-count: 2;
+}
+
+.masonry-item {
+    break-inside: avoid;
+}
+
+@media (max-width: 992px) {
+    .masonry-columns {
+        column-count: 1;
+    }
+}
+
+input[type="number"],
+input[type="text"],
+select {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.container-responsive {
+    padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+    .container-responsive {
+        padding: 0 10px;
+    }
+}
+
+.func_01 ul {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.func_01 li {
+    flex: 1 1 auto;
+    min-width: 200px;
+    align-items: center;
+    text-align: center;
+}
+
+.checkbox_text input[type="checkbox"],
+.checkbox_text input[type="number"] {
+    margin-bottom: 5px;
+    width: 100%;
+    max-width: 60px;
+}
+
+#input-proc-1 {
+    max-width: 70px;
+}
+
+@media (max-width: 768px) {
+    .func_01 ul {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .func_01 li {
+        width: 100%;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .checkbox_text {
+        flex-direction: row;
+        gap: 10px;
+    }
+
+}
+
+/* RESPONSIVE COPY_FRAME */
+@media (max-width: 1200px) {
+    .copy_frame {
+        padding: 10px;
+        border-radius: 15px;
+        font-size: 14px;
+    }
+
+    .copy_frame li {
+        align-items: flex-start;
+        font-size: 14px;
+    }
+
+    .copy_frame .text_show {
+        margin-left: 5px;
+        display: inline-block;
+        word-break: break-word;
+        max-width: 100%;
+    }
+}
+
+/* TOATS CUSTOM Thông báo */
+.toast-custom {
+    visibility: hidden;
+    min-width: fit-content;
+    background-color: #333333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 12px 20px;
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.5s ease, bottom 0.5s ease;
+    border-left: 5px solid #52be4f;
+}
+
+.toast-custom.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px;
+}

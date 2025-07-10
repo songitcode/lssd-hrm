@@ -256,7 +256,7 @@
                                                     class="form-control @error('password') is-invalid @enderror"
                                                     placeholder="Nhập mật khẩu" required>
                                                 @error('password')
-                                                    <!-- <div class="invalid-feedback">{{ $message }}</div> -->
+                                                    {{-- <div class="invalid-feedback">{{ $message }}</div> --}}
                                                     <div class="invalid-feedback">Mật khẩu thiếu thiếu gì rồi</div>
                                                 @enderror
                                             </div>
@@ -412,7 +412,6 @@
             </div>
         </div>
 
-
         <div class="box-employees">
             <!-- Bảng nhân sự -->
             <div class="table-responsive">
@@ -490,13 +489,11 @@
                                         </button>
                                     @endif
                                      <!-- <button class="btn btn-edit"><i class="fa-solid fa-user-pen"></i> Sửa</button> -->
-                                         
                                 </td>
-
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7">Không có nhân sự nào.</td>
+                                <td colspan="9">Không có nhân sự nào.</td>
                             </tr>
                         @endforelse
                     </tbody>
