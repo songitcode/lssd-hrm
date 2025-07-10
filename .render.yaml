@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: lssd-hrtime
+    runtime: php
+    plan: free
+    region: oregon
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      php artisan config:clear
+      php artisan migrate --force
+      php artisan storage:link || true
+    startCommand: php artisan serve --host=0.0.0.0 --port=10000
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        sync: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        value: dpg-d1nsrrumcj7s73fkn5d0-a.oregon-postgres.render.com
+      - key: DB_PORT
+        value: 5432
+      - key: DB_DATABASE
+        value: lssd_hrtime
+      - key: DB_USERNAME
+        value: lssd_hrtime_user
+      - key: DB_PASSWORD
+        value: lHVd813te7N6crKqZOf4pxKlHRW0GzET
