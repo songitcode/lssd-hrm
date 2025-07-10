@@ -19,11 +19,8 @@ class EmployeeController extends Controller
     // Hiển Thị
     public function index()
     {
-        // Lấy danh sách nhân sự và truyền qua view
-        // $employees = Employee::withTrashed()->sortedByCustomPosition();
         $employees = Employee::sortedByCustomPosition(); // chỉ lấy nhân sự hoạt động
         $deletedEmployees = Employee::onlyTrashed()->with(['user', 'position', 'rank'])->get(); // lấy nhân sự trong "thùng rác"
-
 
         // Phân trang thủ công
         $perPage = 10;
@@ -65,6 +62,48 @@ class EmployeeController extends Controller
             'paginated',
             'latestDeleteLogByUser', // áp dụng cho employees, không get() trước paginate
         ));
+    }
+
+    public function homeDisplay()
+    {
+        $positionOrder = [
+            'Cục Trưởng' => 1,
+            'Phó Cục Trưởng' => 2,
+            'Trợ Lý Cục Trưởng' => 3,
+            'Thư Ký' => 4,
+            'Đội Trưởng' => 5,
+            'Đội Phó' => 6,
+            'Cảnh Sát Viên' => 7,
+            'Sĩ Quan Dự Bị' => 8,
+            'Thực Tập' => 9,
+        ];
+
+        $users = User::with(['employee.position.rank'])
+            ->where('role', '!=', 'admin')
+            ->whereHas('employee', function ($query) {
+                $query->whereNull('deleted_at');
+            })
+            ->get()
+            ->sort(function ($a, $b) use ($positionOrder) {
+                $aPriority = $positionOrder[$a->employee->position->name_positions] ?? 999;
+                $bPriority = $positionOrder[$b->employee->position->name_positions] ?? 999;
+
+                return $aPriority <=> $bPriority;
+            });
+
+        // ✅ Phân trang thủ công sau khi sort
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 5;
+        $pagedData = $users->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $paginatedUsers = new LengthAwarePaginator(
+            $pagedData,
+            $users->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('home', ['users' => $paginatedUsers]);
     }
 
     // TẠO, THÊM, ADD

@@ -5,8 +5,9 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Rank;
 use App\Models\Position;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Database\Seeders\EmployeeSeeder;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,7 +19,7 @@ class DatabaseSeeder extends Seeder
         // User mặc định
         User::create([
             'username' => 'admin',
-            'password' => bcrypt('admin'),
+            'password' => bcrypt('@0123321admin'),
             'role' => 'admin'
         ]);
 
@@ -34,6 +35,7 @@ class DatabaseSeeder extends Seeder
             Position::create(['name_positions' => $pos]);
         }
 
+        $this->call(EmployeesSeeder::class);
         // User::factory(10)->create();
 
         // User::factory()->create([

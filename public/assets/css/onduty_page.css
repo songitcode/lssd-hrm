@@ -1,0 +1,94 @@
+.group-function {
+    border: 1px solid #e8a800;
+    margin: 20px 17px 0;
+    border-radius: 20px 20px 0 0;
+    background: #efc2512c;
+    padding: 15px;
+}
+
+.box-employees {
+    border: 1px solid #e8a800;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
+/*  BUTTON  */
+.btn_xem_ho_so {
+    text-decoration: none;
+    color: #3B3B1A;
+    border: 1px solid #3B3B1A;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    padding: 5px 30px;
+    font-weight: 600;
+    transition: all 0.1s ease-in-out;
+
+    &:hover {
+        background: #3B3B1A;
+        color: #e8a800;
+    }
+}
+
+/* SEARCH CSS */
+.search-wrapper {
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.search-box {
+    position: relative;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    border: 1px solid #ffdf8f;
+}
+
+.search-box:focus-within {
+    box-shadow: 0 3px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.search-input {
+    border-radius: 50px;
+    padding-left: 45px;
+    padding-right: 20px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    height: 50px;
+}
+
+.search-input:focus {
+    border-color: #e8a800;
+    box-shadow: none;
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    z-index: 10;
+}
+
+.search-button {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50px;
+    padding: 8px 20px;
+    transition: all 0.3s ease;
+    background: #e8a800;
+    border: none;
+}
+
+.search-button:hover {
+    background-color: #e8a800;
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* CSS KHÁC */
+.table-hover-custom>tbody>tr:hover>* {
+    background-color: #fdefcc;
+}

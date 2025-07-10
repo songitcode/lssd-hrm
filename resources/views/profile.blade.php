@@ -6,50 +6,6 @@
     $isHighRole = in_array(auth()->user()->role, $highRoles);
 @endphp
 
-@push('styles')
-    <style>
-        .profile-avatar {
-            width: 250px;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 50%;
-            /* box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 14px #e8a800, 0 0 20px #e8a800, 0 0 25px #e8a800, 0 0 30px #e8a800, 0 0 35px #e8a800; */
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @-webkit-keyframes glow {
-            from {
-                box-shadow: 0 0 3px #fff, 0 0 7px #fff, 0 0 14px #e8a800, 0 0 20px #e8a800, 0 0 25px #e8a800, 0 0 30px #e8a800, 0 0 35px #e8a800;
-            }
-
-            to {
-                box-shadow: 0 0 5px #fff, 0 0 10px #e9ff5b, 0 0 15px #e9ff5b, 0 0 20px #e9ff5b, 0 0 25px #e9ff5b, 0 0 30px #e9ff5b, 0 0 40px #e9ff5b;
-            }
-        }
-
-        .box-profile {
-            border: 1px solid #e8a800;
-            border-radius: 20px;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-        }
-
-        .btn-update-profile {
-            color: #6C757D;
-            border-radius: 10px;
-            padding: 8px 16px;
-            margin: 32px 0 16px;
-            font-weight: 300;
-            font-size: 16px;
-            border: 1px solid #e8a800;
-            background-color: none;
-
-            &:hover {
-                color: white;
-                background: #e8a800
-            }
-        }
-    </style>
-@endpush
 {{--
 @php
 $currentUser = auth()->user();
@@ -67,12 +23,6 @@ $canEditPosition = $currentUser->canEditPositionOf($employee->user);
             @endif
             @csrf
             @method('PUT')
-            {{-- @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-            @error('avatar')
-            <div class="alert alert-danger">{{ $message }}</div>
-            @enderror --}}
 
             <div class="row g-4">
 
@@ -135,7 +85,7 @@ $canEditPosition = $currentUser->canEditPositionOf($employee->user);
                                     value="{{ $employee->name_ingame }}" readonly required>
                             @else
                                 <input type="text" name="name_ingame" class="form-control input__view"
-                                    value="{{ $employee->name_ingame }}"  required>
+                                    value="{{ $employee->name_ingame }}" required>
                             @endif
 
                         </div>
@@ -163,13 +113,12 @@ $canEditPosition = $currentUser->canEditPositionOf($employee->user);
                         @else
                             <button type="submit" class="btn-update-profile mt-3">Cập nhật hồ sơ</button>
                         @endif
-                        <!-- <a href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal"
-                                                                                                                                                                                                    class="btn btn-warning mt-3 ms-2">🔐 Đổi mật khẩu</a> -->
-                    </div>
+                        {{-- <a href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal" class=" btn-g mt-ms-2">Đổi
+                            khẩu</a--}} </div>
                 @else
-                    <div class="text-white bg-warning p-3">ADMIN KHÔNG PHẢI HỒ SƠ NHÂN SỰ</div>
-                @endif
-            </div>
+                            <div class="text-white bg-warning p-3">ADMIN KHÔNG PHẢI HỒ SƠ NHÂN SỰ</div>
+                        @endif
+                </div>
         </form>
 
         {{-- Đổi mật khẩu (re-use modal)
