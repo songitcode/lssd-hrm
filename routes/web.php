@@ -84,5 +84,8 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
 
     Route::get('/onduty', [OnDutyController::class, 'index'])->name('partials.ondutyList');
 
+    // Reset toàn bộ dữ liệu chấm công WARNING!!
+    Route::delete('/payroll/reset', [AttendanceController::class, 'resetAll'])->name('attendance.resetAll');
+
 });
 

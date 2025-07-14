@@ -15,7 +15,7 @@
                 <thead>
                     <tr>
                         <th>STT</th>
-                        <th>Ngày</th>
+                        <th>Ngày/Tháng/Năm</th>
                         <th>Giờ Vào</th>
                         <th>Giờ Ra</th>
                         <th>Số Giờ</th>
@@ -29,7 +29,7 @@
                             <td class="hover_1">{{ $index + 1 }}</td>
                             <td class="hover_1">{{ \Carbon\Carbon::parse($att->date)->format('d/m/Y') }}</td>
                             <td class="hover_1">
-                                {{ $att->check_in ? \Carbon\Carbon::parse($att->check_in)->format('H:i') : '—' }}
+                                {{ $att->check_in ? \Carbon\Carbon::parse($att->check_in)->format('H:i:s') : '—' }}
                             </td>
                             <td class="hover_1">
                                 {{ $att->check_out ? \Carbon\Carbon::parse($att->check_out)->format('H:i') : '—' }}
@@ -52,6 +52,29 @@
                             <td class="hover_1" colspan="6">Không có dữ liệu chấm công trong tháng này.</td>
                         </tr>
                     @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="ket_noi_bang mt-0">
+            <h5 class="p-4"><strong>LỊCH SỬ TỔNG KẾT THÁNG</strong></h5>
+        </div>
+        <div class="box_history_time table-responsive">
+            <table class="tb_total_month">
+                <thead>
+                    <tr class="table-info">
+                        <th>Tháng/Năm</th>
+                        <th>Tổng giờ</th>
+                        <th>Tổng lương</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($monthlySummaries as $summary)
+                        <tr>
+                            <td>{{ str_pad($summary->month, 2, '0', STR_PAD_LEFT) }}/{{ $summary->year }}</td>
+                            <td>{{ number_format($summary->total_hours, 2) }}h</td>
+                            <td>{{ number_format($summary->total_wage) }}$</td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>

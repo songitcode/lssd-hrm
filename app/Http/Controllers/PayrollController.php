@@ -25,6 +25,7 @@ class PayrollController extends Controller
             'Thực Tập' => 9,
         ];
 
+
         // Lấy tất cả user có employee và position
         $users = User::with(['employee.position', 'rank'])
             ->whereHas('employee')
@@ -60,12 +61,19 @@ class PayrollController extends Controller
         $month = Carbon::now()->month;
         $year = Carbon::now()->year;
 
+        // Hiển thị lịch sử tổng lương theo tháng
+        $monthlySummaries = MonthlyAttendanceSummary::where('user_id', $user->id)
+            ->orderByDesc('year')
+            ->orderByDesc('month')
+            ->get();
+
+
         $attendances = $user->attendances()
             ->whereMonth('date', $month)
             ->whereYear('date', $year)
             ->orderBy('date')
             ->get();
 
-        return view('payroll.attendance_history', compact('user', 'attendances', 'month'));
+        return view('payroll.attendance_history', compact('user', 'attendances', 'month', 'monthlySummaries'));
     }
 }
