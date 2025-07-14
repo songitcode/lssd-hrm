@@ -12,27 +12,29 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copy mã nguồn & phân quyền
-COPY --chown=www-data:www-data . /var/www
+COPY . /var/www
 
+# Cấp quyền cho Laravel
 RUN chown -R www-data:www-data /var/www && \
     chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Cài composer với quyền www-data
+# Chạy Composer install với www-data
 USER www-data
-RUN composer install --optimize-autoloader --no-dev
+RUN composer install --no-dev --optimize-autoloader
 
-# Copy .env và generate key
-COPY .env.example .env
+# Copy .env và reset quyền
+USER root
+COPY .env.example /var/www/.env
+RUN chown www-data:www-data /var/www/.env
+
+# Quay lại www-data để chạy lệnh artisan
+USER www-data
 RUN php artisan key:generate
 
-# Cache lại config
 RUN php artisan config:clear && php artisan config:cache
+RUN php artisan migrate --force || true  
 
-# Migrate database
-RUN php artisan migrate --force
-
-USER root
-
+# Mở port
 EXPOSE 8000
 
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
