@@ -22,6 +22,8 @@ RUN chown -R www-data:www-data /var/www && \
 USER www-data
 RUN composer install
 
+RUN php artisan config:clear && php artisan config:cache
+
 # Quay lại root user
 USER root
 
