@@ -6,7 +6,7 @@ WORKDIR /var/www
 RUN apt-get update && apt-get install -y \
     zip unzip curl git libxml2-dev libzip-dev libpng-dev libjpeg-dev libonig-dev \
     sqlite3 libsqlite3-dev && \
-    docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
+    docker-php-ext-install pdo pdo_mysql exif pcntl bcmath gd zip
 
 # Cài Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
