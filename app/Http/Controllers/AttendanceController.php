@@ -260,4 +260,19 @@ class AttendanceController extends Controller
         );
     }
 
+
+    public function resetAll()
+    {
+        // Kiểm tra quyền hạn nếu cần (admin, supervisor,...)
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Bạn không có quyền thực hiện thao tác này.');
+        }
+
+        // Xóa toàn bộ bản ghi chấm công và tổng kết lương tháng
+        Attendance::truncate();
+        MonthlyAttendanceSummary::truncate();
+
+        return back()->with('success', 'Đã reset toàn bộ dữ liệu chấm công.');
+    }
+
 }

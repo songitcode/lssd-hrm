@@ -62,9 +62,20 @@
                 </tbody>
             </table>
         </div>
-        <div class="text-end mt-3">
+        <div class="text-end mt-3 d-flex justify-content-end gap-2">
             <a href="{{--route('payroll.export') --}}" class="btn btn-success">
                 📥 Xuất Excel
             </a>
+            @if(auth()->user()->role === 'admin')
+                <form action="{{ route('attendance.resetAll') }}" method="POST"
+                    onsubmit="return confirm('WARNING!! Bạn có chắc chắn muốn xóa toàn bộ dữ liệu chấm công? sẽ không khôi phục được dữ liệu')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger" id="resetButon">
+                        <i class="fa fa-trash"></i> Reset Toàn Bộ Dữ Liệu Chấm Công
+                    </button>
+                </form>
+            @endif
+
         </div>
 @endsection
