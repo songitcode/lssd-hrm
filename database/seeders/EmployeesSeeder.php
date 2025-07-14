@@ -15,6 +15,7 @@ class EmployeesSeeder extends Seeder
 {
     public function run(): void
     {
+        /*
         // Lấy danh sách position và rank (giả định đã có sẵn)
         $positions = Position::pluck('id')->toArray();
         $ranks = Rank::pluck('id')->toArray();
@@ -38,5 +39,6 @@ class EmployeesSeeder extends Seeder
                 'created_by' => 1, // hoặc auth id nếu có user admin
             ]);
         }
+            */
     }
 }
