@@ -1,6 +1,6 @@
 @extends('layouts.app') {{-- Kế thừa layout --}}
 
-@section('title', 'Đăng nhập | LSSD')
+@section('title', 'Đăng nhập')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">

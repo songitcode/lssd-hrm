@@ -1,4 +1,7 @@
 @extends('layouts.app')
+
+@section('title', 'Trang Chủ')
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/home.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/hr_employees.css') }}">

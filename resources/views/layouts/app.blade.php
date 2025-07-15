@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8" name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/Logo_LSCSD.png') }}">
     <title>@yield('title')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {{--  --}}
@@ -10,6 +11,7 @@
    <link rel="stylesheet" href="{{ asset('assets/fontawesome-6.5.0/css/all.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link href="https://fonts.googleapis.com/css?family=Archivo+Black&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.7/css/bootstrap.min.css" integrity="sha512-fw7f+TcMjTb7bpbLJZlP8g2Y4XcCyFZW8uy8HsRZsH/SwbMw0plKHFHr99DN3l04VsYNwvzicUX/6qurvIxbxw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     @if (!View::hasSection('hide_css'))
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     @endif
@@ -62,6 +64,7 @@
             }
         }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.7/js/bootstrap.min.js" integrity="sha512-zKeerWHHuP3ar7kX2WKBSENzb+GJytFSBL6HrR2nPSR1kOX1qjm+oHooQtbDpDBSITgyl7QXZApvDfDWvKjkUw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ asset('assets/js/notification.js') }}"></script>
     <script src="{{ asset('assets/bootstrap-5.3.7-dist/js/bootstrap.bundle.min.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

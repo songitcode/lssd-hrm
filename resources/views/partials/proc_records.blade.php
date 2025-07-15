@@ -1,4 +1,7 @@
 @extends('layouts.app')
+
+@section('title', 'Hỗ Trợ Xử Án')
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/proc_records.css') }}">
 @endpush
