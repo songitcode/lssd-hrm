@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Bảo Lãnh Tội Phạm')
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/form_criminal_bail.css') }}">
 @endpush

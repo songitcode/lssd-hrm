@@ -69,4 +69,5 @@
             border: 3px solid #e8a800;
             border-radius: 50%;
         }
+    }
 </style>

@@ -1,4 +1,7 @@
 @extends('layouts.app')
+
+@section('title', 'Live Onduty')
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/onduty_page.css') }}">
 @endpush

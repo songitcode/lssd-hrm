@@ -1,4 +1,7 @@
 @extends('layouts.app')
+
+@section('title', 'Lịch Sử')
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/payrol_page.css') }}">
 @endpush

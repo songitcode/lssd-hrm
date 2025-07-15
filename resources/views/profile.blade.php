@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', auth()->user()->employee->name_ingame ?? 'ADMIN')
+
 @section('title', 'Hồ Sơ Cá Nhân')
 @php
     $highRoles = ['admin', 'thư ký', 'trợ lý cục trưởng', 'phó cục trưởng', 'cục trưởng'];
