@@ -140,7 +140,7 @@
             });
         });
         document.addEventListener('DOMContentLoaded', function () {
-            const xemBtns = document.querySelectorAll('.btn-view-profile');
+            const xemBtns = document.querySelectorAll('.loader-1');
 
             xemBtns.forEach(btn => {
                 btn.addEventListener('click', function (e) {
