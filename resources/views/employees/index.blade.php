@@ -57,8 +57,8 @@
                                 @case('xóa')
                                     <div class="history-item d-flex justify-content-between align-items-center text-danger">
                                         <div>
-                                            <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> đã
-                                            <span class="_Mau">xóa <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong></span>
+                                            <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> 
+                                            đã <span class="_Mau">xóa <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong></span>
                                             vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
                                         </div>
                                         @if(in_array($log->target, $deletedUsernames) && $latestDeleteLogByUser[$log->target] === $log->id)
@@ -103,7 +103,7 @@
                                 @case('đổi mật khẩu')
                                     <div class="history-item text-warning">
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> 
-                                        vừa <strong class="_Mau">{{ $log->detail }}<strong> 
+                                        vừa <strong class="_Mau">{{ $log->detail }}</strong> 
                                         cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
                                         vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
                                     </div>
@@ -112,7 +112,7 @@
                                 @case('resetPassword')
                                     <div class="history-item" style="color: #58A0C8;">
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> 
-                                        đã <strong class="_Mau">{{ $log->detail }}<strong> 
+                                        đã <strong class="_Mau">{{ $log->detail }}</strong> 
                                         của <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
                                         vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
                                     </div>
