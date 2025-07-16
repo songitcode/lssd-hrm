@@ -261,6 +261,20 @@ class EmployeeController extends Controller
         //     $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         // }
 
+        $newName = $request->input('name_ingame');
+        $newPositionId = $request->input('position_id');
+        $newRankId = $request->input('rank_id');
+        // So sánh với dữ liệu cũ
+        $hasChanged = (
+            $newName !== $employee->name_ingame ||
+            $newPositionId != $employee->position_id ||
+            $newRankId != $employee->rank_id
+        );
+
+        if (!$hasChanged) {
+            return redirect()->back()->with('warning', 'Bạn chưa thay đổi thông tin người này!');
+        }
+
         $employee->update($data);
 
         ActivityLog::create([
@@ -306,6 +320,31 @@ class EmployeeController extends Controller
 
         // return back()->with('success', 'Đổi mật khẩu thành công.');
         return response()->json(['message' => 'Đổi mật khẩu thành công']);
+    }
+
+    //// RESET PASSWORD
+    public function resetPassword($id)
+    {
+        $employee = Employee::with('user')->findOrFail($id);
+        $user = $employee->user;
+
+        // Chỉ chính chủ hoặc admin có quyền
+        if (auth()->id() !== $user->id && $this->getRoleLevel(auth()->user()->role) <= $this->getRoleLevel($user->role)) {
+            return response()->json(['message' => 'Bạn không đủ quyền reset mật khẩu người này.'], 403);
+        }
+
+        $user->update([
+            'password' => bcrypt('123456789'),
+        ]);
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'resetPassword',
+            'target' => $user->username,
+            'detail' => 'cứu lấy mật khẩu'
+        ]);
+
+        return response()->json(['message' => 'Mật khẩu đã được đặt lại thành 123456789.']);
     }
 
     // Xóa 1 nhân sự trong thùng rác, Hard delete

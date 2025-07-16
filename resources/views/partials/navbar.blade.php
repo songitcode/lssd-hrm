@@ -84,7 +84,7 @@
                                 <li>
                                     <a class="nav-links {{ request()->is('profile') ? 'active-link-popup' : '' }}"
                                         href="{{ route('profile') }}">
-                                        <button>
+                                        <button class="btn-view-profile">
                                             <i class="fas fa-info-circle"></i>
                                             <span>Hồ Sơ</span>
                                         </button>
@@ -129,6 +129,24 @@
             if (!popup.contains(e.target)) {
                 checkbox.checked = false;
             }
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const xemBtns = document.querySelectorAll('.btn-logout');
+
+            xemBtns.forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    document.getElementById('loadingOverlay').style.display = 'flex';
+                });
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const xemBtns = document.querySelectorAll('.btn-view-profile');
+
+            xemBtns.forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    document.getElementById('loadingOverlay').style.display = 'flex';
+                });
+            });
         });
     </script>
 @endpush

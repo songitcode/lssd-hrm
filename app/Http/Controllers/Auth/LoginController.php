@@ -22,7 +22,7 @@ class LoginController extends Controller
                 ]);
             })
             ->get();
-
+            
         return view('auth.login', compact('contacts'));
         // return view('auth.login');
 

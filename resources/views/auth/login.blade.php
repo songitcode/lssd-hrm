@@ -121,5 +121,13 @@
                 this.classList.toggle('fa-eye-slash');
             });
         });
+
+        document.querySelector('.form-login').addEventListener('submit', function (e) {
+            const btn = document.querySelector('.btn-login');
+            btn.disabled = true;
+            btn.textContent = 'Đang đăng nhập...';
+            showLoading();
+        });
     </script>
+    <script src="{{ asset('assets/js/loading.js') }}"></script>
 @endpush

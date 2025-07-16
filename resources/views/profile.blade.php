@@ -29,15 +29,20 @@ $canEditPosition = $currentUser->canEditPositionOf($employee->user);
             <div class="row g-4">
 
                 @if ($employee)
-                    <div class="col-md-4 text-center mt-5">
-                        <img id="avatarPreview"
-                            src="{{ $employee->avatar ? asset('storage/' . $employee->avatar) : asset('assets/images/user_preview_logo.png') }}"
-                            class="profile-avatar mb-3">
+                    <div class="col-md-4 text-center mt-5 align-items-center">
+                        <div class="avatar-circle">
+                            <div class="profile-avatar-wrapper">
+                                <img id="avatarPreview"
+                                    src="{{ $employee->avatar ? asset('storage/' . $employee->avatar) : asset('assets/images/user_preview_logo.png') }}"
+                                    class="profile-avatar mb-3">
+                            </div>
+                        </div>
+
                         <div>
                             <input type="file" name="avatar" accept="image/*" class="d-none" id="avatarInput"
                                 onchange="previewAvatar(event)">
-                            <label for="avatarInput" class="btn btn-outline-primary btn-sm px-3 py-2 mt-4">
-                                <i class="bi bi-image"></i> Chọn Ảnh
+                            <label for="avatarInput" class="btn-change-img mt-4">
+                                <i class="fa fa-image"></i> Thay đổi ảnh
                             </label>
                         </div>
                     </div>
@@ -74,9 +79,29 @@ $canEditPosition = $currentUser->canEditPositionOf($employee->user);
                         @else
                             <div class="mb-3">
                                 <label class="form-label">Chức vụ</label>
-                                <input type="text"
-                                    class="form-control input__view {{ in_array($employee->position->name_positions, ['Cục Trưởng', 'Phó Cục Trưởng', 'Trợ Lý Cục Trưởng']) ? 'high-level' : '' }}"
-                                    value="{{ $employee->position->name_positions }}" disabled>
+                                <div class="position-cus">
+                                    <video autoplay muted loop playsinline class="bg-video-position">
+                                        <source
+                                            src="https://cdn.discordapp.com/assets/collectibles/nameplates/chance/d20_roll/asset.webm"
+                                            type="video/webm">
+                                        <source
+                                            src="https://cdn.discordapp.com/assets/collectibles/nameplates/chance/d20_roll/asset.webm"
+                                            type="video/mp4">
+                                        {{--
+                                        <source
+                                            src="https://cdn.discordapp.com/assets/collectibles/nameplates/paper/skibidi_toilet/asset.webm"
+                                            type="video/webm">
+                                        <source
+                                            src="https://cdn.discordapp.com/assets/collectibles/nameplates/paper/skibidi_toilet/asset.webm"
+                                            type="video/mp4">
+                                        --}}
+                                        Your browser does not support the video tag.
+                                    </video>
+
+                                    <input type="text"
+                                        class="form-control input__view  {{ in_array($employee->position->name_positions, ['Cục Trưởng', 'Phó Cục Trưởng', 'Trợ Lý Cục Trưởng']) ? 'high-level' : '' }}"
+                                        value="{{ $employee->position->name_positions }}" disabled>
+                                </div>
                             </div>
 
                         @endif
