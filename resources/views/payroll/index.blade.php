@@ -82,3 +82,17 @@
 
         </div>
 @endsection
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const xemBtns = document.querySelectorAll('.btn_xem_lich_su_cham_cong');
+
+                xemBtns.forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        // Hiển thị loader
+                        document.getElementById('loadingOverlay').style.display = 'flex';
+                    });
+                });
+            });
+        </script>
+    @endpush

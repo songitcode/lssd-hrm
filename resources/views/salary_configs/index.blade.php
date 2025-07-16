@@ -5,7 +5,7 @@
 @section('content')
     <div class="container">
         <div class="group-function p-3">
-            <form method="POST" action="{{ route('salary_configs.store') }}" class="row g-3">
+            <form method="POST" action="{{ route('salary_configs.store') }}" class="row g-3 form-salary">
                 @csrf
                 <div class="col-md-4">
                     <select name="position_id" class="form-select" required>
@@ -26,7 +26,7 @@
             </form>
             <!-- Form sửa giờ làm tối đa cho toàn hệ thống -->
             <form method="POST" action="{{ route('salary_configs.updateGlobalHours') }}"
-                class="row g-3 align-items-center mt-4">
+                class="row g-3 align-items-center mt-4 form-edit-time">
                 @csrf
                 @method('PUT')
                 <div class="col-md-4">
@@ -87,6 +87,18 @@
                 }
             });
         });
+        document.querySelector('.form-edit-time').addEventListener('submit', function (e) {
+            showLoading();
+        });
+       
+        document.addEventListener('DOMContentLoaded', function () {
+        const salaryForm = document.querySelectorAll('.form-salary');
+        salaryForm.forEach(form => {
+            form.addEventListener('submit', function () {
+                showLoading();
+            });
+        });
+    });
     </script>
 
 @endpush

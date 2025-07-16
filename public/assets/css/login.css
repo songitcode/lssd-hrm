@@ -296,3 +296,140 @@ h2 span {
     height: 30px;
     object-fit: cover;
 }
+
+/* LOADER */
+
+/* LOADING CSS */
+.loader-clock {
+    width: 65px;
+    height: 65px;
+    border: 8px solid #ee9b00a6;
+    border-radius: 50px;
+    position: relative;
+    margin: 20px auto 0;
+}
+
+.loader-clock span {
+    display: block;
+    background: #ee9b00;
+}
+
+.loader-clock .hour,
+.loader-clock .min {
+    width: 6px;
+    height: 22px;
+    border-radius: 50px;
+    position: absolute;
+    top: 24.5px;
+    left: 21px;
+    animation: load9243 1.2s linear infinite;
+    transform-origin: top center;
+}
+
+.loader-clock .min {
+    height: 17px;
+    animation: load9243 4s linear infinite;
+}
+
+.loader-clock .circel {
+    width: 10px;
+    height: 10px;
+    border-radius: 50px;
+    position: absolute;
+    top: 19px;
+    left: 19px;
+}
+
+@keyframes load9243 {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/*  */
+/* Overlay full màn hình */
+.loader-overlay {
+    position: fixed;
+    z-index: 9999;
+    background: rgba(10, 10, 10, 0.9);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial Black', sans-serif;
+}
+
+/* Loader chính giữa */
+.lssd-loader-content {
+    text-align: center;
+    color: #FFD700;
+
+}
+
+/* Biểu tượng sao */
+.lssd-badge {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+}
+
+/* Hình ngôi sao */
+.lssd-badge .star {
+    width: 100px;
+    height: 100px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Star_icon_stylized.svg/1024px-Star_icon_stylized.svg.png') no-repeat center;
+    background-size: contain;
+    animation: spin 2s linear infinite;
+}
+
+/* Chữ LSSD */
+.lssd-badge .text {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+/* Dòng chữ loading */
+.loading-text {
+    font-size: 16px;
+    color: #bbb;
+    animation: pulse 1.5s infinite;
+}
+
+/* Animation quay */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Animation mờ hiện */
+@keyframes pulse {
+    0% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.3;
+    }
+}

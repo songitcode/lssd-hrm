@@ -378,7 +378,7 @@ img.rounded-circle {
     font-weight: 900;
     font-size: large;
     border: none;
-    animation: glow 2s ease-in-out infinite alternate;
+    /* animation: glow 2s ease-in-out infinite alternate; */
     width: fit-content;
 }
 
@@ -389,7 +389,8 @@ img.rounded-circle {
     object-fit: cover;
     border-radius: 50%;
     /* box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 14px #e8a800, 0 0 20px #e8a800, 0 0 25px #e8a800, 0 0 30px #e8a800, 0 0 35px #e8a800; */
-    animation: glow 2s ease-in-out infinite alternate;
+    /* animation: glow 2s ease-in-out infinite alternate; */
+    border: 2px solid #f8b400;
 }
 
 .glow-box {
@@ -413,18 +414,96 @@ img.rounded-circle {
 }
 
 .btn-update-profile {
-    color: #6C757D;
+    color: #fff;
     border-radius: 10px;
     padding: 8px 16px;
     margin: 32px 0 16px;
     font-weight: 300;
     font-size: 16px;
-    border: 1px solid #e8a800;
-    background-color: none;
+    border: none;
+    background-color: #e8a600;
 
     &:hover {
         color: white;
-        background: #e8a800
+        background: #f7c548
+    }
+}
+
+.position-cus {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    height: 50px;
+}
+
+.bg-video-position {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    border-radius: 4px;
+}
+
+.input__view {
+    position: relative;
+    border: 1px solid #ccc;
+    width: 100%;
+    height: 100%;
+}
+
+.avatar-circle {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+}
+
+.profile-avatar-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.profile-avatar-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    background-image: url('https://cdn.discordapp.com/avatar-decoration-presets/a_fe3c76cac2adf426832a7e495e8329d3.png?size=240&passthrough=true');
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 2;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+}
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #f8b400;
+    z-index: 1;
+    position: relative;
+}
+
+
+.btn-change-img {
+    border: 1px solid #e8a600;
+    padding: 10px 20px;
+    border-radius: 50px;
+    color: #ffff;
+    cursor: pointer;
+    background: #493400a0;
+    transition: all .3s ease;
+
+    &:hover {
+        background: #e8a600;
     }
 }
 
@@ -508,4 +587,139 @@ img.rounded-circle {
 .logo_lssd:hover {
     transform: scale(1.1);
     transition: transform 0.3s ease;
+}
+
+/* LOADING CSS */
+.loader-clock {
+    width: 65px;
+    height: 65px;
+    border: 8px solid #ee9b00a6;
+    border-radius: 50px;
+    position: relative;
+    margin: 20px auto 0;
+}
+
+.loader-clock span {
+    display: block;
+    background: #ee9b00;
+}
+
+.loader-clock .hour,
+.loader-clock .min {
+    width: 6px;
+    height: 22px;
+    border-radius: 50px;
+    position: absolute;
+    top: 24.5px;
+    left: 21px;
+    animation: load9243 1.2s linear infinite;
+    transform-origin: top center;
+}
+
+.loader-clock .min {
+    height: 17px;
+    animation: load9243 4s linear infinite;
+}
+
+.loader-clock .circel {
+    width: 10px;
+    height: 10px;
+    border-radius: 50px;
+    position: absolute;
+    top: 19px;
+    left: 19px;
+}
+
+@keyframes load9243 {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/*  */
+/* Overlay full màn hình */
+.loader-overlay {
+    position: fixed;
+    z-index: 9999;
+    background: rgba(10, 10, 10, 0.9);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial Black', sans-serif;
+}
+
+/* Loader chính giữa */
+.lssd-loader-content {
+    text-align: center;
+    color: #FFD700;
+    
+}
+
+/* Biểu tượng sao */
+.lssd-badge {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+}
+
+/* Hình ngôi sao */
+.lssd-badge .star {
+    width: 100px;
+    height: 100px;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Star_icon_stylized.svg/1024px-Star_icon_stylized.svg.png') no-repeat center;
+    background-size: contain;
+    animation: spin 2s linear infinite;
+}
+
+/* Chữ LSSD */
+.lssd-badge .text {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+/* Dòng chữ loading */
+.loading-text {
+    font-size: 16px;
+    color: #bbb;
+    animation: pulse 1.5s infinite;
+}
+
+/* Animation quay */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Animation mờ hiện */
+@keyframes pulse {
+    0% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.3;
+    }
 }

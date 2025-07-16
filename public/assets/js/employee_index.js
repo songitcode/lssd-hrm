@@ -184,3 +184,113 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
     });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('editUserForm');
+    const submitBtn = document.getElementById('editSubmitBtn');
+
+    // Lưu trạng thái ban đầu
+    let originalData = {};
+
+    function getFormData() {
+        return {
+            name: form.querySelector('#edit_name').value,
+            position: form.querySelector('#edit_position_id').value,
+            rank: form.querySelector('#edit_rank_id').value,
+        };
+    }
+
+    function checkForChanges() {
+        const currentData = getFormData();
+        const changed = Object.keys(currentData).some(key => currentData[key] !== originalData[key]);
+        submitBtn.disabled = !changed;
+    }
+
+    // Khi modal hiển thị, lấy dữ liệu gốc ban đầu
+    const editModal = document.getElementById('editUserModal');
+    editModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const position = button.getAttribute('data-position');
+        const rank = button.getAttribute('data-rank');
+
+        // Gán dữ liệu ban đầu vào form
+        form.querySelector('#edit_id').value = id;
+        form.querySelector('#edit_name').value = name;
+        form.querySelector('#edit_position_id').value = position;
+        form.querySelector('#edit_rank_id').value = rank;
+
+        // Gán dữ liệu vào avatar
+        const avatar = button.getAttribute('data-avatar');
+        const newLocal = '/images/default-avatar.png';
+        document.getElementById('edit_avatar_preview').src = avatar && avatar.trim() !== ''
+            ? avatar
+            : newLocal;
+
+        form.action = `/employees/${id}`;
+
+        // Cập nhật dữ liệu gốc để so sánh
+        originalData = {
+            name: name,
+            position: position,
+            rank: rank,
+        };
+
+        submitBtn.disabled = true; // Tắt nút ban đầu
+    });
+
+    // Theo dõi thay đổi input
+    ['edit_name', 'edit_position_id', 'edit_rank_id'].forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener('input', checkForChanges);
+        input.addEventListener('change', checkForChanges);
+    });
+});
+
+function resetPasswordFromModal() {
+    const userId = document.getElementById('change_password_id').value;
+
+    Swal.fire({
+        title: 'Bạn có chắc muốn reset mật khẩu?',
+        text: "Mật khẩu sẽ đặt lại là 123456789",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        if (result.isConfirmed) {
+            fetch(`/employees/${userId}/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: data.message || 'Đã reset mật khẩu về 123456789',
+                        confirmButtonText: 'Rõ'
+                    });
+                })
+                .catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Đã xảy ra lỗi! Vui lòng thử lại.',
+                        confirmButtonText: 'Đóng'
+                    });
+                })
+                .finally(() => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                });
+        } else {
+            // Ẩn loading nếu huỷ
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+    });
+}

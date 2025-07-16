@@ -87,5 +87,6 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
     // Reset toàn bộ dữ liệu chấm công WARNING!!
     Route::delete('/payroll/reset', [AttendanceController::class, 'resetAll'])->name('attendance.resetAll');
 
+    Route::post('/employees/{id}/reset-password', [EmployeeController::class, 'resetPassword']);
 });
 

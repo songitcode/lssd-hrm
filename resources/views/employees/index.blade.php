@@ -22,16 +22,16 @@
             <div class="col-md-6">
                 <!-- Nút tạo nhân sự -->
                 <div class="d-flex justify-content-end mb-2 gap-2">
-                    <button class="btn btn-action-hr btn-history" data-bs-toggle="modal"
+                    <button class="btn-action-hr btn-history" data-bs-toggle="modal"
                         data-bs-target="#historyModal"><strong><i class="fa-solid fa-clock-rotate-left"></i> Lịch
                             Sử</strong></button>
                             
-                     <button class="btn btn-action-hr btn-trash" data-bs-toggle="modal"
+                     <button class="btn-action-hr btn-trash" data-bs-toggle="modal"
                         data-bs-target="#trashModal">
                         <strong><i class="fa-solid fa-trash-can"></i> Thùng Rác</strong>
                     </button>
 
-                    <button class="btn btn-action-hr btn-add" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                    <button class="btn-action-hr btn-add" data-bs-toggle="modal" data-bs-target="#createUserModal">
                         <strong>
                             <i class="fa fa-circle-plus"></i> 
                             Tạo Nhân Sự
@@ -55,15 +55,15 @@
                         @forelse ($logs as $log)
                          @switch($log->action)
                                 @case('xóa')
-                                    <div class="history-item d-flex justify-content-between align-items-center">
+                                    <div class="history-item d-flex justify-content-between align-items-center text-danger">
                                         <div>
                                             <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> đã
-                                            <span class="text-danger">xóa <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong></span>
+                                            <span class="_Mau">xóa <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong></span>
                                             vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
                                         </div>
                                         @if(in_array($log->target, $deletedUsernames) && $latestDeleteLogByUser[$log->target] === $log->id)
                                             {{-- Nếu user bị xoá và đây là log xoá mới nhất → cho phép khôi phục --}}
-                                            <form method="POST" action="{{ route('employees.restore', $log->target) }}">
+                                            <form method="POST" action="{{ route('employees.restore', $log->target) }}" class="form-restore" >
                                                 @csrf
                                                 <button type="submit" class="btn btn-restore">
                                                     <i class="fa-solid fa-clock-rotate-left"></i> Khôi phục
@@ -77,28 +77,46 @@
                                             <span class="text-muted">(đã xoá)</span>
                                         @endif
                                     </div>
-                                    @break
+                                @break
 
                                 @case('tạo')
-                                    <div class="history-item">
-                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> <span class="text-info">đã ban sự sống cho</span> <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
+                                    <div class="history-item text-info">
+                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> <span class="_Mau">đã ban sự sống cho</span> <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
                                         vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
-                                    @break
+                                @break
 
                                 @case('sửa')
-                                    <div class="history-item">
-                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> vừa <strong class="text-primary">{{ $log->detail }}</strong> cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
+                                    <div class="history-item text-primary">
+                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> vừa <strong class="_">{{ $log->detail }}</strong> cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
                                         vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
                                     </div>
-                                    @break
+                                @break
 
                                 @case('khôi phục')
                                     <div class="history-item text-success">
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> đã cứu lấy linh hồn <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
                                         vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
                                     </div>
-                                    @break
+                                @break
+
+                                @case('đổi mật khẩu')
+                                    <div class="history-item text-warning">
+                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> 
+                                        vừa <strong class="_Mau">{{ $log->detail }}<strong> 
+                                        cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
+                                        vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
+                                    </div>
+                                @break
+
+                                @case('resetPassword')
+                                    <div class="history-item" style="color: #58A0C8;">
+                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> 
+                                        đã <strong class="_Mau">{{ $log->detail }}<strong> 
+                                        của <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
+                                        vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
+                                    </div>
+                                @break
 
                                 @default
                                     <div class="history-item">
@@ -134,7 +152,7 @@
                             <p class="text-center text-muted">Không có nhân sự nào trong thùng rác.</p>
                         @else
                             <form method="POST" action="{{ route('employees.force-delete-multiple') }}"
-                                onsubmit="return confirm('Bạn có chắc muốn xóa vĩnh viễn toàn bộ?');">
+                                onsubmit="return confirm('Bạn có chắc muốn xóa vĩnh viễn toàn bộ?');" class="form-delete-trash">
                                 @csrf
                                 @method('DELETE')
                                 <div class="table-responsive">
@@ -182,7 +200,7 @@
 
                                 <div class="text-end mt-3">
                                     <button type="submit" class="btn btn-danger" id="btnDeleteSelected">
-                                        <i class="fa-solid fa-trash"></i> Xóa Tất Cả Đã Chọn Vĩnh Viễn
+                                        <i class="fa-solid fa-trash"></i> Xóa Vĩnh Viễn
                                     </button>
                                 </div>
                             </form>
@@ -209,7 +227,7 @@
 
                     <!-- Body -->
                     <div class="modal-body px-4 py-4">
-                        <form id="createUserForm" method="POST" action="{{ route('employees.store') }}"
+                        <form class="form-create-employee" id="createUserForm" method="POST" action="{{ route('employees.store') }}"
                             enctype="multipart/form-data">
                             @csrf
                             <div class="row">
@@ -315,7 +333,7 @@
                         <h5 class="modal-title fw-bold">Chỉnh sửa Nhân Sự</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                     </div>
-                    <form id="editUserForm" method="POST" enctype="multipart/form-data">
+                    <form class="form-edit-employee" id="editUserForm" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="modal-body px-4 py-4">
@@ -358,7 +376,7 @@
                                 data-bs-dismiss="modal">
                                 🔐 Đổi mật khẩu
                             </button>
-                            <button type="submit" class="btn btn-primary px-4">Cập nhật</button>
+                            <button type="submit" class="btn btn-primary px-4" id="editSubmitBtn" disabled>Cập nhật</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                         </div>
                     </form>
@@ -366,7 +384,7 @@
             </div>
         </div>
 
-        <!-- Modal Thay Đổi Mật Khẩu -->
+        <!-- Modal Đổi Mật Khẩu -->
         <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
             aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
@@ -375,14 +393,16 @@
                     <h5 class="modal-title" id="changePasswordModalLabel">Đổi mật khẩu </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
-
+                <button type="button" class="m-2 btn-resetpassword" onclick="resetPasswordFromModal()">
+                    Quên Mật Khẩu Cũ
+                </button>
                 <form id="changePasswordForm" method="POST" action="" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <input type="hidden" name="id" id="change_password_id">
 
                         <div class="mb-3">
-                            <label for="old_password" class="form-label">Mật khẩu hiện tại</label>
+                            <label for="old_password" class="form-label">Mật khẩu cũ</label>
                             <input type="password" class="form-control" id="old_password" name="old_password" required>
                             <div class="text-danger small" id="error_old_password"></div>
                         </div>
@@ -404,10 +424,11 @@
                         </button>
                         <div>
                             <button type="submit" class="btn btn-danger">Đổi mật khẩu</button>
+                            <button type="submit" class="btn btn-primary" onclick="goBackToEditModal()">Quay Lại</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                         </div>
                     </div>
-                    </form>
+                </form>
                 </div>
             </div>
         </div>
@@ -452,7 +473,7 @@
                                 <td>{{ $emp->userCreatedBy->username ?? 'Admin' }}</td>
                                 <td>
                                     @if(auth()->id() !== $emp->user_id)
-                                        <form method="POST"
+                                        <form method="POST" class="form-delete-employee"
                                             action="{{ route('employees.destroy', ['id' => Hashids::encode($emp->id)]) }}"
                                             style="display: inline-block;"
                                             onsubmit="return confirm('Bạn có chắc muốn xóa nhân sự này?');">
@@ -464,7 +485,7 @@
                                         </form>
 
                                         <!-- <button class="btn btn-edit"><i class="fa-solid fa-user-pen"></i> Sửa</button> -->
-                                         <button class="btn btn-edit"
+                                         <button class="btn-edit"
                                             data-bs-toggle="modal"
                                             data-bs-target="#editUserModal"
                                             data-id="{{ $emp->id }}"
@@ -476,7 +497,7 @@
                                             <i class="fa-solid fa-user-pen"></i> Sửa
                                         </button>
                                     @else
-                                        <button class="btn btn-edit"
+                                        <button class="btn-edit"
                                             data-bs-toggle="modal"
                                             data-bs-target="#editUserModal"
                                             data-id="{{ $emp->id }}"
@@ -510,6 +531,28 @@
 @endsection 
 @push('scripts')
 <script src="{{ asset('assets/js/employee_index.js') }}"></script>
+<script>
+        document.querySelector('.form-edit-employee').addEventListener('submit', function (e) {
+            showLoading();
+        });
+        document.querySelector('.form-create-employee').addEventListener('submit', function (e) {
+            showLoading();
+        });
+        document.querySelector('.form-restore').addEventListener('submit', function (e) {
+            showLoading();
+        });
+        document.querySelector('.form-delete-trash').addEventListener('submit', function (e) {
+            showLoading();
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+        const deleteForms = document.querySelectorAll('.form-delete-employee');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function () {
+                showLoading();
+            });
+        });
+    });
+</script>
 @endpush
 @if ($errors->any())
     <script>
