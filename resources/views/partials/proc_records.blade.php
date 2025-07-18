@@ -56,7 +56,7 @@
             </div>
             <div class="copy_frame" id="copyFrame">
                 <form action="/">
-                    <ul class="list-unstyled p-3">
+                    {{--<ul class="list-unstyled p-3">
                         <li>Tên: <span class="text_show" id="show-name"></span></li>
                         <li>CCCD: <span class="text_show" id="show-cccd"></span></li>
                         <li>Tội Danh:
@@ -64,7 +64,14 @@
                         </li>
                         <li>Mức Án: <span class="text_show" id="show-soPhut"></span></li>
                         <li>Đã xử lý</li>
-                    </ul>
+                    </ul> --}}
+                    <p class="p-3">
+                        Tên: <span class="text_show" id="show-name"></span> <br>
+                        CCCD: <span class="text_show" id="show-cccd"></span> <br>
+                        Tội Danh: <span class="text_show" id="show-toiDanh"></span> <br>
+                        Mức Án: <span class="text_show" id="show-soPhut"></span> <br>
+                        Đã xử lý
+                    </p>
                 </form>
             </div>
             <div class="d-flex justify-content-around">
@@ -497,7 +504,7 @@
             </div>
         </div>
     </div>
-    
+
 @endsection
 @push('scripts')
     <script src="{{ asset('assets/js/proc_records.js') }}"></script>

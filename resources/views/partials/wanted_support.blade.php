@@ -23,7 +23,7 @@
             </div>
             <div class="copy_frame" id="copyFrame">
                 <form action="/">
-                    <ul class="list-unstyled p-3">
+                    {{--<ul class="list-unstyled p-3">
                         <li>Tên: <span class="text_show" id="show-name"></span></li>
                         <li>CCCD: <span class="text_show" id="show-cccd"></span></li>
                         <li>Tội Danh:
@@ -31,7 +31,14 @@
                         </li>
                         <li>Mức Án: <span class="text_show" id="show-soPhut"></span></li>
                         <li>Bằng Chứng: </li>
-                    </ul>
+                    </ul>--}}
+                    <p class="p-3">
+                        Tên: <span class="text_show" id="show-name"></span> <br>
+                        CCCD: <span class="text_show" id="show-cccd"></span> <br>
+                        Tội Danh: <span class="text_show" id="show-toiDanh"></span> <br>
+                        Mức Án: <span class="text_show" id="show-soPhut"></span> <br>
+                        Đã xử lý
+                    </p>
                 </form>
             </div>
             <div class="d-flex justify-content-around">
@@ -412,7 +419,7 @@
                                 <tr>
                                     <td class="law_input_content law-td d-flex justify-content-between align-items-center tcts"
                                         data-toidan="Tấn công trụ sở, nơi làm việc thuộc Ban ngành Nhà
-                                                                                                        nước"
+                                                                                                            nước"
                                         data-mucdo="cong_don" data-phut="200">
                                         <div class="td-label flex-grow-1 pe-2">
                                             Tấn công trụ sở, nơi làm việc thuộc Ban ngành Nhà nước
