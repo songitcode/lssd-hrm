@@ -13,9 +13,8 @@
                 <div class="search-wrapper position-relative">
                     <div class="search-box">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="form-control search-input" id="employeeSearchInput" placeholder="Tìm kiếm nhân sự...">
+                       <input type="text" id="search-employee" class="form-control search-input" placeholder="Tìm tên sĩ quan hoặc tên đăng nhập...">
                     </div>
-                    <div id="searchResults" class="list-group position-absolute w-100 mt-1 shadow-sm" style="z-index: 9999; display: none;"></div>
                 </div>
             </div>
 
@@ -435,8 +434,13 @@
 
         <div class="box-employees">
             <!-- Bảng nhân sự -->
-            <div class="table-responsive">
-                <table class="table table-striped mb-0 table-employees">
+            <div class="table-responsive employees-position-relative">
+                <div id="loading-spinner" style="text-align: center; margin: 10px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <table class="table table-striped mb-0 table-employees table-radius-custom">
                     <thead>
                         <tr>
                             <th>STT</th>

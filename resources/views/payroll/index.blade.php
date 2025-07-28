@@ -9,20 +9,26 @@
     <div class="container">
         <div class="group-function row">
             <div class="col-lg-6">
-                <h3 class="mb-4">Thông Tin Chấm Công Và Tiền Lương - <span class="h6">Tháng {{ $currentMonth }}</span></h3>
+                <h3>Thông Tin Chấm Công Và Tiền Lương - <span class="h6">Tháng {{ $currentMonth }}</span></h3>
             </div>
             <div class="col-lg-6">
                 <div class="search-box">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="form-control search-input" id="employeeSearchInput"
-                        placeholder="Tìm kiếm ...">
+                    <input type="text" id="search-employee" class="form-control search-input"
+                        placeholder="Tìm tên sĩ quan hoặc tên đăng nhập...">
                 </div>
-                {{-- <div id="searchResults" class="list-group position-absolute w-100 mt-1 shadow-sm"
-                    style="z-index: 9999; display: none;"></div> --}}
             </div>
+            <p class="text">
+                Hiển thị thông tin tiền lương, hệ số, số phút làm việc, tổng kết trước ngày 30
+            </p>
         </div>
-        <div class="table-responsive box-employees">
-            <table class="table table-bordered table-hover-custom">
+        <div class="table-responsive box-employees payroll-position-relative">
+            <div id="loading-spinner" style="text-align: center; margin: 10px;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <table class="table table-bordered table-hover-custom table-employees">
                 <thead>
                     <tr>
                         <th class="text-center">STT</th>
@@ -83,6 +89,7 @@
         </div>
 @endsection
     @push('scripts')
+        <script src="{{ asset('assets/js/payroll.js') }}"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const xemBtns = document.querySelectorAll('.btn_xem_lich_su_cham_cong');

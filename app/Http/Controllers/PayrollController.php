@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{User, MonthlyAttendanceSummary};
+use App\Models\{User, MonthlyAttendanceSummary, Employee};
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -76,4 +76,45 @@ class PayrollController extends Controller
 
         return view('payroll.attendance_history', compact('user', 'attendances', 'month', 'monthlySummaries'));
     }
+
+    //// SEARCH, TÌM KIẾM NHÂN SỰ FETCH
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $employees = Employee::with(['user', 'position', 'rank', 'userCreatedBy'])
+            ->whereHas('user', function ($q) {
+                $q->where('role', '!=', 'admin'); // 👈 Bỏ tài khoản admin
+            })
+            ->where(function ($q) use ($query) {
+                $q->where('name_ingame', 'LIKE', "%{$query}%")
+                    ->orWhereHas('user', fn($q2) => $q2->where('username', 'LIKE', "%{$query}%"));
+            })
+            ->get();
+
+        return response()->json([
+            'data' => $employees->map(function ($emp) {
+                return [
+                    'id' => $emp->id,
+                    'name_ingame' => $emp->name_ingame,
+                    'user' => [
+                        'username' => $emp->user->username ?? null,
+                    ],
+                    'position' => [
+                        'name_positions' => $emp->position->name_positions ?? null,
+                    ],
+                    'rank' => [
+                        'name_ranks' => $emp->rank->name_ranks ?? null,
+                    ],
+                    'avatar' => $emp->avatar,
+                    'created_at' => $emp->created_at,
+                    'user_created_by' => [
+                        'username' => $emp->userCreatedBy->username ?? null,
+                    ],
+                    'attendance_url' => route('payroll.user_attendance', $emp->user),
+                ];
+            }),
+        ]);
+    }
+
 }

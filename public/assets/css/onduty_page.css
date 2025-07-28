@@ -92,3 +92,8 @@
 .table-hover-custom>tbody>tr:hover>* {
     background-color: #fdefcc;
 }
+
+.text {
+    font-weight: 330;
+    font-style: italic
+}

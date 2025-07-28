@@ -69,6 +69,7 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
     Route::put('/employees/{id}', [EmployeeController::class, 'update'])->name('employees.update');
     Route::post('/employees/change-password/{id}', [EmployeeController::class, 'changePassword'])->name('employees.change-password');
     Route::get('/employees/search', [EmployeeController::class, 'search'])->name('employees.search');
+    Route::get('/payroll/search', [PayrollController::class, 'search'])->name('payroll.search');
 
     Route::get('/salary-configs', [SalaryConfigController::class, 'index'])->name('salary_configs.index');
     Route::post('/salary-configs', [SalaryConfigController::class, 'store'])->name('salary_configs.store');
