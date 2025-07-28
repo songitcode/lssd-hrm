@@ -9,7 +9,7 @@
                 @csrf
                 <div class="col-md-4">
                     <select name="position_id" class="form-select" required>
-                        <option value="">-- Chọn chức vụ --</option>
+                        <option value="">--- Chọn chức vụ ---</option>
                         @foreach($positions as $position)
                             <option value="{{ $position->id }}">{{ $position->name_positions }}</option>
                         @endforeach

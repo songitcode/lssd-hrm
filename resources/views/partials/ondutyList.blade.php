@@ -9,17 +9,16 @@
     <div class="container">
         <div class="group-function row">
             <div class="col-lg-6">
-                <h3 class="mb-4">Danh sách On-Duty Trực Tiếp</h3>
+                <h3>Danh sách On-Duty Trực Tiếp</h3>
             </div>
-            <div class="col-lg-6">
+            {{-- <div class="col-lg-6">
                 <div class="search-box">
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" class="form-control search-input" id="employeeSearchInput"
                         placeholder="Tìm kiếm ...">
                 </div>
-                {{-- <div id="searchResults" class="list-group position-absolute w-100 mt-1 shadow-sm"
-                    style="z-index: 9999; display: none;"></div> --}}
-            </div>
+            </div> --}}
+            <p class="text mb-4">Hiển thị thời gian thực bằng cách nhấn F5 để xem những nhân sự nào đang trực tiếp nhấn On-Duty</p>
         </div>
         <div class="table-responsive box-employees text-center">
             <table class="table table-bordered table-hover-custom">

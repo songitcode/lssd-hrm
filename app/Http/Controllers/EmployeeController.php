@@ -413,9 +413,6 @@ class EmployeeController extends Controller
         return back()->with('success', 'Đã xóa vĩnh viễn các nhân sự đã chọn.');
     }
 
-
-    // Tìm kiếm
-
     //// PROFILE SETTING
     public function profile()
     {
@@ -525,6 +522,22 @@ class EmployeeController extends Controller
         };
     }
     // 
+
+    //// SEARCH, TÌM KIẾM NHÂN SỰ FETCH
+    public function search(Request $request)
+    {
+        $query = $request->get('query');
+
+        $employees = Employee::with(['user', 'position', 'rank', 'userCreatedBy'])
+            ->where('name_ingame', 'like', "%$query%")
+            ->orWhereHas('user', fn($q) => $q->where('username', 'like', "%$query%"))
+            ->get();
+
+        return response()->json([
+            'data' => $employees
+        ]);
+    }
+
 }
 
 

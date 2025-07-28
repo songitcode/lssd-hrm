@@ -294,3 +294,79 @@ function resetPasswordFromModal() {
         }
     });
 }
+
+// Tìm kiếm nhân sự
+document.getElementById('search-employee').addEventListener('input', function () {
+    const query = this.value.trim();
+    const tbody = document.querySelector('.table-employees tbody');
+    const loader = document.getElementById('loading-spinner');
+
+    loader.style.display = 'block'; // Hiện loading
+
+    if (query === '') {
+        // Nếu rỗng, fetch lại full table HTML
+        fetch('/employees')
+            .then(response => response.text())
+            .then(html => {
+                // Tạo 1 thẻ DOM tạm để lấy nội dung tbody
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newTbody = doc.querySelector('.table-employees tbody');
+
+                if (newTbody) {
+                    tbody.innerHTML = newTbody.innerHTML;
+                }
+
+                loader.style.display = 'none'; // Ẩn loading
+            });
+        return;
+    }
+
+    // Nếu có nội dung -> tìm kiếm bằng JSON
+    fetch(`/employees/search?query=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            tbody.innerHTML = '';
+
+            if (data.data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9">Không có nhân sự nào.</td></tr>`;
+                loader.style.display = 'none';
+                return;
+            }
+
+            data.data.forEach((emp, index) => {
+                const isGlow = ['Cục Trưởng', 'Phó Cục Trưởng', 'Trợ Lý Cục Trưởng'].includes(emp.position?.name_positions ?? '');
+                const avatar = emp.avatar ? `/storage/${emp.avatar}` : '/assets/images/user_preview_logo.png';
+
+                tbody.innerHTML += `
+                    <tr class="${isGlow ? 'glow' : ''}">
+                        <td>${index + 1}</td>
+                        <td><img src="${avatar}" class="rounded-circle" width="30" height="30"></td>
+                        <td>${emp.name_ingame ?? '-'}</td>
+                        <td><span>${emp.user?.username ?? '-'}</span></td>
+                        <td>${emp.position?.name_positions ?? '-'}</td>
+                        <td>${emp.rank?.name_ranks ?? '-'}</td>
+                        <td>${new Date(emp.created_at).toLocaleDateString()}</td>
+                        <td>${emp.user_created_by?.username ?? 'Admin'}</td>
+                        <td>
+                            <button class="btn-edit"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editUserModal"
+                                data-id="${emp.id}"
+                                data-name="${emp.name_ingame}"
+                                data-position="${emp.position_id}"
+                                data-rank="${emp.rank_id}"
+                                data-username="${emp.user?.username}"
+                                data-avatar="/storage/${emp.avatar ?? ''}">
+                                <i class="fa-solid fa-user-pen"></i> Sửa
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            loader.style.display = 'none';
+        });
+});
+
+////
