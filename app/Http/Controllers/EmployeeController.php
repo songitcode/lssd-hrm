@@ -490,11 +490,35 @@ class EmployeeController extends Controller
             'user_id' => $user->id,
             'action' => 'sửa',
             'target' => $user->username,
-            'detail' => 'đã cập nhật hồ sơ cá nhân'
+            'detail' => 'cập nhật hồ sơ cá nhân'
         ]);
 
         return back()->with('success', 'Cập nhật hồ sơ thành công.');
     }
+
+    // REMOVE PROFILE, XÓA
+    public function deleteAvatar()
+    {
+        $user = auth()->user();
+        $employee = $user->employee;
+
+        if ($employee && $employee->avatar) {
+            if (Storage::disk('public')->exists($employee->avatar)) {
+                Storage::disk('public')->delete($employee->avatar);
+            }
+            $employee->avatar = null;
+            $employee->save();
+        }
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => 'deleteAvatar',
+            'target' => $user->username,
+            'detail' => 'xóa ảnh đại diện'
+        ]);
+
+        return redirect()->back()->with('success', 'Đã xoá ảnh đại diện.');
+    }
+
 
     ////
     // Map chức vụ sang role

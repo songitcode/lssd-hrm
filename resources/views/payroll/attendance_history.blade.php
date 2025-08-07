@@ -8,7 +8,7 @@
 @section('content')
     <div class="container">
         <div class="group-function d-flex flex-column flex-lg-row justify-content-between align-items-start">
-            <h3>Lịch Sử Chấm Công - {{ $user->employee->name_ingame ?? $user->username }} (Tháng
+            <h3>Lịch Sử Chấm Công - {{ $user->employee->name_ingame ?? $user->username }} ID: {{ $user->id }} (Tháng
                 {{ $month }})
             </h3>
             <a href="{{ route('payroll.index') }}" class="btn_back_payroll">← Quay lại</a>
@@ -32,10 +32,12 @@
                             <td class="hover_1">{{ $index + 1 }}</td>
                             <td class="hover_1">{{ \Carbon\Carbon::parse($att->date)->format('d/m/Y') }}</td>
                             <td class="hover_1">
-                                {{ $att->check_in ? \Carbon\Carbon::parse($att->check_in)->format('H:i:s') : '—' }}
+                                {{ $att->check_in ? \Carbon\Carbon::parse($att->check_in)->format('H:i - d/m') : '—' }}
+                                <p style="font-size: 12px; font-weight: bold;">{{ $att->created_at }}</p>
                             </td>
                             <td class="hover_1">
-                                {{ $att->check_out ? \Carbon\Carbon::parse($att->check_out)->format('H:i') : '—' }}
+                                {{ $att->check_out ? \Carbon\Carbon::parse($att->check_out)->format('H:i - d/m') : '—' }}
+                                <p style="font-size: 12px; font-weight: bold;">{{ $att->updated_at }}</p>
                             </td>
                             <td class="hover_1">{{ $att->duration }}h</td>
                             <td class="hover_1">{{ number_format($att->wage) }} $</td>
@@ -58,28 +60,39 @@
                 </tbody>
             </table>
         </div>
-        <div class="ket_noi_bang mt-0">
-            <h5 class="p-4"><strong>LỊCH SỬ TỔNG KẾT THÁNG</strong></h5>
-        </div>
-        <div class="box_history_time table-responsive">
-            <table class="tb_total_month">
-                <thead>
-                    <tr class="table-info">
-                        <th>Tháng/Năm</th>
-                        <th>Tổng giờ</th>
-                        <th>Tổng lương</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($monthlySummaries as $summary)
-                        <tr>
-                            <td>{{ str_pad($summary->month, 2, '0', STR_PAD_LEFT) }}/{{ $summary->year }}</td>
-                            <td>{{ number_format($summary->total_hours, 2) }}h</td>
-                            <td>{{ number_format($summary->total_wage) }}$</td>
+        @if ($monthlySummaries->isNotEmpty())
+
+
+            <div class="ket_noi_bang mt-0">
+                <h5 class="p-4"><strong>LỊCH SỬ TỔNG KẾT THÁNG</strong></h5>
+            </div>
+            <div class="box_history_time table-responsive">
+                <table class="tb_total_month">
+                    <thead>
+                        <tr class="table-info">
+                            <th>Tháng/Năm</th>
+                            <th>Tổng giờ</th>
+                            <th>Tổng lương</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach($monthlySummaries as $summary)
+                            <tr>
+                                <td>{{ str_pad($summary->month, 2, '0', STR_PAD_LEFT) }}/{{ $summary->year }}</td>
+                                <td>{{ number_format($summary->total_hours, 2) }}h</td>
+                                <td>{{ number_format($summary->total_wage) }}$</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
     </div>
 @endsection
+@push('scripts')
+    <script>
+        document.querySelector('.btn_back_payroll').addEventListener('submit', function (e) {
+            showLoading();
+        });
+    </script>
+@endpush

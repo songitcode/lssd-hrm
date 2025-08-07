@@ -67,8 +67,9 @@
                                 <tr>
                                     <td>{{ $att->user->employee->name_ingame ?? $att->user->username }}</td>
                                     <td>{{ date_format($att->date, 'd/m/Y') }}</td>
-                                    <td>{{ $att->check_in->format('d.m.y - H:i') }}</td>
-                                    <td>{{ optional($att->check_out)->format('d.m.y - H:i') ?? '-' }}</td>
+                                    <td>{{ $att->check_in->format('H:i - d/m') }}</td>
+                                    <td>{{ optional($att->check_out)->format('H:i - d/m') ?? 'Đang tính thời gian làm việc ...' }}
+                                    </td>
                                     <td>{{ number_format($att->duration, 2) }}</td>
                                     <td>{{ number_format($att->wage, 0) }}$</td>
                                     <td>
@@ -117,46 +118,51 @@
                 </div>
             </div>
         </div>
-        <div class="ket_noi_bang mt-0">
-            <h5 class="p-4"><strong>LỊCH SỬ TỔNG KẾT THÁNG</strong></h5>
-        </div>
-        <div class="box_history_time table-responsive">
-            <table class="tb_total_month">
-                <thead>
-                    <tr class="table-info">
-                        <th>Tháng/Năm</th>
-                        <th>Tổng giờ</th>
-                        <th>Tổng lương</th>
-                        {{--
-                        @can('manage-attendance')
-                        <th>Xử lý</th>
-                        @endcan
-                        --}}
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($monthlySummaries as $summary)
-                        <tr>
-                            <td>{{ str_pad($summary->month, 2, '0', STR_PAD_LEFT) }}/{{ $summary->year }}</td>
-                            <td>{{ number_format($summary->total_hours, 2) }}h</td>
-                            <td>{{ number_format($summary->total_wage) }}$</td>
+        @if ($monthlySummaries->isNotEmpty() && $monthlySummaries->count() > 1)
 
+            <div class="ket_noi_bang mt-0">
+                <h5 class="p-4"><strong>LỊCH SỬ TỔNG KẾT THÁNG</strong></h5>
+            </div>
+            <div class="box_history_time table-responsive">
+                <table class="tb_total_month">
+                    <thead>
+                        <tr class="table-info">
+                            <th>Tháng/Năm</th>
+                            <th>Tổng giờ</th>
+                            <th>Tổng lương</th>
                             {{--
                             @can('manage-attendance')
-                            <td>
-                                <form method="POST"
-                                    action="{{ route('attendance.delete-month', [$summary->month, $summary->year, $summary->user_id]) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-danger btn-sm">🗑️ Xóa</button>
-                                </form>
-                            </td>
+                            <th>Xử lý</th>
                             @endcan
                             --}}
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach($monthlySummaries as $summary)
+                            <tr>
+                                <td>{{ str_pad($summary->month, 2, '0', STR_PAD_LEFT) }}/{{ $summary->year }}</td>
+                                <td>{{ number_format($summary->total_hours, 2) }}h</td>
+                                <td>{{ number_format($summary->total_wage) }}$</td>
+
+                                {{--
+                                @can('manage-attendance')
+                                <td>
+                                    <form method="POST"
+                                        action="{{ route('attendance.delete-month', [$summary->month, $summary->year, $summary->user_id]) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-danger btn-sm">🗑️ Xóa</button>
+                                    </form>
+                                </td>
+                                @endcan
+                                --}}
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <!-- Emty -->
+        @endif
     </div>
 @endsection

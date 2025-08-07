@@ -69,6 +69,4 @@ class Employee extends Model
     {
         return $this->belongsTo(User::class, 'created_by'); // nếu bạn lưu người tạo
     }
-
-
 }
