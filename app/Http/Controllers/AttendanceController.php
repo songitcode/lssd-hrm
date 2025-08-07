@@ -34,21 +34,38 @@ class AttendanceController extends Controller
             ->first();
 
         if ($previousOngoing) {
+            // $checkIn = Carbon::parse($previousOngoing->check_in);
+            // $autoCheckOut = $checkIn->copy()->addHours($maxHourPerDay);
+
+            // $sessionHours = $checkIn->diffInSeconds($autoCheckOut) / 3600;
+            // $sessionHours = min(round($sessionHours, 2), $maxHourPerDay);
+            // $salaryRate = $user->position->salaryConfig->hourly_rate ?? 24000;
+            // // $salaryRate = $user->employee->effectiveSalaryRate();
+
+
+            // $previousOngoing->update([
+            //     'check_out' => $autoCheckOut,
+            //     'duration' => $sessionHours,
+            //     'wage' => round($sessionHours * $salaryRate),
+            //     'status' => 'Hoàn thành',
+            // ]);
             $checkIn = Carbon::parse($previousOngoing->check_in);
-            $autoCheckOut = $checkIn->copy()->addHours($maxHourPerDay);
+            $expectedCheckOut = $checkIn->copy()->addHours($maxHourPerDay);
+            $now = now();
 
-            $sessionHours = $checkIn->diffInSeconds($autoCheckOut) / 3600;
-            $sessionHours = min(round($sessionHours, 2), $maxHourPerDay);
-            $salaryRate = $user->position->salaryConfig->hourly_rate ?? 24000;
-            // $salaryRate = $user->employee->effectiveSalaryRate();
+            if ($now->gte($expectedCheckOut)) {
+                // Đã đủ giờ → tính đủ 3h
+                $sessionHours = $checkIn->diffInSeconds($expectedCheckOut) / 3600;
+                $sessionHours = min(round($sessionHours, 2), $maxHourPerDay);
+                $salaryRate = $user->position->salaryConfig->hourly_rate ?? 24000;
 
-
-            $previousOngoing->update([
-                'check_out' => $autoCheckOut,
-                'duration' => $sessionHours,
-                'wage' => round($sessionHours * $salaryRate),
-                'status' => 'Hoàn thành',
-            ]);
+                $previousOngoing->update([
+                    'check_out' => $expectedCheckOut,
+                    'duration' => $sessionHours,
+                    'wage' => round($sessionHours * $salaryRate),
+                    'status' => 'Hoàn thành',
+                ]);
+            }
         }
 
         // Lấy tất cả ca trong ngày hôm nay

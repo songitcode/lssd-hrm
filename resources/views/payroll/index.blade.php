@@ -75,6 +75,39 @@
             <a href="{{--route('payroll.export') --}}" class="btn btn-success">
                 📥 Xuất Excel
             </a>
+            <button class="btn btn-secondary" id="viewPrevPayroll">📊 Bảng Lương Tháng
+                {{ now()->subMonth()->month }}</button>
+            {{-- MODAL Xem bản lương tháng trước --}}
+            <div class="modal fade" id="previousPayrollModal" tabindex="-1" aria-labelledby="previousPayrollLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Bảng Lương Tháng {{ now()->subMonth()->month }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <p class="text text-start ms-3 p-0">Xem lại bảng lương tháng trước để dễ dàng thống kê (Thay cho
+                            tính năng xuất Excel)</p>
+                        <div class="modal-body" id="prevPayrollContent">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary" role="status"></div>
+                            </div>
+                        </div>
+                        {{--
+                        <div class="modal-footer">
+                            <form id="deletePrevPayrollForm">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">Xóa Bảng Lương Tháng
+                                    {{ now()->subMonth()->month }}</button>
+                            </form>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                        --}}
+                    </div>
+                </div>
+            </div>
+
             @if(auth()->user()->role === 'admin')
                 <form action="{{ route('attendance.resetAll') }}" method="POST"
                     onsubmit="return confirm('WARNING!! Bạn có chắc chắn muốn xóa toàn bộ dữ liệu chấm công? sẽ không khôi phục được dữ liệu')">
@@ -85,7 +118,6 @@
                     </button>
                 </form>
             @endif
-
         </div>
 @endsection
     @push('scripts')
@@ -101,5 +133,40 @@
                     });
                 });
             });
+
+            // Xóa dữ liệu bảng lương tháng trước
+            document.getElementById('deletePrevPayrollForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Bạn có chắc muốn xóa?',
+                    text: 'Toàn bộ bảng lương tháng trước sẽ bị xóa!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Vâng, xóa đi!',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch("{{ route('payroll.previous.delete') }}", {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            }
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Đã xóa bảng lương thành công',
+                                    text: data.message,
+                                    confirmButtonText: 'Đã hiểu',
+                                    confirmButtonColor: '#3085d6'
+                                });
+                                document.getElementById('previousPayrollModal').querySelector('.modal-body').innerHTML = '<p class="text-success">Đã xóa thành công.</p>';
+                            });
+                    }
+                });
+            });
+            ////
         </script>
     @endpush

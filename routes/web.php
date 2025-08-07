@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     // PROFILE
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('profile');
     Route::put('/profile/update', [EmployeeController::class, 'updateProfile'])->name('profile.update');
+    Route::delete('/profile/avatar', [EmployeeController::class, 'deleteAvatar'])->name('profile.deleteAvatar');
 
     // LOGS
     Route::delete('/activity-log/{id}', [EmployeeController::class, 'deleteLog'])->name('logs.delete');
@@ -82,6 +83,12 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
 
     Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');
     Route::get('/payroll/user/{user}', [PayrollController::class, 'showUserAttendance'])->name('payroll.user_attendance');
+    Route::get('/payroll/previous', [PayrollController::class, 'previousMonthPayroll'])->name('payroll.previous');
+    Route::delete('/payroll/previous', [PayrollController::class, 'deletePreviousMonth'])->name('payroll.previous.delete');
+    Route::get('/payroll/months', [PayrollController::class, 'getAvailableMonths']);
+    Route::get('/payroll/summary', [PayrollController::class, 'summary']);
+    Route::delete('/payroll/summary', [PayrollController::class, 'deleteMonth']);
+
 
     Route::get('/onduty', [OnDutyController::class, 'index'])->name('partials.ondutyList');
 

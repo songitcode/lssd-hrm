@@ -58,7 +58,7 @@
                                         <div>
                                             <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> 
                                             đã <span class="_Mau">xóa <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong></span>
-                                            vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
+                                            vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
                                         </div>
                                         @if(in_array($log->target, $deletedUsernames) && $latestDeleteLogByUser[$log->target] === $log->id)
                                             {{-- Nếu user bị xoá và đây là log xoá mới nhất → cho phép khôi phục --}}
@@ -88,14 +88,14 @@
                                 @case('sửa')
                                     <div class="history-item text-primary">
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> vừa <strong class="_">{{ $log->detail }}</strong> cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
+                                        vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                                 @break
 
                                 @case('khôi phục')
                                     <div class="history-item text-success">
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> đã cứu lấy linh hồn <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
+                                        vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                                 @break
 
@@ -104,7 +104,7 @@
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> 
                                         vừa <strong class="_Mau">{{ $log->detail }}</strong> 
                                         cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
+                                        vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                                 @break
 
@@ -113,14 +113,20 @@
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> 
                                         đã <strong class="_Mau">{{ $log->detail }}</strong> 
                                         của <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
+                                        vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                    </div>
+                                @break
+
+                                @case('deleteAvatar')
+                                   <div class="history-item" style="color: #c85858ff;">
+                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> vừa <strong class="_">{{ $log->detail }}</strong> vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                                 @break
 
                                 @default
                                     <div class="history-item">
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> {{ $log->detail }} với <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc {{ $log->created_at->format('H:i, d/m/Y') }}
+                                        vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                             @endswitch
                         @empty

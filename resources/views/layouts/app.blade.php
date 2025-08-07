@@ -58,6 +58,9 @@
         @include('partials.footer')
     @endif
     <script>
+        document.querySelector('.loader').addEventListener('submit', function (e) {
+            showLoading();
+        });
         function previewAvatar(event) {
             const file = event.target.files[0];
             if (file) {

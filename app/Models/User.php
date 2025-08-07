@@ -111,7 +111,6 @@ class User extends Authenticatable
         return $this->employee?->position?->salaryConfig;
     }
 
-
     public function rank()
     {
         return $this->belongsTo(Rank::class);
