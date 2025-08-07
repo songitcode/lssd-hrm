@@ -1,0 +1,43 @@
+.b-b-default {
+    border-bottom: 1px solid #e0e0e0;
+    width: 100%;
+}
+
+.input__view {
+    position: relative;
+    border: 1px solid #ccc;
+    width: 100%;
+    height: 100%;
+}
+
+.box-profile {
+    border: 1px solid #e8a800;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
+.cursor_not_allowed {
+    cursor: not-allowed;
+}
+
+.not_allowed {
+    cursor: not-allowed;
+    outline: none;
+    background: #e9ecef;
+    border: none;
+    width: fit-content;
+    padding: 10px 10px;
+    border-radius: 5px;
+}
+
+.profile-el-main {
+    /*border-radius: 10px;
+    margin-left: 3px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+     border: 1px solid rgba(255, 255, 255, 0.3); */
+}
