@@ -148,3 +148,43 @@
     font-weight: 330;
     font-style: italic
 }
+
+.btn-bottom-payroll-1,
+.btn-bottom-payroll-2 {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+    text-decoration: none;
+}
+
+.btn-bottom-payroll-1 {
+    background-color: #ffc107;
+    color: white;
+}
+
+.btn-bottom-payroll-1:hover {
+    background-color: #e0a800;
+    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn-bottom-payroll-2 {
+    background-color: transparent;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+}
+
+.btn-bottom-payroll-2:hover {
+    background-color: #dc3545;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(220, 53, 69, 0.4);
+}
