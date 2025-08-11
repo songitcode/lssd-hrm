@@ -19,19 +19,19 @@ $canEditPosition = $currentUser->canEditPositionOf($employee->user);
 --}}
 
 @section('content')
-    <div class="container py-5">
+    <div class="container py-5 profile-card">
         <form id="deleteAvatarForm" action="{{ route('profile.deleteAvatar') }}" method="POST" class="delete-avatar d-none">
             @csrf
             @method('DELETE')
         </form>
 
-        <form class="box-profile loader p-4 row" method="POST" action="{{ route('profile.update') }}"
+        <form class="box-profile p-4 loader" method="POST" action="{{ route('profile.update') }}"
             enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <div class="row p-2 profile-el-main">
+            <div class="row p-2 profile-card">
                 @if ($employee)
-                    <div class="col-md-4 text-center mt-5 align-items-center">
+                    <div class="col-md-4 text-center mt-5 align-items-center ">
                         <div class="avatar-circle">
                             <div class="profile-avatar-wrapper">
                                 <img id="avatarPreview"
@@ -50,7 +50,7 @@ $canEditPosition = $currentUser->canEditPositionOf($employee->user);
                             <button type="button" onclick="confirmDeleteAvatar()" class="btn-remove-avt">Xoá ảnh đại diện</button>
                         @endif
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-8 ">
                         <h3 class="mb-4"> Hồ Sơ Sĩ Quan <strong class="text-warning">{{ $employee->name_ingame }}</strong></h3>
 
                         <div class="mb-3">
@@ -59,7 +59,7 @@ $canEditPosition = $currentUser->canEditPositionOf($employee->user);
                                 value="{{ $employee->user->username }}" disabled>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label"><b>Tên trong game GTA5VN</b> (Name in game  GTA5VN)</label>
+                            <label class="form-label"><b>Tên trong game GTA5VN</b> (Name in game GTA5VN)</label>
                             <br>
                             @if (!in_array(auth()->user()->role, ['cục trưởng', 'phó cục trưởng', 'trợ lý cục trưởng']))
                                 <input type="text" name="name_ingame" class="input__view not_allowed"
