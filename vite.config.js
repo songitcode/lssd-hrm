@@ -10,4 +10,7 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    build: {
+        sourcemap: false, // Tắt source map
+    },
 });

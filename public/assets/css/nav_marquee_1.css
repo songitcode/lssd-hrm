@@ -1,0 +1,32 @@
+.marquee-wrap {
+    overflow: hidden;
+    padding: .45rem 0;
+}
+
+.marquee {
+    display: inline-block;
+    white-space: nowrap;
+    will-change: transform;
+    animation: marquee-anim 18s linear infinite;
+}
+
+@keyframes marquee-anim {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.marquee-wrap:hover .marquee,
+.marquee-wrap:focus-within .marquee {
+    animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .marquee {
+        animation: none;
+    }
+}

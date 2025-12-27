@@ -9,7 +9,7 @@ class Kernel extends ConsoleKernel
 {
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('attendance:autocheckout')->everyMinute();
+        $schedule->command('attendance:autocheckout')->dailyAt('23:59:59');
     }
 
     protected function commands(): void

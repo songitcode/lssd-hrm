@@ -99,12 +99,12 @@ function tuDongTinhTien() {
 
     // Lấy giá trị của Mức án
     const mucAnValue = parseInt(inputMucAn.value);
-    
+
     // Tính số tiền
     if (!isNaN(mucAnValue)) {
         const soTien = mucAnValue * giaTien1Phut;
         inputTien.value = soTien.toLocaleString() + '$';
-        
+
     } else {
         inputTien.value = '0$'; // Nếu mức án không hợp lệ, trả về 0
     }

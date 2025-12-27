@@ -41,7 +41,6 @@
         </div>
     </div>
 
-
     @yield('content')
 
     <!-- Thông Báo -->
@@ -50,7 +49,8 @@
         <span id="session-warning" data-message="{{ session('warning') }}"></span>
         <span id="session-info" data-message="{{ session('info') }}"></span>
         <!-- <span id="session-warning" data-message="{{ session('error') }}"></span> -->
-        <span id="session-error" data-message="{{ $errors->first() }}"></span>
+        <!-- <span id="session-error" data-message="{{ $errors->first() }}"></span> -->
+        <span id="session-error" data-message="{{ session('error') }}"></span>
     </div>
 
     {{-- Footer chỉ hiển thị nếu view không có section hide_footer --}}
@@ -93,6 +93,7 @@
 
         gtag('config', 'G-8YDHTMMQJE');
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YDHTMMQJE"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.7/js/bootstrap.min.js" integrity="sha512-zKeerWHHuP3ar7kX2WKBSENzb+GJytFSBL6HrR2nPSR1kOX1qjm+oHooQtbDpDBSITgyl7QXZApvDfDWvKjkUw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
     <script src="{{ asset('assets/js/loading.js') }}"></script>
