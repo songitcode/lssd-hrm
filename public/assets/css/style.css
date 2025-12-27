@@ -1,3 +1,10 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Quicksand', sans-serif;
+}
+
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
@@ -199,8 +206,8 @@ body {
 }
 
 .active-link-popup {
-    background: #f8b400;
-    color: white;
+    background: #f8b400 !important;
+    color: #fff !important; 
     border-radius: var(--nav-button-border-radius);
 }
 
@@ -441,45 +448,6 @@ img.rounded-circle {
     z-index: 1;
     border-radius: 4px;
 }
-
-.avatar-circle {
-    position: relative;
-    width: 250px;
-    height: 250px;
-    margin: 0 auto;
-}
-
-.profile-avatar-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.profile-avatar-wrapper::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 300px;
-    height: 300px;
-    background-image: url('https://cdn.discordapp.com/avatar-decoration-presets/a_fe3c76cac2adf426832a7e495e8329d3.png?size=240&passthrough=true');
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 2;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-}
-
-.profile-avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid #f8b400;
-    z-index: 1;
-    position: relative;
-}
-
 
 .btn-change-img {
     border: 1px solid #e8a600;
@@ -723,5 +691,37 @@ img.rounded-circle {
 
     100% {
         opacity: 0.3;
+    }
+}
+
+/* VN FLAG ANIMATION */
+.vn-flag-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 120px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.vn-flag-fixed svg {
+    display: block;
+    shape-rendering: geometricPrecision;
+    text-rendering: geometricPrecision;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vn-flag-fixed svg #disp {
+        animation: none !important;
+    }
+}
+
+@keyframes flagWave {
+    0% {
+        transform: translateZ(0);
+    }
+
+    100% {
+        transform: translateZ(0);
     }
 }

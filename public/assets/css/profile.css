@@ -29,3 +29,73 @@
     padding: 10px 10px;
     border-radius: 5px;
 }
+
+.btn-update-profile:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
+.profile-avatar-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.profile-avatar-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    /* background-image: url('https://cdn.discordapp.com/avatar-decoration-presets/a_3ce0ab2726378ba762fcc5318b87ee6f.png?size=240&passthrough=true'); */
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 2;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+}
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #f8b400;
+    z-index: 1;
+    position: relative;
+}
+
+.box-connect-discord {
+    border: 1px solid #e8a800;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    padding: 10px;
+}
+
+.avatar-circle {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+}
+
+.info-box {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-left: 4px solid #EFB036;
+    font-size: 16px;
+    padding: 15px;
+}
+
+.box-info-custom {
+    border-radius: 30px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    border: none;
+}

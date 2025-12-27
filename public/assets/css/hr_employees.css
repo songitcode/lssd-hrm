@@ -6,6 +6,7 @@
 .table-employees {
     border-radius: 20px;
 }
+
 .tb-timekeeping {
     border: 1px solid #e8a800;
 }
@@ -158,6 +159,23 @@
     cursor: pointer;
 }
 
+.btn-resetpassword {
+    padding: 5px 10px;
+    border-radius: 5px;
+    background: #06923E;
+    border: none;
+    outline: none;
+    color: white;
+    transition: all 200ms;
+
+    &:hover {
+        background: #07d75a;
+        color: rgb(135, 135, 135);
+        color: white;
+        transform: translateY(-2px);
+    }
+}
+
 /* PHÂN TRANG CSS */
 .pagination .page-link {
     border-radius: 6px;
@@ -308,4 +326,60 @@ td {
     position: relative;
 }
 
+.text-notification {
+    font-weight: 330;
+    font-style: italic
+}
+
 /* BUTTON _ Chấm CÔng, cham cong, timekeeping */
+
+.bg_secondary_cus {
+    background-color: #bababa;
+}
+
+
+/* LOGS TAB */
+.log-item {
+    transition: all 0.3s ease;
+    border-left: 4px solid #dee2e6 !important;
+}
+
+.log-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.log-item[data-action="xóa"] {
+    border-left-color: #dc3545 !important;
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+.log-item[data-action="tạo"] {
+    border-left-color: #0dcaf0 !important;
+    background-color: rgba(13, 202, 240, 0.05);
+}
+
+.log-item[data-action="sửa"] {
+    border-left-color: #ffc107 !important;
+    background-color: rgba(255, 193, 7, 0.05);
+}
+
+.log-item[data-action="khôi phục"] {
+    border-left-color: #198754 !important;
+    background-color: rgba(25, 135, 84, 0.05);
+}
+
+.log-item[data-action="đổi mật khẩu"],
+.log-item[data-action="resetPassword"] {
+    border-left-color: #6c757d !important;
+    background-color: rgba(108, 117, 125, 0.05);
+}
+
+.filter-btn.active {
+    font-weight: bold;
+    transform: scale(1.05);
+}
+
+.hidden {
+    display: none !important;
+}

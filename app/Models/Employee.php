@@ -29,12 +29,15 @@ class Employee extends Model
         return $query->with(['user', 'position', 'rank', 'userCreatedBy'])
             ->get()
             ->sort(function ($a, $b) use ($positionOrder) {
-                $aPriority = $positionOrder[$a->position->name_positions] ?? 999;
-                $bPriority = $positionOrder[$b->position->name_positions] ?? 999;
+                $aPos = $positionOrder[$a->position->name_positions] ?? 999;
+                $bPos = $positionOrder[$b->position->name_positions] ?? 999;
 
-                return $aPriority === $bPriority
-                    ? $a->created_at <=> $b->created_at
-                    : $aPriority <=> $bPriority;
+                if ($aPos === $bPos) {
+                    // Sắp xếp theo rank_id từ cao xuống thấp
+                    return $b->rank_id <=> $a->rank_id;
+                }
+
+                return $aPos <=> $bPos;
             });
     }
     public function scopeSortedActiveOnly($query)

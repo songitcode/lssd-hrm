@@ -40,10 +40,10 @@ document.getElementById('search-employee').addEventListener('input', function ()
                 const name = emp.name_ingame ?? emp.username ?? '-';
                 const position = emp.position?.name_positions ?? '-';
                 const rank = emp.rank?.name_ranks ?? '-';
-                const minutes = 60 * emp.summary?.total_hours ?? 0;
-                const hours = emp.summary?.total_hours ?? 0;
-                const rate = emp.position?.salary_config?.hourly_rate ?? 24000;
-                const wage = emp.summary?.total_wage?.toLocaleString() ?? '0';
+                const minutes = 60 * (emp.user?.total_hours ?? 0);
+                const hours = emp.user?.total_hours ?? 0;
+                const rate = emp.user?.employee?.position?.salary_config?.hourly_rate ?? 24000;
+                const wage = emp.user?.total_wage ?? '0';
 
                 tbody.innerHTML += `
                     <tr>
@@ -51,8 +51,8 @@ document.getElementById('search-employee').addEventListener('input', function ()
                         <td class="hover_1">${name}</td>
                         <td class="hover_1">${position}</td>
                         <td class="hover_1">${rank}</td>
-                        <td class="hover_1">${Number(minutes).toLocaleString()} phút ~ ${hours}h</td>
-                        <td class="hover_1">${rate.toLocaleString()}$/h</td>
+                        <td class="hover_1">${Number(minutes).toLocaleString()} phút ~ ${Number(hours).toLocaleString()}h</td>
+                        <td class="hover_1">${Number(rate).toLocaleString()}$/h</td>
                         <td class="hover_1">${Number(wage).toLocaleString()}$</td>
                         <td class="text-center history_function">
                             <a href="${emp.attendance_url}" class="btn_xem_lich_su_cham_cong" target="_parent">
@@ -83,21 +83,28 @@ document.getElementById('viewPrevPayroll').addEventListener('click', function ()
         .then(response => {
             const data = response.data;
             console.log("Dữ liệu tháng trước:", data);
+
             if (data.length === 0) {
                 contentDiv.innerHTML = '<p class="text-danger">Không có dữ liệu tháng trước.</p>';
                 return;
             }
 
-            let table = `
+            // HTML bảng hiển thị trong modal
+            let tableHTML = `
+                <div class="mb-2 text-end">
+                    <button id="btnExportPrev" class="btn btn-success">
+                        <i class="fa fa-file-excel"></i> Xuất Excel
+                    </button>
+                </div>
                 <div class="table-responsive">
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover submonth-table">
                     <thead>
                         <tr>
                             <th>#</th>
                             <th>Tên</th>
                             <th>Chức Vụ</th>
                             <th>Quân Hàm</th>
-                            <th>Phút Làm Việc</th>
+                            <th>Thời Gian Làm Việc</th>
                             <th>Hệ Số</th>
                             <th>Tổng Lương</th>
                         </tr>
@@ -111,7 +118,7 @@ document.getElementById('viewPrevPayroll').addEventListener('click', function ()
                 const rank = item.user.employee?.rank?.name_ranks || '—';
                 const rate = item.user.employee?.position?.salary_config?.hourly_rate || 24000;
 
-                table += `
+                tableHTML += `
                     <tr>
                         <td>${index + 1}</td>
                         <td>${name}</td>
@@ -124,20 +131,75 @@ document.getElementById('viewPrevPayroll').addEventListener('click', function ()
                 `;
             });
 
-            table += `</tbody></table></div>`;
-            const totalWageAll = data.reduce((sum, item) => sum + Number(item.total_wage), 0); // Tổng lương toàn bộ
-            table += `
+            tableHTML += `</tbody></table></div>`;
+
+            // Tổng lương toàn bộ
+            const totalWageAll = data.reduce((sum, item) => sum + Number(item.total_wage), 0);
+            tableHTML += `
                 <tfoot>
                     <tr class="table-light fw-bold">
                         <td colspan="6" class="text-end">Tổng Lương Toàn Bộ:</td>
                         <td class="text-success">${totalWageAll.toLocaleString()}$</td>
                     </tr>
                 </tfoot>
+                <p class="text text-end ms-3 p-0 text-success total-wage-all">Tổng Lương Toàn Bộ: ${totalWageAll.toLocaleString()}$</p>
             `;
 
-            contentDiv.innerHTML = table;
+            // Gắn vào modal
+            contentDiv.innerHTML = tableHTML;
+
+            // Sự kiện export
+            document.getElementById('btnExportPrev').addEventListener('click', function () {
+                exportPayrollDataToExcel(data, 'bang-luong-thang-truoc');
+            });
         });
 
     modal.show();
 });
-////
+
+// Hàm export Excel từ data (không phụ thuộc DOM)
+function exportPayrollDataToExcel(data, filename = 'export') {
+    let tableHTML = `
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tên</th>
+                    <th>Chức Vụ</th>
+                    <th>Quân Hàm</th>
+                    <th>Thời Gian Làm Việc</th>
+                    <th>Hệ Số</th>
+                    <th>Tổng Lương</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    data.forEach((item, index) => {
+        const name = item.user.employee?.name_ingame ?? item.user.username ?? '-';
+        const pos = item.user.employee?.position?.name_positions || '—';
+        const rank = item.user.employee?.rank?.name_ranks || '—';
+        const rate = item.user.employee?.position?.salary_config?.hourly_rate || 24000;
+
+        tableHTML += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${name}</td>
+                <td>${pos}</td>
+                <td>${rank}</td>
+                <td>${item.total_hours}h</td>
+                <td>${Number(rate).toLocaleString()}$/h</td>
+                <td>${Number(item.total_wage).toLocaleString()}</td>
+            </tr>
+        `;
+    });
+
+    tableHTML += `</tbody></table>`;
+
+    const dataType = 'application/vnd.ms-excel';
+    const blob = new Blob(['\ufeff', tableHTML], { type: dataType });
+    const downloadLink = document.createElement("a");
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = `${filename}.xls`;
+    downloadLink.click();
+}

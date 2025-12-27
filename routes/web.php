@@ -2,15 +2,29 @@
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckManagerRole;
-use App\Http\Controllers\{HomeController, EmployeeController, ActivityLogController, AttendanceController, SalaryConfigController, PayrollController, OnDutyController};
+use App\Http\Controllers\{DiscordController, HomeController, EmployeeController, ActivityLogController, AttendanceController, SalaryConfigController, PayrollController, OnDutyController, OfficeMemberController};
+use App\Models\Attendance;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
+// Route::get('/fix-storage-force', function () {
+//     $targetFolder = storage_path('app/public');
+//     $linkFolder = public_path('storage');
 
+//     if (file_exists($linkFolder)) {
+//         // Remove real folder or broken symlink
+//         if (is_link($linkFolder) || is_dir($linkFolder)) {
+//             File::deleteDirectory($linkFolder); // Works for symlinks and folders
+//         } else {
+//             unlink($linkFolder); // Fallback
+//         }
+//     }
+
+//     File::link($targetFolder, $linkFolder);
+//     return 'Symlink recreated successfully!';
+// });
 Route::get('/', function () {
     return view('auth.login');
 });
-
-// Route::get('/home', function () {
-//     return view('home');
-// });
 
 Route::get('/employees', function () {
     return view('employees.index');
@@ -18,11 +32,20 @@ Route::get('/employees', function () {
 
 Route::middleware('guest')->group(function () {
     Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
+    // Route::get('/', function () {
+    //     return view('maintenance');
+    // });
     Route::post('/', [LoginController::class, 'login']);
 });
 
-Route::middleware('auth')->group(function () {
+/// Liên Kết Discord
+Route::get('/discord/connect', [DiscordController::class, 'connect'])->name('discord.connect');
+Route::get('/discord/callback', [DiscordController::class, 'callback'])->name('discord.callback');
+Route::post('/discord/unlink', [DiscordController::class, 'unlink'])
+    ->name('discord.unlink')
+    ->middleware('auth');
 
+Route::middleware('auth')->group(function () {
     // Route::get('/home', function () {
     //     return view('home');
     // })->name('home');
@@ -44,6 +67,12 @@ Route::middleware('auth')->group(function () {
     // CHẤM CÔNG, ONDUTY
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/check', [AttendanceController::class, 'check'])->name('attendance.check');
+    Route::put('/attendance/{id}/force-checkout', [AttendanceController::class, 'forceCheckout'])
+        ->name('attendance.force_checkout')
+        ->middleware('auth');
+    // routes fetch trạng thái chấm công
+    Route::get('/attendance/status', [AttendanceController::class, 'status'])->name('attendance.status');
+    Route::delete('/attendance/{id}/huy-onduty', [AttendanceController::class, 'huyCheckin'])->name('attendance.huyCheckin');
 
     // XÓA LỊCH SỬ CHẤM CÔNG
     Route::delete('/attendance/delete-month/{month}/{year}/{user}', [AttendanceController::class, 'deleteMonthlyHistory'])
@@ -56,6 +85,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/ho-tro-xu-an', [HomeController::class, 'viewProcRecords'])->name('partials.proc_records');
     // FORM HỒ SƠ HỖ TRỢ TRUY NÃ
     Route::get('/ho-tro-truy-na', [HomeController::class, 'viewWantedSupport'])->name('partials.wanted_support');
+    // FORM XIN NGHỈ PHÉP
+    Route::get('/don-xin-nghi-phep', [HomeController::class, 'viewTakeLeave'])->name('partials.take_leave');
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
@@ -88,13 +119,16 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
     Route::get('/payroll/months', [PayrollController::class, 'getAvailableMonths']);
     Route::get('/payroll/summary', [PayrollController::class, 'summary']);
     Route::delete('/payroll/summary', [PayrollController::class, 'deleteMonth']);
-
+    Route::delete('/payroll/user/{id}', [PayrollController::class, 'deleteAttendance'])->name('attendance.destroy');
+    Route::post('/payroll/user/{id}', [PayrollController::class, 'updateInline'])
+        ->name('attendance.updateInline');
 
     Route::get('/onduty', [OnDutyController::class, 'index'])->name('partials.ondutyList');
 
     // Reset toàn bộ dữ liệu chấm công WARNING!!
-    Route::delete('/payroll/reset', [AttendanceController::class, 'resetAll'])->name('attendance.resetAll');
+    Route::delete('/payroll/reset', [AttendanceController::class, 'resetAttendanceDta'])->name('attendance.resetAttendanceDta');
 
     Route::post('/employees/{id}/reset-password', [EmployeeController::class, 'resetPassword']);
 });
+
 

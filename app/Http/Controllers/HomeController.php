@@ -21,4 +21,9 @@ class HomeController extends Controller
     {
         return view('partials.wanted_support');
     }
+    //// ĐƠN XIN NGHỈ PHÉP VIEW
+    public function viewTakeLeave()
+    {
+        return view('partials.take_leave');
+    }
 }

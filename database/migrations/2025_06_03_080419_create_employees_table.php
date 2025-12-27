@@ -17,6 +17,9 @@ return new class extends Migration {
             $table->unsignedBigInteger('position_id');
             $table->unsignedBigInteger('rank_id');
             $table->string('avatar')->nullable();
+            $table->string('discord_id')->nullable();
+            $table->string('discord_username')->nullable();
+            $table->string('discord_avatar')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();
             $table->timestamps();

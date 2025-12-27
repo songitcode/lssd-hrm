@@ -37,7 +37,7 @@
                         CCCD: <span class="text_show" id="show-cccd"></span> <br>
                         Tội Danh: <span class="text_show" id="show-toiDanh"></span> <br>
                         Mức Án: <span class="text_show" id="show-soPhut"></span> <br>
-                        Đã xử lý
+                        Bằng chứng:
                     </p>
                 </form>
             </div>
@@ -131,6 +131,18 @@
                                             Tấn công người khác gây thương tích nghiêm trọng
                                         </div>
 
+                                        <div class="td-input">
+                                            <input type="number" value="1" min="1"
+                                                class="form-control gioi_han_number law-count-input" />
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="law_input_content law-td d-flex justify-content-between align-items-center"
+                                        data-toidan="Sử dụng vũ khí tấn công Cảnh sát" data-phut="60" data-mucdo="cong_don">
+                                        <div class="td-label flex-grow-1 pe-2">
+                                            Sử dụng vũ khí tấn công Cảnh sát
+                                        </div>
                                         <div class="td-input">
                                             <input type="number" value="1" min="1"
                                                 class="form-control gioi_han_number law-count-input" />
@@ -289,13 +301,13 @@
                                 <tr>
                                     <td data-mucdo="2" class="law-td" data-toidan="Sử dụng vũ khí thô sơ nơi công cộng"
                                         data-phut="30">Sử dụng vũ
-                                        khí <span class="h4">thô sơ</span> nơi công cộng
+                                        khí <span class="text-primary h5">thô sơ</span> nơi công cộng
                                     </td>
                                 </tr>
                                 <tr>
                                     <td data-mucdo="2" class="law-td" id="td-dac-biet-1"
-                                        data-toidan="Sử dụng vũ khí nóng nơi công cộng (KTGNVQS + 60p)" data-phut="30">Sử
-                                        dụng vũ khí <span class="h4">nóng</span> nơi công cộng
+                                        data-toidan="Sử dụng vũ khí nóng nơi công cộng (KTNVQS + 60p)" data-phut="30">Sử
+                                        dụng vũ khí <span class="text-danger h5">nóng</span> nơi công cộng
                                     </td>
                                 </tr>
                                 <tr>

@@ -15,7 +15,7 @@
                     <ul class="list-unstyled d-flex flex-row justify-content-between align-items-center">
                         <li class="text-center checkbox_text">
                             <input type="number" class="input_proc form-control gioi_han_number" id="input-proc-1" min="1"
-                                value="5">
+                                value="6">
                             <input type="checkbox" class="custom_check_01 input_proc form-check-input"
                                 id="viPhamLuatTieuDungCheck">
                             <label for="input-proc-1">Vi phạm luật người tiêu dùng</label>
@@ -40,6 +40,18 @@
                             <input type="checkbox" class="custom_check_01 input_proc form-check-input" id="input-proc-7"
                                 data-toidan="điều tra" data-phut="-10" data-type="giam">
                             <label for="input-proc-7">Giảm 10p điều tra</label>
+                        </li>
+                        <li class="checkbox_text">
+                            <input type="checkbox" class="custom_check_01 input_proc form-check-input" id="input-proc-9"
+                                data-toidan="đầu thú" data-phut="-10" data-type="giam">
+                            <label for="input-proc-9">Giảm 10p đầu thú</label>
+                        </li>
+                        <li class="checkbox_text">
+                            <input type="number" class="input_proc form-control gioi_han_number" id="input-proc-8"
+                                value="5">
+                            {{--<input type="checkbox"
+                                class="custom_check_01 input_proc form-check-input giamphutcustomer">--}}
+                            <label for="input-proc-8">Giảm phút tự chọn</label>
                         </li>
                     </ul>
                 </div>
@@ -86,7 +98,7 @@
                     <h6>
                         <button class="muc_do btn text-decoration-none d-flex align-items-center" type="button"
                             data-bs-toggle="collapse" data-bs-target="#mucDo1" aria-expanded="true" aria-controls="mucDo1">
-                            Mức Độ 1
+                            Mức Độ 1 (20p)
                             <i class="fa-solid fa-angle-down ms-2 transition"></i>
                         </button>
                     </h6>
@@ -147,7 +159,7 @@
                     <h6>
                         <button class="muc_do btn text-decoration-none d-flex align-items-center" type="button"
                             data-bs-toggle="collapse" data-bs-target="#mucDo3" aria-expanded="true" aria-controls="mucDo3">
-                            Mức Độ 3
+                            Mức Độ 3 (60p)
                             <i class="fa-solid fa-angle-down ms-2 transition"></i>
                         </button>
                     </h6>
@@ -168,6 +180,18 @@
                                             Tấn công người khác gây thương tích nghiêm trọng
                                         </div>
 
+                                        <div class="td-input">
+                                            <input type="number" value="1" min="1"
+                                                class="form-control gioi_han_number law-count-input" />
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="law_input_content law-td d-flex justify-content-between align-items-center"
+                                        data-toidan="Sử dụng vũ khí tấn công Cảnh sát" data-phut="60" data-mucdo="cong_don">
+                                        <div class="td-label flex-grow-1 pe-2">
+                                            Sử dụng vũ khí tấn công Cảnh sát
+                                        </div>
                                         <div class="td-input">
                                             <input type="number" value="1" min="1"
                                                 class="form-control gioi_han_number law-count-input" />
@@ -238,7 +262,7 @@
                     <h6>
                         <button class="muc_do btn text-decoration-none" type="button" data-bs-toggle="collapse"
                             data-bs-target="#mucDo5">
-                            Mức Độ 5 <i class="fa-solid fa-angle-down"></i>
+                            Mức Độ 5 (180p) <i class="fa-solid fa-angle-down"></i>
                         </button>
                     </h6>
                     <div id="mucDo5" class="collapse show box-law">
@@ -252,30 +276,30 @@
                                 <tr>
                                     <td class="law-td"
                                         data-toidan="Lợi dụng quyền ra toà để bỏ trốn hoặc bỏ trốn trong thời gian được tại ngoại chờ ra toà"
-                                        data-phut="180">
+                                        data-phut="180" data-mucdo="2">
                                         Lợi dụng quyền ra toà để bỏ trốn hoặc bỏ trốn trong thời gian được tại ngoại
                                         chờ ra toà
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="law-td" data-toidan="Tấn công Thống Đốc, Phó Thống Đốc, Nhân viên Chính Phủ"
-                                        data-phut="180">
+                                        data-phut="180" data-mucdo="2">
                                         Tấn công Thống Đốc, Phó Thống Đốc, Nhân viên Chính Phủ
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="law-td" data-toidan="Đột nhập Trụ sở làm việc Học Viện Quốc Gia"
-                                        data-phut="180">
+                                        data-phut="180" data-mucdo="2">
                                         Đột nhập Trụ sở làm việc Học Viện Quốc Gia
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="law-td" data-toidan="Đột nhập Trụ sở làm việc Nhà Tù " data-phut="180">
+                                    <td class="law-td" data-toidan="Đột nhập Trụ sở làm việc Nhà Tù " data-phut="180" data-mucdo="2">
                                         Đột nhập Trụ sở làm việc Nhà Tù
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="law-td" data-toidan="Đột nhập Trụ sở làm việc Quân Khu" data-phut="180">
+                                    <td class="law-td" data-toidan="Đột nhập Trụ sở làm việc Quân Khu" data-phut="180" data-mucdo="2">
                                         Đột nhập Trụ sở làm việc Quân Khu
                                     </td>
                                 </tr>
@@ -288,7 +312,7 @@
                     <h6>
                         <button class="muc_do btn text-decoration-none d-flex align-items-center" type="button"
                             data-bs-toggle="collapse" data-bs-target="#mucDo2" aria-expanded="true" aria-controls="mucDo2">
-                            Mức Độ 2
+                            Mức Độ 2 (30p)
                             <i class="fa-solid fa-angle-down ms-2 transition"></i>
                         </button>
                     </h6>
@@ -325,14 +349,14 @@
                                 </tr>
                                 <tr>
                                     <td data-mucdo="2" class="law-td" data-toidan="Sử dụng vũ khí thô sơ nơi công cộng"
-                                        data-phut="30">Sử dụng vũ
-                                        khí thô sơ nơi công cộng
+                                        data-phut="30">
+                                        Sử dụng vũ khí <span class="text-primary h5">thô sơ</span> nơi công cộng
                                     </td>
                                 </tr>
                                 <tr>
                                     <td data-mucdo="2" class="law-td" id="td-dac-biet-1"
                                         data-toidan="Sử dụng vũ khí nóng nơi công cộng+Tàng trữ vũ khí nóng trái phép+Sử dụng vũ khí nóng trái phép"
-                                        data-phut="90">Sử dụng vũ khí nóng nơi công cộng
+                                        data-phut="90">Sử dụng vũ khí <span class="text-danger h5">nóng</span> nơi công cộng
                                     </td>
                                 </tr>
                                 <tr>
@@ -379,7 +403,7 @@
                     <h6>
                         <button class="muc_do btn text-decoration-none d-flex align-items-center" type="button"
                             data-bs-toggle="collapse" data-bs-target="#mucDo4">
-                            Mức Độ 4 <i class="fa-solid fa-angle-down"></i>
+                            Mức Độ 4 (120p) <i class="fa-solid fa-angle-down"></i>
                         </button>
                     </h6>
                     <div id="mucDo4" class="collapse show box-law">
@@ -430,7 +454,7 @@
                     <h6>
                         <button class="muc_do btn text-decoration-none" type="button" data-bs-toggle="collapse"
                             data-bs-target="#mucDo6">
-                            Mức Độ 6 <i class="fa-solid fa-angle-down"></i>
+                            Mức Độ 6 (200p)<i class="fa-solid fa-angle-down"></i>
                         </button>
                     </h6>
                     <div id="mucDo6" class="collapse show box-law">

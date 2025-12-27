@@ -51,7 +51,7 @@ document.querySelector('form#bulkDeleteForm')?.addEventListener('submit', functi
     }
 });
 
-/////
+///// Sửa nhân sự
 document.addEventListener('DOMContentLoaded', function () {
     const editModal = document.getElementById('editUserModal');
     editModal.addEventListener('show.bs.modal', function (event) {
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Gán dữ liệu vào avatar
         const avatar = button.getAttribute('data-avatar');
-        const newLocal = '/images/default-avatar.png';
+        const newLocal = '/images/user_preview_logo.png';
         document.getElementById('edit_avatar_preview').src = avatar && avatar.trim() !== ''
             ? avatar
             : newLocal;
@@ -336,19 +336,23 @@ document.getElementById('search-employee').addEventListener('input', function ()
 
             data.data.forEach((emp, index) => {
                 const isGlow = ['Cục Trưởng', 'Phó Cục Trưởng', 'Trợ Lý Cục Trưởng'].includes(emp.position?.name_positions ?? '');
-                const avatar = emp.avatar ? `/storage/${emp.avatar}` : '/assets/images/user_preview_logo.png';
+                // const avatar = emp.avatar ? `/storage/${emp.avatar}` : (emp.discord_avatar ? emp.discord_avatar : '/assets/images/user_preview_logo.png');
+                // const avatar = emp.discord_avatar || (emp.avatar ? `/storage/${emp.avatar}` : '/assets/images/user_preview_logo.png');
 
                 tbody.innerHTML += `
                     <tr class="${isGlow ? 'glow' : ''}">
                         <td>${index + 1}</td>
-                        <td><img src="${avatar}" class="rounded-circle" width="30" height="30"></td>
+                        <td><img src="${emp.avatar}" class="rounded-circle" width="30" height="30"></td>
                         <td>${emp.name_ingame ?? '-'}</td>
-                        <td><span>${emp.user?.username ?? '-'}</span></td>
-                        <td>${emp.position?.name_positions ?? '-'}</td>
-                        <td>${emp.rank?.name_ranks ?? '-'}</td>
+                        <td><span>${emp.username ?? '-'}</span></td>
+                        <td>${emp.name_positions ?? '-'}</td>
+                        <td>${emp.name_ranks ?? '-'}</td>
                         <td>${new Date(emp.created_at).toLocaleDateString()}</td>
-                        <td>${emp.user_created_by?.username ?? 'Admin'}</td>
+                        <td>${emp.user_created_by ?? 'Admin'}</td>
                         <td>
+                            <button class="btn btn-delete" data-id="${emp.hash_id}">
+                                <i class="fa-solid fa-user-pen"></i> Xóa
+                            </button>
                             <button class="btn-edit"
                                 data-bs-toggle="modal"
                                 data-bs-target="#editUserModal"
@@ -356,8 +360,8 @@ document.getElementById('search-employee').addEventListener('input', function ()
                                 data-name="${emp.name_ingame}"
                                 data-position="${emp.position_id}"
                                 data-rank="${emp.rank_id}"
-                                data-username="${emp.user?.username}"
-                                data-avatar="/storage/${emp.avatar ?? ''}">
+                                data-username="${emp.username}"
+                                data-avatar="${emp.avatar ?? ''}">
                                 <i class="fa-solid fa-user-pen"></i> Sửa
                             </button>
                         </td>
@@ -367,6 +371,50 @@ document.getElementById('search-employee').addEventListener('input', function ()
 
             loader.style.display = 'none';
         });
+});
+
+document.querySelector('.table-employees tbody').addEventListener('click', async function (e) {
+    if (e.target.closest('.btn-delete')) {
+        const btn = e.target.closest('.btn-delete');
+        const id = btn.dataset.id;
+
+        if (!confirm('Bạn có chắc muốn xóa nhân sự này?')) return;
+        
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            let response = await fetch(`/employees/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                btn.closest('tr').remove(); // xoá dòng ngay
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thông Báo',
+                    html: `Đã bỏ nhân sự vào thùng rác.`,
+                    confirmButtonText: 'xác nhận',
+                    confirmButtonColor: '#ffc107'
+                });
+            } else {
+                let err = await response.json();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Thông Báo',
+                    html: err.message || 'Không thể xóa.',
+                    confirmButtonText: 'xác nhận',
+                    confirmButtonColor: '#ffc107'
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Có lỗi xảy ra.');
+        }
+    }
 });
 
 ////

@@ -29,6 +29,56 @@
     }
 }
 
+.btn_xem_lich_su_cham_cong {
+    text-decoration: none;
+    color: #3B3B1A;
+    border: 1px solid #3B3B1A;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    padding: 5px 30px;
+    font-weight: 600;
+    transition: all 0.1s ease-in-out;
+}
+
+.btn_xem_lich_su_cham_cong:hover {
+    background: #3B3B1A;
+    color: #e8a800;
+}
+
+
+
+.btn_ket_thuc_ca,
+.btn_xoa_ca {
+    text-decoration: none;
+    background: none;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    padding: 5px 30px;
+    font-weight: 600;
+    transition: all 0.1s ease-in-out;
+}
+
+.btn_ket_thuc_ca {
+    color: #d49c00;
+    border: 1px solid #d49c00;
+
+    &:hover {
+        background: #d49c00;
+        color: #fff;
+    }
+}
+
+.btn_xoa_ca {
+    color: #910000;
+    border: 1px solid #c70000;
+
+    &:hover {
+        background: #910000;
+        color: #fff;
+
+    }
+}
+
 /* SEARCH CSS */
 .search-wrapper {
     max-width: 600px;

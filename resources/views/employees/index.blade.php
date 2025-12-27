@@ -57,8 +57,8 @@
                                     <div class="history-item d-flex justify-content-between align-items-center text-danger">
                                         <div>
                                             <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> 
-                                            đã <span class="_Mau">xóa <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong></span>
-                                            vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                            đã <span class="_Mau">bỏ sĩ quan <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong> dô thùng rác</span>
+                                            vào lúc <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
                                         </div>
                                         @if(in_array($log->target, $deletedUsernames) && $latestDeleteLogByUser[$log->target] === $log->id)
                                             {{-- Nếu user bị xoá và đây là log xoá mới nhất → cho phép khôi phục --}}
@@ -81,21 +81,21 @@
                                 @case('tạo')
                                     <div class="history-item text-info">
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> <span class="_Mau">đã ban sự sống cho</span> <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                        vào lúc <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                                 @break
 
                                 @case('sửa')
                                     <div class="history-item text-primary">
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> vừa <strong class="_">{{ $log->detail }}</strong> cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                        vào lúc <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                                 @break
 
                                 @case('khôi phục')
                                     <div class="history-item text-success">
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> đã cứu lấy linh hồn <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                        vào lúc <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                                 @break
 
@@ -104,7 +104,7 @@
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> 
                                         vừa <strong class="_Mau">{{ $log->detail }}</strong> 
                                         cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                        vào lúc <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                                 @break
 
@@ -113,20 +113,25 @@
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> 
                                         đã <strong class="_Mau">{{ $log->detail }}</strong> 
                                         của <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                        vào lúc <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                                 @break
 
                                 @case('deleteAvatar')
                                    <div class="history-item" style="color: #c85858ff;">
-                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> vừa <strong class="_">{{ $log->detail }}</strong> vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> vừa <strong class="_">{{ $log->detail }}</strong> vào lúc <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                    </div>
+                                @break
+                                @case('logsCustom')
+                                   <div class="history-item" style="color: #5662F6;">
+                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> vừa <strong class="_">{{ $log->detail }}</strong> vào lúc <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                                 @break
 
                                 @default
                                     <div class="history-item">
                                         <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> {{ $log->detail }} với <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc {{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                        vào lúc <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                             @endswitch
                         @empty
@@ -346,8 +351,13 @@
 
                             <div class="row">
                                 <div class="col-md-4 text-center">
-                                    <img id="edit_avatar_preview" src="" width="100%" class="img-thumbnail rounded-circle mb-3 shadow-sm"
+                                    @if (auth()->user()->employee->discord_id ?? false)
+                                        <img id="edit_avatar_preview" src="{{ auth()->user()->employee->discord_avatar }}" width="100%" class="img-thumbnail rounded-circle mb-3 shadow-sm"
+                                            style="width: 220px; height: 220px; object-fit: cover;">
+                                    @else
+                                        <img id="edit_avatar_preview" src="{{ asset('assets/images/user_preview_logo.png') }}" width="100%" class="img-thumbnail rounded-circle mb-3 shadow-sm"
                                         style="width: 220px; height: 220px; object-fit: cover;">
+                                    @endif
                                 </div>
                                 <div class="col-md-8 row g-3">
                                     <div class="col-md-6">
@@ -398,9 +408,6 @@
                     <h5 class="modal-title" id="changePasswordModalLabel">Đổi mật khẩu </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
-                <button type="button" class="m-2 btn-resetpassword" onclick="resetPasswordFromModal()">
-                    Quên Mật Khẩu Cũ
-                </button>
                 <form id="changePasswordForm" method="POST" action="" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
@@ -434,6 +441,9 @@
                         </div>
                     </div>
                 </form>
+                 <button type="button" class="m-2 btn-resetpassword" onclick="resetPasswordFromModal()">
+                    Quên Mật Khẩu Cũ
+                </button>
                 </div>
             </div>
         </div>
@@ -455,6 +465,7 @@
                             <th>Tên Đăng Nhập</th>
                             <th>Chức Vụ</th>
                             <th>Quân Hàm</th>
+                            <th>ID_DISCORD</th>
                             <th>Ngày Tạo</th>
                             <th>Người Tạo</th>
                             <th>Action</th>
@@ -462,15 +473,22 @@
                     </thead>
                     <tbody>
                         @forelse ($paginated as $index => $emp)
-                            <tr class="{{ in_array($emp->position->name_positions, ['Cục Trưởng', 'Phó Cục Trưởng', 'Trợ Lý Cục Trưởng']) ? 'glow' : '' }}">
+                            <tr>
                                 <td>{{ $loop->iteration + ($paginated->currentPage() - 1) * $paginated->perPage() }}</td>
-                                    <td> @if ($emp->avatar)
-                                            <img src="{{ asset('storage/' . $emp->avatar) }}" alt="Avatar" class="rounded-circle"
-                                                width="30" height="30">
+                                    <td> 
+                                        @if ($emp->discord_id ?? false)
+                                            <img src="{{ $emp->discord_avatar }}" alt="Avatar" class="rounded-circle"
+                                                    width="30" height="30">
                                         @else
-                                            <img src="{{ asset('assets/images/user_preview_logo.png') }}" alt="Default"
-                                                class="rounded-circle" width="30" height="30">
+                                            @if ($emp->avatar)
+                                                <img src="{{ asset('storage/' . $emp->avatar) }}" alt="Avatar" class="rounded-circle"
+                                                    width="30" height="30">
+                                            @else
+                                                <img src="{{ asset('assets/images/user_preview_logo.png') }}" alt="Default"
+                                                    class="rounded-circle" width="30" height="30">
+                                            @endif
                                         @endif
+
                                     </td>
                                 <td>
                                     {{ $emp->name_ingame ?? '-' }}
@@ -479,20 +497,15 @@
                                 </td>
                                 <td>{{ $emp->position->name_positions ?? '-' }}</td>
                                 <td>{{ $emp->rank->name_ranks ?? '-' }}</td>
+                                <td><small class="text-secondary">{{ $emp->discord_id ?? 'Chưa liên kết' }}</small></td>
                                 <td>{{ $emp->created_at->format('d/m/Y') }}</td>
-                                <td>{{ $emp->userCreatedBy->username ?? 'Admin' }}</td>
+                                <td>{{ $emp->userCreatedBy->username ?? 'Người Tàng Hình' }}</td>
                                 <td>
                                     @if(auth()->id() !== $emp->user_id)
-                                        <form method="POST" class="form-delete-employee"
-                                            action="{{ route('employees.destroy', ['id' => Hashids::encode($emp->id)]) }}"
-                                            style="display: inline-block;"
-                                            onsubmit="return confirm('Bạn có chắc muốn xóa nhân sự này?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-delete">
-                                                <i class="fa-solid fa-trash"></i> Xóa
-                                            </button>
-                                        </form>
+                                        <button class="btn btn-delete"
+                                            data-id="{{ Hashids::encode($emp->id) }}">
+                                            <i class="fa-solid fa-trash"></i> Xóa
+                                        </button>
 
                                         <!-- <button class="btn btn-edit"><i class="fa-solid fa-user-pen"></i> Sửa</button> -->
                                          <button class="btn-edit"
@@ -503,7 +516,7 @@
                                             data-position="{{ $emp->position_id }}"
                                             data-rank="{{ $emp->rank_id }}"
                                             data-username="{{ $emp->user->username }}"
-                                            data-avatar="{{ asset('storage/' . $emp->avatar) }}">
+                                            data-avatar="{{ $emp->discord_avatar ?? asset('storage/' . $emp->avatar) }}">
                                             <i class="fa-solid fa-user-pen"></i> Sửa
                                         </button>
                                     @else
@@ -515,7 +528,7 @@
                                             data-position="{{ $emp->position_id }}"
                                             data-rank="{{ $emp->rank_id }}"
                                             data-username="{{ $emp->user->username }}"
-                                            data-avatar="{{ asset('storage/' . $emp->avatar) }}">
+                                            data-avatar="{{ $emp->discord_avatar ?? asset('storage/' . $emp->avatar) }}">
                                             <i class="fa-solid fa-user-pen"></i> Đổi Mật Khẩu
                                         </button>
                                     @endif
@@ -538,10 +551,229 @@
 
         </div>
     </div>
+    
+    <!-- LOGS TAB -->
+    <div class="container mt-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-white">
+                <h4 class="mb-0"><i class="fas fa-history me-2"></i>Bộ lọc thao tác</h4>
+            </div>
+            <div class="card-body">
+                
+                <!-- Bộ lọc và thống kê -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="filter-section">
+                            <h6 class="text-muted mb-2">Lọc theo loại hành động:</h6>
+                            <div class="btn-group flex-wrap gap-3" role="group">
+                                <button type="button" class="btn btn-outline-primary active filter-btn" data-filter="all">Tất cả</button>
+                                <button type="button" class="btn btn-outline-danger filter-btn" data-filter="xóa">Bỏ thùng rác</button>
+                                <button type="button" class="btn btn-outline-danger filter-btn" data-filter="xóa vĩnh viễn">Tái chế</button>
+                                <button type="button" class="btn btn-outline-info filter-btn" data-filter="tạo">Tạo mới</button>
+                                <button type="button" class="btn btn-outline-warning filter-btn" data-filter="sửa">Chỉnh sửa</button>
+                                <button type="button" class="btn btn-outline-success filter-btn" data-filter="khôi phục">Khôi phục</button>
+                                <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="password">Mật khẩu</button>
+                                <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="logsCustom">Khác</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-section text-end">
+                            <small class="text-muted">
+                                Hiển thị <span id="visible-count">0</span>/<span id="total-count">0</span> bản ghi
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danh sách logs -->
+                <div id="logs-container">
+                    @forelse ($logs as $log)
+                        <div class="log-item mb-3 p-3 rounded border" data-action="{{ $log->action }}">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-center">
+                                        <!-- Icon theo loại hành động -->
+                                        @switch($log->action)
+                                            @case('xóa')
+                                                <i class="fas fa-trash text-danger me-3 fs-5"></i>
+                                            @break
+                                            @case('xóa vĩnh viển')
+                                                <i class="fas fa-trash text-danger me-3 fs-5"></i>
+                                            @break
+                                            @case('tạo')
+                                                <i class="fas fa-plus-circle text-info me-3 fs-5"></i>
+                                            @break
+                                            @case('sửa')
+                                                <i class="fas fa-edit text-warning me-3 fs-5"></i>
+                                            @break
+                                            @case('khôi phục')
+                                                <i class="fas fa-recycle text-success me-3 fs-5"></i>
+                                            @break
+                                            @case('đổi mật khẩu')
+                                                <i class="fas fa-key text-secondary me-3 fs-5"></i>
+                                            @break
+                                            @case('logsCustom')
+                                                <i class="fas fa-info-circle text-secondary me-3 fs-5"></i>
+                                            @break
+                                            @case('resetPassword')
+                                                <i class="fas fa-key text-secondary me-3 fs-5"></i>
+                                            @break
+                                            @case('deleteAvatar')
+                                                <i class="fas fa-user-times text-danger me-3 fs-5"></i>
+                                            @break
+                                            @default
+                                                <i class="fas fa-info-circle text-primary me-3 fs-5"></i>
+                                        @endswitch
+
+                                        <div>
+                                            <!-- Người thực hiện -->
+                                            <strong class="text-dark">{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong>
+                                            
+                                            <!-- Nội dung hành động -->
+                                            <span>
+                                                @switch($log->action)
+                                                    @case('xóa')
+                                                        đã <span class="text-danger">bỏ sĩ quan <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong> vào thùng rác</span>
+                                                    @break
+                                                    @case('xóa vĩnh viễn')
+                                                        {{ $log->detail }} với <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
+                                                    @break
+                                                    @case('tạo')
+                                                        <span class="text-info">đã ban sự sống cho</span> <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
+                                                    @break
+                                                    @case('sửa')
+                                                        vừa <strong class="text-warning">{{ $log->detail }}</strong> cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
+                                                    @break
+                                                    @case('khôi phục')
+                                                        <span class="text-success">đã cứu lấy linh hồn</span> <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
+                                                    @break
+                                                    @case('đổi mật khẩu')
+                                                        vừa <strong class="text-secondary">{{ $log->detail }}</strong> cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
+                                                    @break
+                                                    @case('resetPassword')
+                                                        đã <strong class="text-secondary">{{ $log->detail }}</strong> của <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
+                                                    @break
+                                                    @case('deleteAvatar')
+                                                        vừa <strong class="text-danger">{{ $log->detail }}</strong>
+                                                    @break
+                                                    @case('logsCustom')
+                                                        vừa <strong class="text-primary">{{ $log->detail }}</strong>
+                                                    @break
+                                                    @default
+                                                        {{ $log->detail }} với <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
+                                                @endswitch
+                                            </span>
+
+                                            <!-- Thời gian -->
+                                            <div class="text-muted small mt-1">
+                                                <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 text-end">
+                                    <!-- Nút khôi phục hoặc trạng thái -->
+                                    @if($log->action === 'xóa')
+                                        @if(in_array($log->target, $deletedUsernames) && $latestDeleteLogByUser[$log->target] === $log->id)
+                                            <form method="POST" action="{{ route('employees.restore', $log->target) }}" class="form-restore d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-restore">
+                                                    <i class="fa-solid fa-clock-rotate-left"></i> Khôi phục
+                                                </button>
+                                            </form>
+                                        @elseif(isset($employeeMap[$log->target]))
+                                            <span class="badge bg-success">Đã hồi sinh</span>
+                                        @else
+                                            <span class="badge bg-secondary">Đã xóa</span>
+                                        @endif
+                                    @endif
+
+                                    <!-- Badge loại hành động -->
+                                     {{-- 
+                                    <span class="badge 
+                                        @switch($log->action)
+                                            @case('xóa') bg-danger @break
+                                            @case('xóa vĩnh viễn') bg-primary @break
+                                            @case('tạo') bg-info @break
+                                            @case('sửa') bg-warning @break
+                                            @case('khôi phục') bg-success @break
+                                            @case('đổi mật khẩu') bg-secondary @break
+                                            @case('resetPassword') bg-secondary @break
+                                            @case('deleteAvatar') bg-danger @break
+                                            @default bg-primary
+                                        @endswitch ms-2">
+                                        {{ $log->action }}
+                                    </span>
+                                    --}}
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-4">
+                            <i class="fas fa-clock-rotate-left fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Không có lịch sử thao tác nào</h5>
+                            <p class="text-muted">Các thao tác trên hệ thống sẽ được hiển thị tại đây</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection 
 @push('scripts')
 <script src="{{ asset('assets/js/employee_index.js') }}"></script>
 <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const logItems = document.querySelectorAll('.log-item');
+            const visibleCountEl = document.getElementById('visible-count');
+            const totalCountEl = document.getElementById('total-count');
+
+            // Đếm tổng số logs
+            totalCountEl.textContent = logItems.length;
+
+            function filterLogs(filter) {
+                let visibleCount = 0;
+
+                logItems.forEach(item => {
+                    const action = item.getAttribute('data-action');
+                    
+                    if (filter === 'all' || 
+                        (filter === 'password' && (action === 'đổi mật khẩu' || action === 'resetPassword')) ||
+                        action === filter) {
+                        item.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+
+                // Cập nhật số lượng hiển thị
+                visibleCountEl.textContent = visibleCount;
+
+                // Cập nhật trạng thái active của nút lọc
+                filterButtons.forEach(btn => {
+                    if (btn.getAttribute('data-filter') === filter) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Thêm sự kiện click cho các nút lọc
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    filterLogs(filter);
+                });
+            });
+
+            // Khởi tạo
+            filterLogs('all');
+        });
         document.querySelector('.form-edit-employee').addEventListener('submit', function (e) {
             showLoading();
         });
@@ -555,13 +787,13 @@
             showLoading();
         });
         document.addEventListener('DOMContentLoaded', function () {
-        const deleteForms = document.querySelectorAll('.form-delete-employee');
-        deleteForms.forEach(form => {
-            form.addEventListener('submit', function () {
-                showLoading();
+            const deleteForms = document.querySelectorAll('.form-delete-employee');
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function () {
+                    showLoading();
+                });
             });
         });
-    });
 </script>
 @endpush
 @if ($errors->any())

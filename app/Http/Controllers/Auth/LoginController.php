@@ -18,15 +18,26 @@ class LoginController extends Controller
                 $query->whereIn('name_positions', [
                     'Cục Trưởng',
                     'Phó Cục Trưởng',
-                    'Trợ Lý Cục Trưởng'
+                    'Trợ Lý Cục Trưởng',
+                    'Thư Ký',
                 ]);
             })
+            ->join('employees', 'users.id', '=', 'employees.user_id')
+            ->join('positions', 'employees.position_id', '=', 'positions.id')
+            ->orderByRaw("
+            FIELD(positions.name_positions, 
+                'Cục Trưởng', 
+                'Phó Cục Trưởng', 
+                'Trợ Lý Cục Trưởng', 
+                'Thư Ký'
+            )
+        ")
+            ->select('users.*') // tránh trùng cột
             ->get();
-            
-        return view('auth.login', compact('contacts'));
-        // return view('auth.login');
 
+        return view('auth.login', compact('contacts'));
     }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -38,6 +49,11 @@ class LoginController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return back()->withErrors(['login' => 'Tên đăng nhập hoặc mật khẩu không đúng']);
+        }
+
+        if ($user->employee?->trashed()) {
+            $deletedBy = $user->employee->delete_by ?? 'Con Bò';
+            return redirect()->back()->with('error', "Tài khoản đã bị vô hiệu hóa bởi $deletedBy.");
         }
 
         Auth::login($user);

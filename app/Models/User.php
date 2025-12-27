@@ -48,12 +48,21 @@ class User extends Authenticatable
     }
     public function employee()
     {
-        return $this->hasOne(Employee::class, 'user_id');
+        return $this->hasOne(Employee::class, 'user_id')->withTrashed();
     }
 
     public function isManager()
     {
         return in_array($this->role, ['admin', 'thư ký', 'trợ lý cục trưởng', 'phó cục trưởng', 'cục trưởng']);
+    }
+    public function isDownAdminRole()
+    {
+        return in_array($this->role, ['admin', 'phó cục trưởng', 'cục trưởng']);
+    }
+    
+    public function quanLyOnduty()
+    {
+        return in_array($this->position?->name_positions, ['Cục Trưởng', 'Phó Cục Trưởng', 'Trợ Lý Cục Trưởng', 'Thư Ký', 'Đội Trưởng', 'Đội Phó']);
     }
     public function canEditPositionOf(User $target)
     {
@@ -69,6 +78,18 @@ class User extends Authenticatable
             'phó cục trưởng' => 3,
             'trợ lý cục trưởng' => 2,
             'thư ký' => 1,
+            default => 0,
+        };
+    }
+    public function getPositionLevel()
+    {
+        return match ($this->position->name_positions) {
+            'Cục Trưởng' => 9,
+            'Phó Cục Trưởng' => 8,
+            'Trợ Lý Cục Trưởng' => 7,
+            'Thư Ký' => 6,
+            'Đội Trưởng' => 5,
+            'Đội Phó' => 4,
             default => 0,
         };
     }
@@ -119,5 +140,9 @@ class User extends Authenticatable
     public function attendances()
     {
         return $this->hasMany(Attendance::class, 'user_id');
+    }
+    public function monthly_attendance_summaries()
+    {
+        return $this->hasMany(MonthlyAttendanceSummary::class, 'user_id', 'id');
     }
 }

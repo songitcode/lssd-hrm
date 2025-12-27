@@ -20,7 +20,15 @@ class CheckManagerRole
             'thư ký',
         ];
 
-        if (!$user || !in_array(strtolower($user->role), $allowedRoles)) {
+        $allowedPositions = [
+            'Đội Trưởng',
+            'Đội Phó',
+        ];
+
+        $userRole = strtolower($user->role);
+        $userPosition = $user->position?->name_positions; // kiểm tra lại column name trước
+
+        if (!in_array($userRole, $allowedRoles) && !in_array($userPosition, $allowedPositions)) {
             abort(403, 'Bạn không có quyền truy cập chức năng này.');
         }
 

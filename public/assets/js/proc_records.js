@@ -361,3 +361,34 @@ cbLuatTieuDung.addEventListener('change', updateToiDanhVaPhut);
 inputSoBill.addEventListener('input', () => {
     if (cbLuatTieuDung.checked) updateToiDanhVaPhut();
 });
+
+const customReduceInput = document.getElementById('input-proc-8'); // input số phút
+
+customReduceInput.addEventListener('input', () => {
+    let reduceValue = parseInt(customReduceInput.value) || 0;
+    if (reduceValue < 0) reduceValue = 0;
+
+    // Lấy tổng phút gốc từ selectedLaws
+    let tongPhut = 0;
+    for (let [key, value] of selectedLaws) {
+        tongPhut += value.phut;
+    }
+
+    // Áp dụng luật nhóm 1, 2, 3 + checkbox khác nếu cần
+    // Hoặc dùng updateToiDanhVaPhut() để tính lại tổng, rồi trừ giảm
+    updateToiDanhVaPhut();
+    let currentPhut = parseInt(showSoPhut.textContent) || 0;
+
+    // Trừ số phút từ input
+    let phutSauGiam = Math.max(0, currentPhut - reduceValue);
+    showSoPhut.textContent = `${phutSauGiam}p`;
+
+    // Cập nhật show-toiDanh
+    let currentToiDanh = showToiDanh.textContent.replace(/\s*\(-\d+p\)/g, '');
+    if (reduceValue > 0) {
+        showToiDanh.textContent = `${currentToiDanh} (-${reduceValue}p)`;
+    } else {
+        showToiDanh.textContent = currentToiDanh || 'Không có';
+    }
+});
+

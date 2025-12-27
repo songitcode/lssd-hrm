@@ -23,7 +23,7 @@ class EmployeeController extends Controller
         $deletedEmployees = Employee::onlyTrashed()->with(['user', 'position', 'rank'])->get(); // lấy nhân sự trong "thùng rác"
 
         // Phân trang thủ công
-        $perPage = 10;
+        $perPage = 20;
         $page = request()->get('page', 1);
         $paginated = new LengthAwarePaginator(
             $employees->forPage($page, $perPage),
@@ -35,7 +35,7 @@ class EmployeeController extends Controller
 
         $positions = Position::all();
         $ranks = Rank::all();
-        $logs = ActivityLog::with('user')->latest()->take(50)->get();
+        $logs = ActivityLog::with('user')->latest()->take(200)->get();
         // $deletedEmployees = Employee::onlyTrashed()->with('user')->get();
         $deletedUsernames = $deletedEmployees->pluck('user.username')->toArray();
 
@@ -91,9 +91,24 @@ class EmployeeController extends Controller
                 return $aPriority <=> $bPriority;
             });
 
+        $tongSoNhanVien = User::where('role', '!=', 'admin')
+            ->whereHas('employee', function ($query) {
+                $query->whereNull('deleted_at');
+            })
+            ->count();
+        $capBacCao = ['Cục Trưởng', 'Phó Cục Trưởng', 'Trợ Lý Cục Trưởng', 'Thư Ký', 'Đội Trưởng'];
+        $soNhanVienCapCao = User::where('role', '!=', 'admin')
+            ->whereHas('employee', function ($query) use ($capBacCao) {
+                $query->whereNull('deleted_at')
+                    ->whereHas('position', function ($q) use ($capBacCao) {
+                        $q->whereIn('name_positions', $capBacCao);
+                    });
+            })
+            ->count();
+
         // ✅ Phân trang thủ công sau khi sort
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 5;
+        $perPage = 7;
         $pagedData = $users->slice(($currentPage - 1) * $perPage, $perPage)->values();
         $paginatedUsers = new LengthAwarePaginator(
             $pagedData,
@@ -103,7 +118,7 @@ class EmployeeController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        return view('home', ['users' => $paginatedUsers]);
+        return view('home', ['users' => $paginatedUsers], compact('tongSoNhanVien', 'soNhanVienCapCao'));
     }
 
     // TẠO, THÊM, ADD
@@ -158,37 +173,39 @@ class EmployeeController extends Controller
         return redirect()->back()->with('success', 'Tạo nhân sự thành công');
     }
 
-    // Xóa, Remove, Delete, Xóa mề, soft delete
+    // Xóa, Remove, Delete, Xóa mềm, soft delete
     public function destroy($id)
     {
-
         $decoded = Hashids::decode($id);
         if (empty($decoded)) {
             abort(404);
         }
 
         $employee = Employee::with('user')->findOrFail($decoded[0]);
-
         $currentUser = auth()->user();
         $targetUser = $employee->user;
 
         if ($this->getRoleLevel($currentUser->role) <= $this->getRoleLevel($targetUser->role)) {
-            // abort(403, 'Bạn không đủ quyền để xóa người này.');
-            return redirect()->back()->with('warning', 'Bạn không đủ thẩm quyền xóa người.');
+            $msg = 'Bạn không đủ thẩm quyền xóa người.';
+            return request()->expectsJson()
+                ? response()->json(['message' => $msg], 403)
+                : redirect()->back()->with('warning', $msg);
         }
 
         $username = $targetUser->username ?? 'Không rõ';
-
         $employee->delete();
 
         ActivityLog::create([
             'user_id' => $currentUser->id,
             'action' => 'xóa',
             'target' => $username,
-            'detail' => 'cưới lấy sự sống'
+            'detail' => 'bỏ vào thùng rác'
         ]);
 
-        return redirect()->back()->with('success', 'Đã chuyển nhân sự vào thùng rác.');
+        $msg = 'Đã chuyển nhân sự vào thùng rác.';
+        return request()->expectsJson()
+            ? response()->json(['message' => $msg])
+            : redirect()->back()->with('success', $msg);
     }
 
     // Phục hồi, Khôi phục
@@ -277,11 +294,20 @@ class EmployeeController extends Controller
 
         $employee->update($data);
 
+        // Đồng bộ role của User dựa theo chức vụ mới
+        $newRole = $this->mapPositionToRole($newPositionId);
+        $employee->user->update([
+            'role' => $newRole,
+        ]);
+
+        // Ghi log chi tiết
+        $detail = $newPositionId == $hasChanged ? 'cập nhật Quân hàm - Chức vụ' : 'cập nhật thông tin';
+
         ActivityLog::create([
             'user_id' => auth()->id(),
             'action' => 'sửa',
             'target' => $employee->user->username,
-            'detail' => 'đã cập nhật thông tin'
+            'detail' => $detail
         ]);
 
         return redirect()->back()->with('success', 'Cập nhật thành công!');
@@ -374,7 +400,7 @@ class EmployeeController extends Controller
             'user_id' => auth()->id(),
             'action' => 'xóa vĩnh viễn',
             'target' => $user?->username ?? 'Ẩn danh',
-            'detail' => 'đã xóa vĩnh viễn khỏi hệ thống'
+            'detail' => 'xóa vĩnh viễn khỏi hệ thống'
         ]);
 
         return back()->with('success', 'Đã xóa vĩnh viễn nhân sự.');
@@ -403,7 +429,7 @@ class EmployeeController extends Controller
                 'user_id' => auth()->id(),
                 'action' => 'xóa vĩnh viễn',
                 'target' => $user?->username ?? 'Ẩn danh',
-                'detail' => 'xóa vĩnh viễn'
+                'detail' => 'đổ rác  tái chế'
             ]);
 
             $emp->forceDelete();
@@ -423,11 +449,11 @@ class EmployeeController extends Controller
 
         $currentRoleLevel = auth()->user()->getRoleLevel();
         $targetRoleLevel = $employee?->user?->getRoleLevel() ?? 0;
-
         // Chỉ được chỉnh nếu user hiện tại có cấp bậc cao hơn nhân sự đó
         $canEditPosition = $currentRoleLevel > $targetRoleLevel;
+        $tongTienSuNghiep = auth()->user()->monthly_attendance_summaries->flatten()->sum('total_wage');
 
-        return view('profile', compact('employee', 'positions', 'ranks', 'canEditPosition'));
+        return view('profile', compact('employee', 'positions', 'ranks', 'canEditPosition', 'tongTienSuNghiep'));
     }
 
     // UPDATE PROFILE, SỬA, THAY ĐỔI PROFILE
@@ -486,11 +512,17 @@ class EmployeeController extends Controller
 
         $employee->save();
 
+        if ($request->hasFile('avatar')) {
+            $detail = 'thay đổi ảnh đại diện';
+        } else {
+            $detail = 'cập nhật thông tin cá nhân';
+        }
+
         ActivityLog::create([
             'user_id' => $user->id,
             'action' => 'sửa',
             'target' => $user->username,
-            'detail' => 'cập nhật hồ sơ cá nhân'
+            'detail' => $detail
         ]);
 
         return back()->with('success', 'Cập nhật hồ sơ thành công.');
@@ -518,7 +550,6 @@ class EmployeeController extends Controller
 
         return redirect()->back()->with('success', 'Đã xoá ảnh đại diện.');
     }
-
 
     ////
     // Map chức vụ sang role
@@ -557,8 +588,29 @@ class EmployeeController extends Controller
             ->orWhereHas('user', fn($q) => $q->where('username', 'like', "%$query%"))
             ->get();
 
+        // return response()->json([
+        //     'data' => $employees,
+        // ]);
         return response()->json([
-            'data' => $employees
+            'data' => $employees->map(function ($emp) {
+                return [
+                    'id' => $emp->id,
+                    'hash_id' => Hashids::encode($emp->id), // thêm dòng này
+                    'name_ingame' => $emp->name_ingame,
+                    'username' => $emp->user->username ?? '-',
+                    'name_positions' => $emp->position->name_positions ?? '-',
+                    'name_ranks' => $emp->rank->name_ranks ?? '-',
+                    'rank_id' => $emp->rank->id ?? '-',
+                    'position_id' => $emp->position->id ?? '-',
+                    'created_at' => $emp->created_at,
+                    'user_created_by' => $emp->userCreatedBy->username ?? 'Admin',
+                    'avatar' => $emp->discord_avatar
+                        ? $emp->discord_avatar
+                        : ($emp->avatar
+                            ? asset('storage/' . $emp->avatar)
+                            : asset('/assets/images/user_preview_logo.png')),
+                ];
+            })
         ]);
     }
 

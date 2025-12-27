@@ -4,41 +4,47 @@
 @endpush
 @section('content')
     <div class="container">
-        <div class="group-function p-3">
-            <form method="POST" action="{{ route('salary_configs.store') }}" class="row g-3 form-salary">
-                @csrf
-                <div class="col-md-4">
-                    <select name="position_id" class="form-select" required>
-                        <option value="">--- Chọn chức vụ ---</option>
-                        @foreach($positions as $position)
-                            <option value="{{ $position->id }}">{{ $position->name_positions }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <input type="text" name="hourly_rate_display" id="hourly_rate_display" class="form-control"
-                        placeholder="Lương/giờ" required>
-                    <input type="hidden" name="hourly_rate" id="hourly_rate">
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary">Cập nhật hệ số</button>
-                </div>
-            </form>
-            <!-- Form sửa giờ làm tối đa cho toàn hệ thống -->
-            <form method="POST" action="{{ route('salary_configs.updateGlobalHours') }}"
-                class="row g-3 align-items-center mt-4 form-edit-time">
-                @csrf
-                @method('PUT')
-                <div class="col-md-4">
-                    <label for="max_hours_per_day" class="form-label">Giờ làm tối đa/ngày (toàn hệ thống):</label>
-                    <input type="number" step="0.1" min="0" max="24" name="max_hours_per_day" id="max_hours_per_day"
-                        class="form-control" value="{{ $configs->first()?->max_hours_per_day ?? 3 }}" required>
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-warning mt-4">Cập nhật giờ làm</button>
-                </div>
-            </form>
-        </div>
+        @if (in_array(auth()->user()->role, ['cục trưởng', 'phó cục trưởng', 'admin']))
+            <div class="group-function p-3">
+                <form method="POST" action="{{ route('salary_configs.store') }}" class="row g-3 form-salary">
+                    @csrf
+                    <div class="col-md-4">
+                        <select name="position_id" class="form-select" required>
+                            <option value="">--- Chọn chức vụ ---</option>
+                            @foreach($positions as $position)
+                                <option value="{{ $position->id }}">{{ $position->name_positions }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="hourly_rate_display" id="hourly_rate_display" class="form-control"
+                            placeholder="Lương/giờ" required>
+                        <input type="hidden" name="hourly_rate" id="hourly_rate">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary">Cập nhật hệ số</button>
+                    </div>
+                </form>
+                <!-- Form sửa giờ làm tối đa cho toàn hệ thống -->
+                <form method="POST" action="{{ route('salary_configs.updateGlobalHours') }}"
+                    class="row g-3 align-items-center mt-4 form-edit-time">
+                    @csrf
+                    @method('PUT')
+                    <div class="col-md-4">
+                        <label for="max_hours_per_day" class="form-label">Giờ làm tối đa/ngày (toàn hệ thống):</label>
+                        <input type="number" step="0.1" min="0" max="24" name="max_hours_per_day" id="max_hours_per_day"
+                            class="form-control" value="{{ $configs->first()?->max_hours_per_day ?? 3 }}" required>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-warning mt-4">Cập nhật giờ làm</button>
+                    </div>
+                </form>
+            </div>
+        @else
+            <div class="group-function p-3">
+                Không có thẩm quyền để cập nhật hệ số lương.
+            </div>
+        @endif
         <div class="box-employees table-responsive">
             <table class="table table-striped align-middle">
                 <thead>
@@ -57,7 +63,7 @@
                             <td>{{ number_format($cfg->hourly_rate) }}$</td>
                             <td>{{ $cfg->max_hours_per_day }}h</td>
                             <td>{{ $cfg->updatedBy?->username ?? 'Không rõ' }}</td>
-                            <td>{{ $cfg->updated_at->format('d-m-Y H:i') }}</td>
+                            <td>{{ $cfg->updated_at->format('d-m-Y H:i:s') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -90,15 +96,15 @@
         document.querySelector('.form-edit-time').addEventListener('submit', function (e) {
             showLoading();
         });
-       
+
         document.addEventListener('DOMContentLoaded', function () {
-        const salaryForm = document.querySelectorAll('.form-salary');
-        salaryForm.forEach(form => {
-            form.addEventListener('submit', function () {
-                showLoading();
+            const salaryForm = document.querySelectorAll('.form-salary');
+            salaryForm.forEach(form => {
+                form.addEventListener('submit', function () {
+                    showLoading();
+                });
             });
         });
-    });
     </script>
 
 @endpush

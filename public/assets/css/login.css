@@ -6,7 +6,9 @@
 }
 
 body {
-    background: url("../images/LSSD_HRM.lssdoznak.png") no-repeat center center fixed;
+    background: url("../images/banner_lssd_1.png") no-repeat center center fixed;
+    /* background: url("../images/LSSD_HRM.lssdoznak.png") no-repeat center center fixed; */
+    /* background: url("https://stories.baothanhhoa.vn/Kh-ng-c--g--qu--h-n---c-l-p-t--do---V-ng-tin-con----ng-ch--ngh-a-x--h-i-Vi-t-Nam/assets/5R7twzvfQH/sbh-18-4000x2251.jpg") no-repeat center center fixed; */
     background-size: cover;
     height: 100vh;
     display: flex;
@@ -14,15 +16,65 @@ body {
     justify-content: center;
 }
 
+/* 
 .group-login {
     background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(13px);
     border-radius: 12px;
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 40px 30px;
     width: 400px;
     color: white;
     text-align: center;
     scale: 0.95;
+} */
+
+.group-login {
+    padding: 40px 30px;
+    width: 400px;
+    color: white;
+    text-align: center;
+    scale: 0.95;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    /* box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 0 0px 0px rgba(255, 255, 255, 0); */
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    position: relative;
+    overflow: hidden;
+}
+
+.group-login::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.8),
+            transparent);
+}
+
+.group-login::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.8),
+            transparent,
+            rgba(255, 255, 255, 0.3));
 }
 
 .logo-login-page img {
@@ -92,12 +144,12 @@ h2 span {
 .footer-login-page {
     margin-top: 25px;
     font-size: 12px;
-    color: #ccc;
+    color: #37403f;
 }
 
 .version-login-page {
     font-size: 11px;
-    color: #999;
+    color: #7e8483;
     margin-top: -10px;
 }
 
@@ -146,14 +198,14 @@ h2 span {
     padding-bottom: 6px;
     font-weight: 700;
     border-width: 3px;
-    border-image: linear-gradient(to right, #EEAF36, #ffe7bb);
+    border-image: linear-gradient(to right, #ffcc00, #ffe7bb);
     border-image-slice: 1;
 }
 
 .form__field:focus~.form__label {
     top: 0;
     font-size: 17px;
-    color: #EEAF36;
+    color: #ffa600;
     font-weight: 700;
 }
 
@@ -431,5 +483,32 @@ h2 span {
 
     100% {
         opacity: 0.3;
+    }
+}
+
+.notifi {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    bottom: 20px;
+    z-index: 9999;
+    padding: 15px;
+    color: #fff;
+    background: rgba(255, 0, 0, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    animation: identifier 0.5s ease-in-out;
+}
+
+@keyframes identifier {
+    0% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
     }
 }
