@@ -7,8 +7,8 @@
 @endpush
 @section('content')
 <div class="container">
-    <form class="box-form-1 container mb-5">
-        <h2>Bảo Lãnh Tội Phạm</h2>
+    <form class="box-form-1 lssd-card container mb-5">
+        <h2 class="lssd-control-btn ms-5 me-5 mt-3 mb-3">Bảo Lãnh Tội Phạm</h2>
         <hr>
 
         <!--  -->

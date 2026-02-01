@@ -12,13 +12,14 @@ return new class extends Migration {
     {
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id'); // ai thao tác
+            // $table->unsignedBigInteger('user_id'); // ai thao tác
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('action'); // tạo, sửa, xoá...
             $table->string('target'); // ví dụ: "Nguyễn Văn A"
             $table->string('detail'); // ví dụ: "cập nhật chức vụ"
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

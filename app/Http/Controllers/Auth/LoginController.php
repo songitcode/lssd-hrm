@@ -47,12 +47,15 @@ class LoginController extends Controller
 
         $user = User::where('username', $request->username)->first();
 
+        if ($user->role === 'admin') {
+            return redirect()->back()->with('error', "Đây không phải trang Admin vui lòng truy cập https:://lssdhrtime.com/admin/");
+        }
         if (!$user || !Hash::check($request->password, $user->password)) {
             return back()->withErrors(['login' => 'Tên đăng nhập hoặc mật khẩu không đúng']);
         }
 
         if ($user->employee?->trashed()) {
-            $deletedBy = $user->employee->delete_by ?? 'Con Bò';
+            $deletedBy = $user->employee->delete_by ?? 'Admin';
             return redirect()->back()->with('error', "Tài khoản đã bị vô hiệu hóa bởi $deletedBy.");
         }
 
@@ -61,9 +64,63 @@ class LoginController extends Controller
         return redirect()->route('home')->with('success', 'Đăng nhập thành công!');
     }
 
+    public function loginAdmin(Request $request)
+    {
+        $request->validate([
+            'username' => 'required',
+            'password' => 'required'
+        ]);
+
+        $user = User::where('username', $request->username)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tên đăng nhập hoặc mật khẩu không đúng'
+            ], 401);
+        }
+        if ($user->isDownAdminRole()) {
+
+            // (tuỳ chọn) check role admin
+            // if ($user->role !== 'admin') {
+            //     return response()->json([
+            //         'status' => 'error',
+            //         'message' => 'Bạn không phải ADMIN'
+            //     ], 403);
+            // }
+
+            if ($user->employee?->trashed()) {
+                $deletedBy = $user->employee->delete_by ?? 'Con Bò';
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Tài khoản đã bị vô hiệu hóa bởi $deletedBy."
+                ], 403);
+            }
+
+            Auth::login($user);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Đăng nhập thành công!',
+                'redirect' => route('home')
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Bạn không phải ADMIN'
+            ], 403);
+        }
+    }
     public function logout()
     {
+        $user = Auth::user(); // lấy user hiện tại\
+
         Auth::logout();
+
+        if ($user && $user->role === 'admin') {
+            return redirect()->route('admin.login');
+        }
+       
         // return redirect()->route('login')->with('success', 'Đăng xuất thành công!');
         return redirect()->route('login');
     }

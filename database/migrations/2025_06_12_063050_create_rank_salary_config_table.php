@@ -10,15 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('position_salary_configs', function (Blueprint $table) {
+        Schema::create('rank_salary_configs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('position_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('rank_id')->constrained()->cascadeOnDelete();
             $table->decimal('hourly_rate', 10, 0)->default(0);
             $table->decimal('max_hours_per_day', 5, 2)->default(3.0);
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
-            $table->unique(['position_id']); // Mỗi chức vụ chỉ có 1 cấu hình
+            $table->unique(['rank_id']);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('position_salary_configs');
+        Schema::dropIfExists('rank_salary_configs');
     }
 };

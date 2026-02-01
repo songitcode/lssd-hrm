@@ -76,7 +76,7 @@
                     @foreach ($users as $user)
                         @php
                             $positionName = $user->employee->position->name_positions ?? '';
-                            $excludePositions = ['Cục Trưởng', 'Phó Cục Trưởng', 'Trợ Lý Cục Trưởng', 'Thư Ký'];
+                            $excludePositions = ['Cục Trưởng', 'Phó Cục Trưởng'];
 
                             if (in_array($positionName, $excludePositions)) {
                                 continue;

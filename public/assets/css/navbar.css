@@ -158,7 +158,15 @@
 }
 
 .navbar-custom {
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    background: linear-gradient(145deg, #ffffff, #fff5e6, #ffffff00) !important;
+    border-radius: 0 0 100px 100px;
+    box-shadow: 0 15px 35px rgba(255, 149, 0, 0.15);
+    border: 2px solid rgba(255, 149, 0, 0.3);
+    margin: 0px 70px 0px 70px;
+    position: sticky;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 .main-header {
@@ -167,9 +175,9 @@
     padding: 15px 0;
     color: #2c3e50;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    position: sticky;
     top: 0;
-    z-index: 1000;
+    border-bottom-left-radius: 100px;
+    border-bottom-right-radius: 100px;
 
     .user-info span a {
         color: #2C3E50;
@@ -188,7 +196,6 @@
     }
 }
 
-
 .user-avatar {
     border: 4px solid #E4A500 !important;
     transition: transform 0.2s ease-in-out;
@@ -199,13 +206,13 @@
 }
 
 .dropdown-menu {
-    /* From https://css.glass */
     background: rgba(255, 255, 255, 0.2);
     border-radius: 16px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.3);
+    z-index: 1030;
 }
 
 .btn-drop-custom {

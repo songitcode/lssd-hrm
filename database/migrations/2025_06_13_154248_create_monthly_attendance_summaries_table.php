@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('monthly_attendance_summaries', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->unsignedInteger('month'); // 1-12
             $table->unsignedInteger('year');
             $table->decimal('total_hours', 8, 2);

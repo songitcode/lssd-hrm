@@ -24,12 +24,12 @@
                     <button class="btn-action-hr btn-history" data-bs-toggle="modal"
                         data-bs-target="#historyModal"><strong><i class="fa-solid fa-clock-rotate-left"></i> Lịch
                             Sử</strong></button>
-                            
+                    @if(auth()->user()->gioiHanRole_1()) 
                      <button class="btn-action-hr btn-trash" data-bs-toggle="modal"
                         data-bs-target="#trashModal">
                         <strong><i class="fa-solid fa-trash-can"></i> Thùng Rác</strong>
                     </button>
-
+                    @endif
                     <button class="btn-action-hr btn-add" data-bs-toggle="modal" data-bs-target="#createUserModal">
                         <strong>
                             <i class="fa fa-circle-plus"></i> 
@@ -49,6 +49,21 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                     </div>
                     <div class="modal-body">
+                        @if (auth()->user()->role !== 'admin')
+                            <span></span>
+                        @else
+                            <span>
+                                <form action="{{ route('logs.clear') }}" method="POST"
+                                    onsubmit="return confirm('Bạn có chắc muốn xóa toàn bộ logs không?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="badge bg-danger">
+                                        Xóa toàn bộ logs
+                                    </button>
+                                </form>
+                            </span>
+                        @endif
+                        
                         <!-- Lịch sử mẫu -->
                         <!-- Xóa -->
                         @forelse ($logs as $log)
@@ -207,7 +222,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-
+                                
                                 <div class="text-end mt-3">
                                     <button type="submit" class="btn btn-danger" id="btnDeleteSelected">
                                         <i class="fa-solid fa-trash"></i> Xóa Vĩnh Viễn
@@ -465,6 +480,7 @@
                             <th>Tên Đăng Nhập</th>
                             <th>Chức Vụ</th>
                             <th>Quân Hàm</th>
+                            <th>USER_ID</th>
                             <th>ID_DISCORD</th>
                             <th>Ngày Tạo</th>
                             <th>Người Tạo</th>
@@ -475,38 +491,40 @@
                         @forelse ($paginated as $index => $emp)
                             <tr>
                                 <td>{{ $loop->iteration + ($paginated->currentPage() - 1) * $paginated->perPage() }}</td>
-                                    <td> 
-                                        @if ($emp->discord_id ?? false)
-                                            <img src="{{ $emp->discord_avatar }}" alt="Avatar" class="rounded-circle"
-                                                    width="30" height="30">
+                                <td> 
+                                   @if($emp?->discord_id)
+                                        <img id="avatarPreview" src="{{ $emp->discord_avatar }}" alt="Avatar"
+                                            class="rounded-circle" width="40" height="40"
+                                            onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($emp->name_ingame ?? 'NAN') }}&background=random';">
+                                    @else
+                                        @if ($emp?->avatar)
+                                            <img id="avatarPreview" src="{{ asset('storage/' . $emp->avatar) }}"
+                                                alt="Avatar" class="rounded-circle" width="40" height="40"
+                                                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($emp->name_ingame ?? 'NAN') }}&background=random';">
                                         @else
-                                            @if ($emp->avatar)
-                                                <img src="{{ asset('storage/' . $emp->avatar) }}" alt="Avatar" class="rounded-circle"
-                                                    width="30" height="30">
-                                            @else
-                                                <img src="{{ asset('assets/images/user_preview_logo.png') }}" alt="Default"
-                                                    class="rounded-circle" width="30" height="30">
-                                            @endif
+                                            <img id="avatarPreview"
+                                                src="https://ui-avatars.com/api/?name={{ urlencode($emp->name_ingame ?? 'NAN') }}&background=random"
+                                                class="rounded-circle" width="40" height="40" alt="Default">
                                         @endif
-
-                                    </td>
-                                <td>
-                                    {{ $emp->name_ingame ?? '-' }}
+                                    @endif
                                 </td>
+                                <td>{{ $emp->name_ingame ?? '-' }}</td>
                                 <td><span>{{ $emp->user->username ?? '-' }}</span>
                                 </td>
                                 <td>{{ $emp->position->name_positions ?? '-' }}</td>
                                 <td>{{ $emp->rank->name_ranks ?? '-' }}</td>
+                                <td><small class="text-secondary">{{ $emp->id ?? null }}</small></td>
                                 <td><small class="text-secondary">{{ $emp->discord_id ?? 'Chưa liên kết' }}</small></td>
                                 <td>{{ $emp->created_at->format('d/m/Y') }}</td>
                                 <td>{{ $emp->userCreatedBy->username ?? 'Người Tàng Hình' }}</td>
                                 <td>
                                     @if(auth()->id() !== $emp->user_id)
-                                        <button class="btn btn-delete"
-                                            data-id="{{ Hashids::encode($emp->id) }}">
-                                            <i class="fa-solid fa-trash"></i> Xóa
-                                        </button>
-
+                                        @if(auth()->user()->gioiHanRole_1()) 
+                                            <button class="btn btn-delete"
+                                                data-id="{{ Hashids::encode($emp->id) }}">
+                                                <i class="fa-solid fa-trash"></i> Xóa
+                                            </button>
+                                        @endif
                                         <!-- <button class="btn btn-edit"><i class="fa-solid fa-user-pen"></i> Sửa</button> -->
                                          <button class="btn-edit"
                                             data-bs-toggle="modal"
@@ -537,7 +555,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9">Không có nhân sự nào.</td>
+                                <td colspan="10">Không có nhân sự nào.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -551,229 +569,10 @@
 
         </div>
     </div>
-    
-    <!-- LOGS TAB -->
-    <div class="container mt-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-warning text-white">
-                <h4 class="mb-0"><i class="fas fa-history me-2"></i>Bộ lọc thao tác</h4>
-            </div>
-            <div class="card-body">
-                
-                <!-- Bộ lọc và thống kê -->
-                <div class="row mb-4">
-                    <div class="col-md-8">
-                        <div class="filter-section">
-                            <h6 class="text-muted mb-2">Lọc theo loại hành động:</h6>
-                            <div class="btn-group flex-wrap gap-3" role="group">
-                                <button type="button" class="btn btn-outline-primary active filter-btn" data-filter="all">Tất cả</button>
-                                <button type="button" class="btn btn-outline-danger filter-btn" data-filter="xóa">Bỏ thùng rác</button>
-                                <button type="button" class="btn btn-outline-danger filter-btn" data-filter="xóa vĩnh viễn">Tái chế</button>
-                                <button type="button" class="btn btn-outline-info filter-btn" data-filter="tạo">Tạo mới</button>
-                                <button type="button" class="btn btn-outline-warning filter-btn" data-filter="sửa">Chỉnh sửa</button>
-                                <button type="button" class="btn btn-outline-success filter-btn" data-filter="khôi phục">Khôi phục</button>
-                                <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="password">Mật khẩu</button>
-                                <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="logsCustom">Khác</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stats-section text-end">
-                            <small class="text-muted">
-                                Hiển thị <span id="visible-count">0</span>/<span id="total-count">0</span> bản ghi
-                            </small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Danh sách logs -->
-                <div id="logs-container">
-                    @forelse ($logs as $log)
-                        <div class="log-item mb-3 p-3 rounded border" data-action="{{ $log->action }}">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <div class="d-flex align-items-center">
-                                        <!-- Icon theo loại hành động -->
-                                        @switch($log->action)
-                                            @case('xóa')
-                                                <i class="fas fa-trash text-danger me-3 fs-5"></i>
-                                            @break
-                                            @case('xóa vĩnh viển')
-                                                <i class="fas fa-trash text-danger me-3 fs-5"></i>
-                                            @break
-                                            @case('tạo')
-                                                <i class="fas fa-plus-circle text-info me-3 fs-5"></i>
-                                            @break
-                                            @case('sửa')
-                                                <i class="fas fa-edit text-warning me-3 fs-5"></i>
-                                            @break
-                                            @case('khôi phục')
-                                                <i class="fas fa-recycle text-success me-3 fs-5"></i>
-                                            @break
-                                            @case('đổi mật khẩu')
-                                                <i class="fas fa-key text-secondary me-3 fs-5"></i>
-                                            @break
-                                            @case('logsCustom')
-                                                <i class="fas fa-info-circle text-secondary me-3 fs-5"></i>
-                                            @break
-                                            @case('resetPassword')
-                                                <i class="fas fa-key text-secondary me-3 fs-5"></i>
-                                            @break
-                                            @case('deleteAvatar')
-                                                <i class="fas fa-user-times text-danger me-3 fs-5"></i>
-                                            @break
-                                            @default
-                                                <i class="fas fa-info-circle text-primary me-3 fs-5"></i>
-                                        @endswitch
-
-                                        <div>
-                                            <!-- Người thực hiện -->
-                                            <strong class="text-dark">{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong>
-                                            
-                                            <!-- Nội dung hành động -->
-                                            <span>
-                                                @switch($log->action)
-                                                    @case('xóa')
-                                                        đã <span class="text-danger">bỏ sĩ quan <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong> vào thùng rác</span>
-                                                    @break
-                                                    @case('xóa vĩnh viễn')
-                                                        {{ $log->detail }} với <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                                    @break
-                                                    @case('tạo')
-                                                        <span class="text-info">đã ban sự sống cho</span> <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                                    @break
-                                                    @case('sửa')
-                                                        vừa <strong class="text-warning">{{ $log->detail }}</strong> cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                                    @break
-                                                    @case('khôi phục')
-                                                        <span class="text-success">đã cứu lấy linh hồn</span> <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                                    @break
-                                                    @case('đổi mật khẩu')
-                                                        vừa <strong class="text-secondary">{{ $log->detail }}</strong> cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                                    @break
-                                                    @case('resetPassword')
-                                                        đã <strong class="text-secondary">{{ $log->detail }}</strong> của <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                                    @break
-                                                    @case('deleteAvatar')
-                                                        vừa <strong class="text-danger">{{ $log->detail }}</strong>
-                                                    @break
-                                                    @case('logsCustom')
-                                                        vừa <strong class="text-primary">{{ $log->detail }}</strong>
-                                                    @break
-                                                    @default
-                                                        {{ $log->detail }} với <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                                @endswitch
-                                            </span>
-
-                                            <!-- Thời gian -->
-                                            <div class="text-muted small mt-1">
-                                                <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4 text-end">
-                                    <!-- Nút khôi phục hoặc trạng thái -->
-                                    @if($log->action === 'xóa')
-                                        @if(in_array($log->target, $deletedUsernames) && $latestDeleteLogByUser[$log->target] === $log->id)
-                                            <form method="POST" action="{{ route('employees.restore', $log->target) }}" class="form-restore d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-restore">
-                                                    <i class="fa-solid fa-clock-rotate-left"></i> Khôi phục
-                                                </button>
-                                            </form>
-                                        @elseif(isset($employeeMap[$log->target]))
-                                            <span class="badge bg-success">Đã hồi sinh</span>
-                                        @else
-                                            <span class="badge bg-secondary">Đã xóa</span>
-                                        @endif
-                                    @endif
-
-                                    <!-- Badge loại hành động -->
-                                     {{-- 
-                                    <span class="badge 
-                                        @switch($log->action)
-                                            @case('xóa') bg-danger @break
-                                            @case('xóa vĩnh viễn') bg-primary @break
-                                            @case('tạo') bg-info @break
-                                            @case('sửa') bg-warning @break
-                                            @case('khôi phục') bg-success @break
-                                            @case('đổi mật khẩu') bg-secondary @break
-                                            @case('resetPassword') bg-secondary @break
-                                            @case('deleteAvatar') bg-danger @break
-                                            @default bg-primary
-                                        @endswitch ms-2">
-                                        {{ $log->action }}
-                                    </span>
-                                    --}}
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-center py-4">
-                            <i class="fas fa-clock-rotate-left fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">Không có lịch sử thao tác nào</h5>
-                            <p class="text-muted">Các thao tác trên hệ thống sẽ được hiển thị tại đây</p>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection 
 @push('scripts')
 <script src="{{ asset('assets/js/employee_index.js') }}"></script>
 <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const logItems = document.querySelectorAll('.log-item');
-            const visibleCountEl = document.getElementById('visible-count');
-            const totalCountEl = document.getElementById('total-count');
-
-            // Đếm tổng số logs
-            totalCountEl.textContent = logItems.length;
-
-            function filterLogs(filter) {
-                let visibleCount = 0;
-
-                logItems.forEach(item => {
-                    const action = item.getAttribute('data-action');
-                    
-                    if (filter === 'all' || 
-                        (filter === 'password' && (action === 'đổi mật khẩu' || action === 'resetPassword')) ||
-                        action === filter) {
-                        item.classList.remove('hidden');
-                        visibleCount++;
-                    } else {
-                        item.classList.add('hidden');
-                    }
-                });
-
-                // Cập nhật số lượng hiển thị
-                visibleCountEl.textContent = visibleCount;
-
-                // Cập nhật trạng thái active của nút lọc
-                filterButtons.forEach(btn => {
-                    if (btn.getAttribute('data-filter') === filter) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
-            }
-
-            // Thêm sự kiện click cho các nút lọc
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const filter = this.getAttribute('data-filter');
-                    filterLogs(filter);
-                });
-            });
-
-            // Khởi tạo
-            filterLogs('all');
-        });
         document.querySelector('.form-edit-employee').addEventListener('submit', function (e) {
             showLoading();
         });

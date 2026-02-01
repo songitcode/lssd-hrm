@@ -7,8 +7,8 @@
 @endpush
 
 @section('content')
-    <form class="box-form-1 container mb-5 mt-5">
-        <h2 class="text-color-efb036">Đơn Xin Nghỉ Phép</h2>
+    <form class="box-form-1 container lssd-card mb-5 mt-5">
+        <h2 class="text-color-efb036 lssd-control-btn ms-5 me-5 mt-3 mb-3">Đơn Xin Nghỉ Phép</h2>
         <hr class="text-color-efb036">
         <!--  -->
         <div class="form-group-1">
@@ -30,12 +30,13 @@
         </div>
         <div class="form-group-1">
             <label id="label-3">Phó Cục Trưởng:</label>
-            <li id="quan-li-2" class="input-ia static-input" value="<@604610757656576000>"><span style="color: #BF3131;">Duy Iress</span></li>
+            <li id="quan-li-2" class="input-ia static-input" value="<@604610757656576000> <@1171037567630712915>"><span
+                    style="color: #BF3131;">Duy Iress, Phuong Teddy</span></li>
         </div>
         <div class="form-group-1">
             <label id="label-4">Trợ Lý Điều Hành:</label>
-            <li id="quan-li-3" class="input-ia static-input" value="<@1171037567630712915>">
-                <span style="color: #BF3131;">Phuong Teddy</span>
+            <li id="quan-li-3" class="input-ia static-input" value="<@489780355453288449>">
+                <span style="color: #BF3131;">Hvien Dat</span>
             </li>
         </div>
         <div class="form-group-1">
@@ -44,15 +45,17 @@
                 <option value="">--- Không Có Đội Trưởng ---</option>
                 <option value="<@489780355453288449>">GS00 | Hvien Dat</option>
                 <option value="<@440837500848570376>">DS00 | Son Myname</option>
-                <option value="<@547944496038543370>">SS00 | Im Bill</option>
+                <option value="<@1366784682099740814>">SS | D. Garp</option>
             </select>
         </div>
         <div class="form-group-1">
             <label id="label-6" class="label-select">Đội Phó:</label>
             <select id="select-3">
                 <option value="">--- Không Có Đội Phó ---</option>
-                <option value="<@1366784682099740814>">SS | D. Garp</option>
-                <option value="<@1208265190144213026>">DS | Benzily Vy</option>
+                <option value="<@1429332888565977189>">SS | A Hnam</option>
+                <option value="<@1282164227175616624>">DS | Mr Hungzz</option>
+                <option value="<@1155356758269763685> <@902760460200321054>">PS | Bin Master, Hieu Dawng </option>
+                <option value="<@1326219805811937290>">GS | Wire Tips</option>
             </select>
         </div>
         <div class="form-group-1">
@@ -112,7 +115,8 @@
         <div class="form-group-1">
             <label id="label-14">
                 Ký Tên:</label>
-            <input placeholder="Viết lại tên trong game Hoặc tự tag tên của bạn trên discord. . ." class="input-ia" type="text" id="input-6" value="" required>
+            <input placeholder="Viết lại tên trong game Hoặc tự tag tên của bạn trên discord. . ." class="input-ia"
+                type="text" id="input-6" value="" required>
         </div>
         <hr>
         <div class="d-flex box-button-end">

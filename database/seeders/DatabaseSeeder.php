@@ -11,15 +11,12 @@ use Database\Seeders\EmployeeSeeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         // User mặc định
         User::create([
-            'username' => 'admin',
-            'password' => bcrypt('admin@#qazxsw'),
+            'username' => 'ADMIN',
+            'password' => bcrypt('123'),
             'role' => 'admin'
         ]);
 
@@ -36,11 +33,5 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->call(EmployeesSeeder::class);
-        // User::factory(10)->create();
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }

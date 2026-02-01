@@ -15,7 +15,7 @@
                             ({{ $user->username }})</strong></p>
                     <p class="mb-0">Chức vụ: <strong>{{ $user->employee->position->name_positions }}</strong></p>
                     <p class="mb-0">Quân hàm: <strong>{{ $user->employee->rank->name_ranks }}</strong></p>
-                    <p class="mb-0">ID Sĩ Quan: <strong>{{ $user->id }}</strong></p>
+                    <p class="mb-0">ID Sĩ Quan: <strong>{{ $user->employee->id }}</strong></p>
                     <p class="mb-0">Tháng: <strong>{{ $month }} (Lương trực tiếp:
                             <strong>{{ number_format($monthlyTotal) }}$</strong>)</strong></p>
                 </div>
@@ -166,12 +166,13 @@
                             $groupedAttendances = $monthlyAttendances->groupBy('date');
                             $totalMonthHours = $monthlyAttendances->sum('duration');
                             $totalMonthWage = $monthlyAttendances->sum('wage');
+                            $stt = 1;
                         @endphp
 
                         @foreach($groupedAttendances as $date => $records)
                             @foreach($records as $index => $att)
                                 <tr>
-                                    <td class="hover_1">{{ $loop->iteration }}</td>
+                                    <td class="hover_1">{{ $stt++}}</td>
                                     <td class="hover_1">{{ $att->id }}</td>
                                     <td class="hover_1">{{ \Carbon\Carbon::parse($att->date)->format('d/m/Y') }}</td>
                                     <td class="hover_1">
