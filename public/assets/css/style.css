@@ -207,7 +207,7 @@ body {
 
 .active-link-popup {
     background: #f8b400 !important;
-    color: #fff !important; 
+    color: #fff !important;
     border-radius: var(--nav-button-border-radius);
 }
 
@@ -708,6 +708,37 @@ img.rounded-circle {
     display: block;
     shape-rendering: geometricPrecision;
     text-rendering: geometricPrecision;
+}
+
+.lssd-container {
+    background: rgba(255, 149, 0, 0.05);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(255, 149, 0, 0.1);
+    border: 2px solid rgba(255, 149, 0, 0.2);
+}
+
+.lssd-card {
+    background: linear-gradient(145deg, #ffffff, #fff5e6) !important;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(255, 149, 0, 0.15);
+    border: 2px solid rgba(255, 149, 0, 0.3);
+    position: relative;
+}
+
+.lssd-control-btn {
+    padding: 10px 20px;
+    background: rgba(255, 149, 0, 0.1);
+    color: #ff9500;
+    border: 1px solid rgba(255, 149, 0, 0.3);
+    border-radius: 50px;
+    transition: all 0.3s;
+    font-weight: bold;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.width-fit-ctn {
+    width: fit-content;
 }
 
 @media (prefers-reduced-motion: reduce) {

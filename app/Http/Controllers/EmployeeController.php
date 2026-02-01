@@ -2,20 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Models\User;
-use App\Models\Employee;
-use App\Models\Position;
-use App\Models\Rank;
-use App\Models\ActivityLog;
+use Illuminate\Support\Collection;
 use Vinkla\Hashids\Facades\Hashids;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Validation\ValidationException;
+use App\Models\{User, Employee, Position, Rank, ActivityLog, Attendance, WorkHourConfig};
+
 class EmployeeController extends Controller
 {
-
+    public function deleteLogsActive()
+    {
+        $logs = ActivityLog::first(); // Lấy bản ghi đầu (trả về null nếu không có dữ liệu)
+        if ($logs === null) {
+            return redirect()->back()->with('error', 'Bảng ghi trống');
+        }
+        ActivityLog::truncate(); // Xóa toàn bộ dữ liệu + reset ID
+        return redirect()->back()->with('success', 'Đã xóa toàn bộ activity logs');
+    }
     // Hiển Thị
     public function index()
     {
@@ -118,7 +127,83 @@ class EmployeeController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        return view('home', ['users' => $paginatedUsers], compact('tongSoNhanVien', 'soNhanVienCapCao'));
+        // Logic hiển thị top 10 onduty
+        $ondutyRanking = Attendance::with('user.employee.rank.salaryConfig')
+            ->get()
+            ->groupBy('user_id')
+            ->map(function (Collection $rows) {
+
+                $totalSessions = $rows->count();
+                $totalHours = round($rows->sum('duration'), 2);
+                $totalWage = $rows->sum('wage');
+
+                $errorCount = 0;
+                $forcedClosedCount = 0;
+
+                foreach ($rows as $r) {
+
+                    // Bỏ qua ca chưa checkout
+                    if (!$r->check_in || !$r->check_out) {
+                        // $errorCount++;
+                        continue;
+                    }
+
+                    $realHours = round(
+                        Carbon::parse($r->check_in)
+                            ->diffInSeconds(Carbon::parse($r->check_out)) / 3600,
+                        2
+                    );
+
+                    $maxHour = $r->user?->employee?->rank?->salaryConfig?->max_hours_per_day
+                        ?? WorkHourConfig::currentMaxHour();
+
+                    // LỖI NẶNG: vượt quá max 1h
+                    if ($realHours > $maxHour + 1) {
+                        $errorCount++;
+                        continue;
+                    }
+
+                    // Bị quản lý tắt
+                    $status = trim((string) $r->status);
+                    if (
+                        str_contains($status, 'Quản Lý') &&
+                        !str_contains($status, 'Dư')
+                    ) {
+                        $forcedClosedCount++;
+                    }
+                }
+
+                $completedCount = max(
+                    0,
+                    $totalSessions - ($errorCount + $forcedClosedCount)
+                );
+
+                $completionRate = $totalSessions > 0
+                    ? round(($completedCount / $totalSessions) * 100)
+                    : 0;
+
+                return [
+                    'user' => $rows->first()->user,
+                    'onduty_count' => $totalSessions,
+                    'total_hours' => $totalHours,
+                    'errors' => $errorCount,
+                    'forced_closed' => $forcedClosedCount,
+                    'completion_rate' => $completionRate,
+                    'total_wage' => $totalWage,
+                ];
+            })
+            ->sortByDesc('total_hours')
+            ->take(10)
+            ->values();
+
+        return view(
+            'home',
+            [
+                'users' => $paginatedUsers,
+                'ondutyRanking' => $ondutyRanking
+            ],
+            compact('tongSoNhanVien', 'soNhanVienCapCao')
+        );
     }
 
     // TẠO, THÊM, ADD
@@ -239,9 +324,9 @@ class EmployeeController extends Controller
             'detail' => 'đã hồi sinh '
         ]);
         // Xóa bỏ các log xóa trước đó của bản ghi này (nếu muốn)
-        // ActivityLog::where('action', 'xóa')
-        //     ->where('target', $employee->user->username)
-        //     ->delete();
+        ActivityLog::where('action', 'xóa')
+            ->where('target', $employee->user->username)
+            ->delete();
         return redirect()->back()->with('success', 'Đã khôi phục nhân sự thành công.');
     }
 
@@ -348,7 +433,7 @@ class EmployeeController extends Controller
         return response()->json(['message' => 'Đổi mật khẩu thành công']);
     }
 
-    //// RESET PASSWORD
+    // RESET PASSWORD
     public function resetPassword($id)
     {
         $employee = Employee::with('user')->findOrFail($id);
@@ -439,11 +524,10 @@ class EmployeeController extends Controller
         return back()->with('success', 'Đã xóa vĩnh viễn các nhân sự đã chọn.');
     }
 
-    //// PROFILE SETTING
+    // PROFILE SETTING
     public function profile()
     {
-        $employee = auth()->user()->employee;
-
+        $employee = Auth::user()->employee;
         $positions = Position::all();
         $ranks = Rank::all();
 
@@ -551,7 +635,6 @@ class EmployeeController extends Controller
         return redirect()->back()->with('success', 'Đã xoá ảnh đại diện.');
     }
 
-    ////
     // Map chức vụ sang role
     private function mapPositionToRole($positionId)
     {
@@ -578,14 +661,24 @@ class EmployeeController extends Controller
     }
     // 
 
-    //// SEARCH, TÌM KIẾM NHÂN SỰ FETCH
+    // SEARCH, TÌM KIẾM NHÂN SỰ FETCH
     public function search(Request $request)
     {
         $query = $request->get('query');
 
         $employees = Employee::with(['user', 'position', 'rank', 'userCreatedBy'])
-            ->where('name_ingame', 'like', "%$query%")
-            ->orWhereHas('user', fn($q) => $q->where('username', 'like', "%$query%"))
+            ->where(function ($q) use ($query) {
+                $q->where('name_ingame', 'like', "%{$query}%")
+                    ->orWhereHas(
+                        'user',
+                        fn($u) =>
+                        $u->where('username', 'like', "%{$query}%")
+                    );
+
+                if (is_numeric($query)) {
+                    $q->orWhere('id', (int) $query);
+                }
+            })
             ->get();
 
         // return response()->json([
@@ -613,7 +706,4 @@ class EmployeeController extends Controller
             })
         ]);
     }
-
 }
-
-

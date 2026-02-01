@@ -15,7 +15,9 @@
                 <p>Chức Vụ: <strong>{{ auth()->user()->position->name_positions ?? '-' }} -
                         {{ auth()->user()->employee->rank->name_ranks ?? '-' }}</strong></p>
                 <p>Hệ Số Lương: <strong>{{ number_format($heSoLuong ?? 0) }}$/1h</strong>
-                    <small>({{ number_format(auth()->user()->positionSalaryConfig()->max_hours_per_day ?? 0) }}h/1day)</small>
+                    {{-- <small>({{ number_format(auth()->user()->positionSalaryConfig()->max_hours_per_day ?? 0)
+                        }}h/1day)</small> --}}
+                    <small>({{ number_format($maxHourPerDay ?? 0, 2) }}h/1day)</small>
                 </p>
                 {{-- <p>Tính Hệ Số Lương: <strong>{{ number_format($heSoLuong) }} /(Chia) Số Giờ</strong></p>--}}
                 <p>Sự Nghiệp: <strong>{{ number_format($totalLuong) }}$</strong></p>
@@ -52,6 +54,7 @@
                 <table class="table-bordered tb-timekeeping mb-5 text-center align-middle">
                     <thead>
                         <tr class="bg-warning">
+                            <th>ID</th>
                             <th>Sĩ quan</th>
                             <th>Ngày/Tháng/Năm</th>
                             <th>On-Duty</th>
@@ -73,7 +76,7 @@
                         @foreach ($summariesByMonth as $month => $monthSummaries)
                             {{-- Hàng tiêu đề tháng --}}
                             <tr class="bg_secondary_cus text-white">
-                                <td colspan="8" class="text-center">
+                                <td colspan="9" class="text-center">
                                     <strong>Bảng chấm công tháng {{ $month }}</strong>
                                 </td>
                             </tr>
@@ -81,6 +84,7 @@
                             @foreach ($monthSummaries as $summary)
                                 @foreach ($summary['attendances'] as $att)
                                     <tr>
+                                        <td><small>{{ $att->id }}</small></td>
                                         <td>{{ $att->user->employee->name_ingame ?? $att->user->username }}</td>
                                         <td>{{ date_format($att->date, 'd/m/Y') }}</td>
                                         <td>{{ $att->check_in->format('H:i:s - d/m') }}</td>
@@ -121,7 +125,7 @@
 
                                 {{-- Tổng từng ngày --}}
                                 <tr class="total-day-timekeeping">
-                                    <td colspan="4">
+                                    <td colspan="5">
                                         Tổng ngày:
                                         {{ \Carbon\Carbon::parse($summary['date'])->format('d/m/Y') }}
                                     </td>
@@ -152,11 +156,7 @@
                         <th>Tháng/Năm</th>
                         <th>Tổng giờ</th>
                         <th>Tổng lương</th>
-                        {{--
-                        @can('manage-attendance')
-                        <th>Xử lý</th>
-                        @endcan
-                        --}}
+                        {{--@can('manage-attendance')<th>Xử lý</th>@endcan --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -166,8 +166,7 @@
                             <td>{{ number_format($summary->total_hours, 2) }}h</td>
                             <td class="text-success">{{ number_format($summary->total_wage) }}$</td>
 
-                            {{--
-                            @can('manage-attendance')
+                            {{--@can('manage-attendance')
                             <td>
                                 <form method="POST"
                                     action="{{ route('attendance.delete-month', [$summary->month, $summary->year, $summary->user_id]) }}">
@@ -176,8 +175,7 @@
                                     <button class="btn btn-danger btn-sm">🗑️ Xóa</button>
                                 </form>
                             </td>
-                            @endcan
-                            --}}
+                            @endcan--}}
                         </tr>
                     @endforeach
                 </tbody>

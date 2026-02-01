@@ -10,7 +10,8 @@ class CheckManagerRole
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $user = auth()->user();
+        // $user = auth()->user();
+        $user = $request->user();
 
         $allowedRoles = [
             'admin',

@@ -329,7 +329,7 @@ document.getElementById('search-employee').addEventListener('input', function ()
             tbody.innerHTML = '';
 
             if (data.data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9">Không có nhân sự nào.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10">Không có nhân sự nào.</td></tr>`;
                 loader.style.display = 'none';
                 return;
             }
@@ -347,6 +347,8 @@ document.getElementById('search-employee').addEventListener('input', function ()
                         <td><span>${emp.username ?? '-'}</span></td>
                         <td>${emp.name_positions ?? '-'}</td>
                         <td>${emp.name_ranks ?? '-'}</td>
+                        <td><small class="text-secondary">${emp.id ?? null }</small></td>
+                        <td><small class="text-secondary">${emp.discord_id ?? 'Chưa liên kết'}</small></td>
                         <td>${new Date(emp.created_at).toLocaleDateString()}</td>
                         <td>${emp.user_created_by ?? 'Admin'}</td>
                         <td>
@@ -379,7 +381,7 @@ document.querySelector('.table-employees tbody').addEventListener('click', async
         const id = btn.dataset.id;
 
         if (!confirm('Bạn có chắc muốn xóa nhân sự này?')) return;
-        
+
         try {
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 

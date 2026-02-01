@@ -59,10 +59,14 @@ class User extends Authenticatable
     {
         return in_array($this->role, ['admin', 'phó cục trưởng', 'cục trưởng']);
     }
-    
+    public function gioiHanRole_1()
+    {
+        return in_array($this->role, ['admin', 'phó cục trưởng', 'cục trưởng', 'trợ lý cục trưởng']);
+    }
+
     public function quanLyOnduty()
     {
-        return in_array($this->position?->name_positions, ['Cục Trưởng', 'Phó Cục Trưởng', 'Trợ Lý Cục Trưởng', 'Thư Ký', 'Đội Trưởng', 'Đội Phó']);
+        return in_array($this->position?->name_positions, ['Đội Trưởng', 'Đội Phó']);
     }
     public function canEditPositionOf(User $target)
     {
@@ -102,8 +106,12 @@ class User extends Authenticatable
         }
 
         // Nếu có lương theo chức vụ thông qua employee
-        if ($this->employee?->position?->salaryConfig) {
-            return (float) $this->employee->position->salaryConfig->hourly_rate;
+        // if ($this->employee?->position?->salaryConfig) {
+        //     return (float) $this->employee->position->salaryConfig->hourly_rate;
+        // }
+
+        if ($this->employee?->rank?->salaryConfig) {
+            return (float) $this->employee->rank->salaryConfig->hourly_rate;
         }
 
         // Lương mặc định
@@ -130,6 +138,10 @@ class User extends Authenticatable
     public function positionSalaryConfig()
     {
         return $this->employee?->position?->salaryConfig;
+    }
+    public function rankSalaryConfig()
+    {
+        return $this->employee?->rank?->salaryConfig;
     }
 
     public function rank()

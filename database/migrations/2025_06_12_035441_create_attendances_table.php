@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->dateTime('check_in')->nullable();
             $table->dateTime('check_out')->nullable();
             $table->decimal('duration', 5, 2)->default(0); // Số giờ làm

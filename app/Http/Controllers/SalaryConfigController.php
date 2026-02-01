@@ -2,31 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SalaryConfig;
-use App\Models\User;
-use App\Models\ActivityLog;
 use Illuminate\Http\Request;
-use App\Models\{Position, Rank, PositionSalaryConfig, WorkHourConfig};
+use App\Models\{User, Position, Rank, ActivityLog, SalaryConfig, PositionSalaryConfig, RankSalaryConfig, WorkHourConfig};
 
 class SalaryConfigController extends Controller
 {
     public function index()
     {
-        $configs = PositionSalaryConfig::with(['position', 'updatedBy'])->get();
-        $positions = Position::all();
+        // BACKUP_ Lấy Lương Theo Chức Vụ -> $configs = PositionSalaryConfig::with(['position', 'updatedBy'])->get();
 
-        return view('salary_configs.index', compact('configs', 'positions'));
+        // MỚI_ Lấy Lương Theo Cấp Bậc Quân Hàm
+        $configs = RankSalaryConfig::with(['rank', 'updatedBy'])->get();
+        $positions = Position::all();
+        $ranks = Rank::all();
+
+        return view('salary_configs.index', compact('configs', 'positions', 'ranks'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'position_id' => 'required|exists:positions,id',
+            'rank_id' => 'required|exists:ranks,id',
             'hourly_rate' => 'required|numeric|min:0',
         ]);
 
-        PositionSalaryConfig::updateOrCreate(
-            ['position_id' => $data['position_id']],
+        RankSalaryConfig::updateOrCreate(
+            ['rank_id' => $data['rank_id']],
             [
                 'hourly_rate' => $data['hourly_rate'],
                 'updated_by' => auth()->id(),
@@ -43,7 +44,7 @@ class SalaryConfigController extends Controller
         ]);
 
         // Cập nhật toàn bộ configs
-        PositionSalaryConfig::query()->update([
+        RankSalaryConfig::query()->update([
             'max_hours_per_day' => $request->max_hours_per_day,
             'updated_by' => auth()->id(),
             'updated_at' => now(),
@@ -52,5 +53,22 @@ class SalaryConfigController extends Controller
         return redirect()->back()->with('success', 'Đã cập nhật giờ làm tối đa cho toàn hệ thống.');
     }
 
+    // BACKUP_ Lấy Lương Theo Chức Vụ
+    public function store_backup_positionSLG_20012026(Request $request)
+    {
+        $data = $request->validate([
+            'position_id' => 'required|exists:positions,id',
+            'hourly_rate' => 'required|numeric|min:0',
+        ]);
 
+        PositionSalaryConfig::updateOrCreate(
+            ['position_id' => $data['position_id']],
+            [
+                'hourly_rate' => $data['hourly_rate'],
+                'updated_by' => auth()->id(),
+            ]
+        );
+
+        return back()->with('success', 'Cập nhật hệ số thành công!');
+    }
 }

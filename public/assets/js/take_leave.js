@@ -67,7 +67,7 @@ Ngày Quay Lại: ${formattedDate5}
 
 function resetValue() {
     const inputs = document.querySelectorAll('input, select, textarea');
-    alert("Ban co chac chan khong");
+    alert("Bạn Có Muốn Xóa Tất Cả Dữ Liệu?");
     inputs.forEach(input => {
         if (input.tagName === 'SELECT') {
             input.selectedIndex = 0;

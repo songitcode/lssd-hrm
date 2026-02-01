@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('salary_configs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->decimal('hourly_rate', 10, 0)->default(24000); // 24,000$/giờ mặc định
             $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();

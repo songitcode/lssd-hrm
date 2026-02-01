@@ -18,21 +18,20 @@ class AttendanceController extends Controller
     {
         $user = Auth::user()->loadMissing([
             'salaryConfig',
-            'employee.position.salaryConfig',
+            'employee.rank.salaryConfig',
         ]);
-
-        // $user = Auth::user();
 
         $lastMonth = Carbon::now()->subMonth();
         $this->storeMonthlySummaryIfNotExists($user->id, $lastMonth->month, $lastMonth->year);
 
         $today = Carbon::now()->toDateString();
         $now = Carbon::now();
-        // $maxHourPerDay = WorkHourConfig::currentMaxHour(); // ví dụ 3.0
-        $maxHourPerDay = (float) ($user->position?->salaryConfig?->max_hours_per_day ?? WorkHourConfig::currentMaxHour());
-        $currentMonth = $now->format('Y-m');
 
-        // ✅ Auto check-out cho ca từ hôm trước
+        $maxHourPerDay = (float) ($user->employee->rank?->salaryConfig?->max_hours_per_day ?? WorkHourConfig::currentMaxHour());
+        $currentMonth = $now->format('Y-m');
+        // dd(($user->employee->rank?->salaryConfig?->max_hours_per_day), $user->employee->rank?->salaryConfig);
+
+        // Auto check-out cho ca từ hôm trước
         $previousOngoing = Attendance::where('user_id', $user->id)
             ->whereNull('check_out')
             ->whereDate('date', '<', $today)
@@ -50,15 +49,14 @@ class AttendanceController extends Controller
                 $checkOut = $endOfDay;
             }
 
-            // 🔹 Đảm bảo check_out không trước check_in (tránh số âm)
+            // Đảm bảo check_out không trước check_in (tránh số âm)
             if ($checkOut->lt($checkIn)) {
                 $checkOut = $checkIn;
             }
 
             $sessionHours = $checkIn->diffInSeconds($checkOut) / 3600;
             $sessionHours = min(round($sessionHours, 2), $maxHourPerDay);
-
-            $salaryRate = $user->position->salaryConfig->hourly_rate ?? 24000;
+            $salaryRate = $user->employee->rank->salaryConfig->hourly_rate ?? 24000;
 
             $previousOngoing->update([
                 'check_out' => $checkOut,
@@ -114,6 +112,7 @@ class AttendanceController extends Controller
                     && Carbon::parse($attendance->date)->year === $now->year;
             })
             ->sum('wage');
+
         //// Hoặc gọn hơn nếu query lại (hiệu suất tốt hơn):
         // $monthlyTotal = Attendance::where('user_id', $user->id)
         //     ->whereMonth('date', $now->month)
@@ -149,8 +148,8 @@ class AttendanceController extends Controller
         $today = Carbon::now()->toDateString();
         $now = Carbon::now();
 
-        $salaryRate = $user->position->salaryConfig->hourly_rate ?? 24000;
-        $maxHourPerDay = $user->position?->salaryConfig?->max_hours_per_day ?? WorkHourConfig::currentMaxHour();
+        $salaryRate = $user->employee->rank->salaryConfig->hourly_rate ?? 24000;
+        $maxHourPerDay = $user->employee?->rank?->salaryConfig?->max_hours_per_day ?? WorkHourConfig::currentMaxHour();
 
         // Tổng giờ đã làm hôm nay (chỉ ca đã checkout)
         $totalTodayDuration = Attendance::where('user_id', $user->id)
@@ -227,6 +226,7 @@ class AttendanceController extends Controller
 
         $tinhTienLuong = round($finalDuration * $salaryRate);
 
+        // ==
         if ($overTime >= 6) {
             $phanTramTru = 90;
         } elseif ($overTime >= 3) {
@@ -240,15 +240,30 @@ class AttendanceController extends Controller
         $tienBiTru = round($tinhTienLuong * ($phanTramTru / 100));
 
         $tinhWageDu = $tinhTienLuong - $tienBiTru;
+        // ==
+
+        // Logic Hiển thị Status
+        if (($totalBefore + $finalDuration) >= $maxHourPerDay) {
+            // Đã đạt giới hạn
+            $status = 'Đã Đạt Giới Hạn Lúc ' . $timeReachMax->format('H:i');
+
+            // 👉 Chỉ hiển thị dư giờ + trừ tiền khi overtime >= 1h
+            if ($overTime >= 1) {
+                $status .= ' (Dư ' . $overTime . 'h, Trừ -'
+                    . number_format($tienBiTru, 0, ',')
+                    . ' (' . $phanTramTru . '%))';
+            }
+        } else {
+            // Chưa đạt giới hạn
+            $status = 'Còn ' . $remainHours . 'h';
+        }
 
         // Cập nhật ca
         $currentAttendance->update([
             'check_out' => $checkOut, // luôn lưu thời điểm thực tế 
             'duration' => $finalDuration, // chỉ tính tối đa giờ hệ thống cho phép
             'wage' => round($tinhWageDu),
-            'status' => ($totalBefore + $finalDuration) >= $maxHourPerDay
-                ? 'Đã Đạt Giới Hạn Lúc ' . $timeReachMax->format('H:i') . ' (Dư ' . $overTime . 'h, Trừ -' . number_format($tienBiTru, 0, ',') . ' (' . $phanTramTru . '%))'
-                : 'Còn ' . $remainHours . 'h',
+            'status' => $status,
         ]);
 
         return back()->with('success', 'Kết thúc ca thành công.');
@@ -267,8 +282,8 @@ class AttendanceController extends Controller
         $now = Carbon::now(); // ✅ Luôn là thời gian hiện tại
         $today = $now->toDateString();
 
-        $salaryRate = $user->position->salaryConfig->hourly_rate ?? 24000;
-        $maxHourPerDay = (float) ($user->position?->salaryConfig?->max_hours_per_day ?? WorkHourConfig::currentMaxHour());
+        $salaryRate = $user->employee->rank->salaryConfig->hourly_rate ?? 24000;
+        $maxHourPerDay = (float) ($user->employee->rank?->salaryConfig?->max_hours_per_day ?? WorkHourConfig::currentMaxHour());
 
         // Tổng giờ đã làm hôm nay (có check_out)
         $totalTodayDuration = Attendance::where('user_id', $user->id)
@@ -297,13 +312,20 @@ class AttendanceController extends Controller
             $tinhWageDu = $overTime > 24 ? round($tinhTienLuong * 0) : round($tinhTienLuong);
 
             $attendance->update([
-                'check_out' => $checkOut, // ✅ Ghi đúng ngày/giờ hiện tại
+                'check_out' => $checkOut,
                 'duration' => $sessionHours,
                 'wage' => round($tinhWageDu),
                 'status' => $sessionHours >= $maxHourPerDay
                     ? 'Hoàn Thành (Kết Thúc Bởi Quản Lý, Vượt quá ' . $overTime . 'h)'
                     : 'Còn ' . $remainHours . 'h (Kết Thúc Bởi Quản Lý)',
             ]);
+
+            // $attendance->update([
+            //     'check_out' => $checkOut, 
+            //     'duration' => $sessionHours,
+            //     'wage' => round($tinhWageDu),
+            //     'status' => 'Kết thúc bảo trì',
+            // ]);
 
             ActivityLog::create([
                 'user_id' => $manager->id,
@@ -406,7 +428,7 @@ class AttendanceController extends Controller
             ->where('month', $month)
             ->where('year', $year)
             ->delete();
-
+        
         return back()->with('success', "Đã xóa lịch sử tháng $month/$year của {$user->name}");
     }
 
@@ -456,4 +478,218 @@ class AttendanceController extends Controller
         return back()->with('success', 'Đã reset toàn bộ dữ liệu chấm công.');
     }
 
+
+    public function index_backup_200102026_185500()
+    {
+        $user = Auth::user()->loadMissing([
+            'salaryConfig',
+            'employee.position.salaryConfig',
+        ]);
+
+        // $user = Auth::user();
+
+        $lastMonth = Carbon::now()->subMonth();
+        $this->storeMonthlySummaryIfNotExists($user->id, $lastMonth->month, $lastMonth->year);
+
+        $today = Carbon::now()->toDateString();
+        $now = Carbon::now();
+        // $maxHourPerDay = WorkHourConfig::currentMaxHour(); // ví dụ 3.0
+        $maxHourPerDay = (float) ($user->position?->salaryConfig?->max_hours_per_day ?? WorkHourConfig::currentMaxHour());
+        $currentMonth = $now->format('Y-m');
+
+        // ✅ Auto check-out cho ca từ hôm trước
+        $previousOngoing = Attendance::where('user_id', $user->id)
+            ->whereNull('check_out')
+            ->whereDate('date', '<', $today)
+            ->first();
+
+        if ($previousOngoing) {
+            $checkIn = Carbon::parse($previousOngoing->check_in);
+            $endOfDay = $checkIn->copy()->endOfDay(); // 23:59:59 của ngày check-in
+
+            // Nếu maxHourPerDay kết thúc trước 23:59:59 thì dùng maxHourPerDay
+            $maxHourCheckOut = $checkIn->copy()->addHours($maxHourPerDay);
+            if ($maxHourCheckOut->lessThan($endOfDay)) {
+                $checkOut = $maxHourCheckOut;
+            } else {
+                $checkOut = $endOfDay;
+            }
+
+            // 🔹 Đảm bảo check_out không trước check_in (tránh số âm)
+            if ($checkOut->lt($checkIn)) {
+                $checkOut = $checkIn;
+            }
+
+            $sessionHours = $checkIn->diffInSeconds($checkOut) / 3600;
+            $sessionHours = min(round($sessionHours, 2), $maxHourPerDay);
+
+            $salaryRate = $user->position->salaryConfig->hourly_rate ?? 24000;
+
+            $previousOngoing->update([
+                'check_out' => $checkOut,
+                'duration' => $sessionHours,
+                'wage' => round($sessionHours * $salaryRate),
+                'status' => $sessionHours >= $maxHourPerDay ? 'Đã Đạt Giới Hạn (Hệ Thống Tự Động)' : 'Hoàn Thành (Hệ Thống Tự Động)',
+            ]);
+        }
+
+        // Lấy tất cả ca trong ngày hôm nay
+        $todayAttendances = Attendance::where('user_id', $user->id)
+            ->whereDate('date', $today)
+            ->orderBy('check_in', 'asc')
+            ->get();
+
+        // Tìm phiên đang mở (check_out null) trong ngày hôm nay
+        $ongoing = $todayAttendances->firstWhere('check_out', null);
+
+        // Tính tổng giờ đã làm các phiên đã đóng (có check_out) trong ngày
+        $totalTodayDuration = $todayAttendances
+            ->filter(fn($att) => $att->check_out !== null)
+            ->sum('duration');
+
+        // Truyền attendance history (có thể toàn bộ hoặc chỉ trong tháng)
+        $attendances = Attendance::where('user_id', $user->id)
+            ->orderByDesc('date')
+            ->get();
+
+        // Có phân trang ngày
+        $attendancesPaginated = Attendance::where('user_id', $user->id)
+            ->orderByDesc('date')
+            ->paginate(10); // 5 ngày mỗi trang
+
+        // Tính tổng lương ngày
+        $dailySummaries = $attendancesPaginated
+            ->groupBy(function ($att) {
+                return Carbon::parse($att->date)->format('Y-m-d');
+            })
+            ->map(function ($items) {
+                return [
+                    'date' => $items->first()->date,
+                    'attendances' => $items,
+                    'total_wage' => $items->sum('wage'),
+                    'total_duration' => $items->sum('duration'),
+                ];
+            });
+
+        $totalLuong = $user->monthly_attendance_summaries->flatten()->sum('total_wage');
+        $monthlyTotal = $attendances
+            ->filter(function ($attendance) use ($now) {
+                return Carbon::parse($attendance->date)->month === $now->month
+                    && Carbon::parse($attendance->date)->year === $now->year;
+            })
+            ->sum('wage');
+
+        $heSoLuong = $user->effectiveSalaryRate();
+        // Hiển thị lịch sử tổng lương theo tháng
+        $monthlySummaries = MonthlyAttendanceSummary::where('user_id', $user->id)
+            ->orderByDesc('year')
+            ->orderByDesc('month')
+            ->get();
+
+        return view('attendance.index', compact(
+            'attendances',
+            'todayAttendances',
+            'ongoing',
+            'totalTodayDuration',
+            'maxHourPerDay',
+            'dailySummaries',
+            'monthlyTotal',
+            'totalLuong',
+            'attendancesPaginated',
+            'monthlySummaries',
+            'heSoLuong'
+        ));
+    }
+}
+
+
+// CHECK FUNCTION BACK_KUP
+function check_BACKUP(Request $request)
+{
+    $user = Auth::user();
+    $today = Carbon::now()->toDateString();
+    $now = Carbon::now();
+
+    $salaryRate = $user->position->salaryConfig->hourly_rate ?? 24000;
+    $maxHourPerDay = $user->position?->salaryConfig?->max_hours_per_day ?? WorkHourConfig::currentMaxHour();
+
+    $totalTodayDuration = Attendance::where('user_id', $user->id)
+        ->whereDate('date', $today)
+        ->whereNotNull('check_out')
+        ->sum('duration');
+
+    if ($user->role === 'admin') {
+        return back()->with('warning', 'Tài khoản ADMIN không thể chấm công.');
+    }
+
+    $currentAttendance = Attendance::where('user_id', $user->id)
+        ->whereNull('check_out')
+        ->latest('check_in')
+        ->first();
+
+    if (!$currentAttendance) {
+        if ($totalTodayDuration >= $maxHourPerDay) {
+            return back()->with('warning', "Bạn đã đạt giới hạn {$maxHourPerDay} giờ hôm nay.");
+        }
+
+        Attendance::create([
+            'user_id' => $user->id,
+            'check_in' => $now,
+            'date' => $today,
+            'status' => 'Đang On-Duty',
+            'duration' => 0,
+            'wage' => 0,
+        ]);
+        return back()->with('success', 'Bắt đầu ca thành công.');
+    }
+
+    $checkIn = Carbon::parse($currentAttendance->check_in);
+    $checkOut = $now;
+
+    if ($checkOut->toDateString() !== $checkIn->toDateString()) {
+        $checkOut = $checkIn->copy()->setTime(23, 59, 59);
+    }
+
+    $totalBefore = Attendance::where('user_id', $user->id)
+        ->whereDate('date', $checkIn->toDateString())
+        ->whereNotNull('check_out')
+        ->sum('duration');
+
+    $secondsToMax = max(0, ($maxHourPerDay - $totalBefore) * 3600);
+    $timeReachMax = $checkIn->copy()->addSeconds($secondsToMax);
+
+    if ($secondsToMax > 0 && $checkOut->greaterThanOrEqualTo($timeReachMax)) {
+        $overLimit = true;
+    } else {
+        $overLimit = false;
+    }
+
+    $sessionHours = round($checkIn->diffInSeconds($checkOut) / 3600, 2);
+    $availableTime = max(0, $maxHourPerDay - $totalBefore);
+    $finalDuration = min($sessionHours, $availableTime);
+    $remainHours = round($maxHourPerDay - ($totalBefore + $finalDuration), 2);
+
+    $overTime = 0;
+    if (($totalBefore + $sessionHours) > $maxHourPerDay) {
+        $overTime = round(($totalBefore + $sessionHours) - $maxHourPerDay, 2);
+    }
+
+    if (($totalBefore + $finalDuration) >= $maxHourPerDay) {
+        $status = 'Đã Đạt Giới Hạn Lúc ' . $timeReachMax->format('H:i');
+
+        if ($overTime >= 1) {
+            $status .= ' (Dư ' . $overTime . 'h)';
+        }
+    } else {
+        $status = 'Còn ' . $remainHours . 'h';
+    }
+
+    $currentAttendance->update([
+        'check_out' => $checkOut,
+        'duration' => $finalDuration,
+        'wage' => round($finalDuration * $salaryRate),
+        'status' => $status,
+    ]);
+
+    return back()->with('success', 'Kết thúc ca thành công.');
 }

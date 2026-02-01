@@ -48,13 +48,13 @@
                             data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa-solid fa-caret-down"></i>
                         </button>
-                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                        <ul class="dropdown-menu lssd-card" aria-labelledby="userDropdown">
                             <li>
                                 <a class="dropdown-item text-primary {{ request()->is('profile') ? 'active-link-popup' : '' }}" href="{{ route('profile') }}">
                                     <i class="fas fa-info-circle me-2"></i>Hồ sơ
                                 </a>
                             </li>
-                            <li><a class="dropdown-item text-success" href="#"><i class="fas fa-cog me-2"></i>Cài đặt</a></li>
+                            <!-- <li><a class="dropdown-item text-success" href="#"><i class="fas fa-cog me-2"></i>Cài đặt</a></li> -->
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -82,7 +82,8 @@
             </div> -->
         </div>
     </header>
-    <nav class="navbar navbar-expand-lg navbar-custom">
+
+    <nav class="navbar navbar-expand-lg navbar-custom position-sticky top-0">
         <div class="container color-white">
             <a class="navbar-brand d-flex align-items-center logo_lssd" href="{{ route('home') }}">
                 <img src="{{ asset('assets/images/Logo_LSCSD.png') }}" alt="Logo" height="50" class="me-3">
@@ -115,35 +116,32 @@
                         <a class="nav-link {{ request()->is('ho-tro-truy-na') ? 'active-link' : '' }}"
                             href="{{ route('partials.wanted_support') }}">Hỗ Trợ Truy Nã</a>
                     </li>
-                    @if(auth()->user()->quanLyOnduty())
-                        <li class="nav-item border bg-warning px-2 mx-1">
-                            @php
-                                $nguoiDungDangOnduty = \App\Models\Attendance::where('status', 'Đang On-Duty')->count();
-                            @endphp
-                            @if ($nguoiDungDangOnduty > 0)
-                            <a class="nav-link text-white {{ request()->is('onduty') ? 'active-link' : '' }}"
-                            href="{{ route('partials.ondutyList') }}">On-duty Trực Tiếp <span class="rounded-circle bg-danger text-white" style="padding: 3px 6px;font-size: 13px;">{{ $nguoiDungDangOnduty}}</span></a>
-                            @else
-                            <a class="nav-link {{ request()->is('onduty') ? 'active-link' : '' }}"
-                            href="{{ route('partials.ondutyList') }}"><i class="fa-solid fa-circle-dot" style="color: #00d904ff;"></i>Onduty Trực Tiếp (0)</a>
-                            @endif
-                        </li>
-                    @endif
-                    {{--
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('don-xin-nghi-phep') ? 'active-link' : '' }}"
                             href="{{ route('partials.take_leave') }}">Đơn Xin Nghỉ Phép</a>
                     </li>
-                     <li class="nav-item">
-                        <a class="nav-link" href="#">Ban Lãnh Đạo</a>
-                    </li> --}}
+                    @if(auth()->user()->quanLyOnduty())
+                        <li class="nav-item">
+                            @php
+                                $nguoiDungDangOnduty = \App\Models\Attendance::where('status', 'Đang On-Duty')->count();
+                            @endphp
+                            @if ($nguoiDungDangOnduty > 0)
+                            <a class="nav-link text-success {{ request()->is('onduty') ? 'active-link' : '' }}"
+                            href="{{ route('partials.ondutyList') }}">Onduty Live <small class="text-danger">({{ $nguoiDungDangOnduty}})</small></a>
+                            @else
+                            <a class="nav-link text-danger {{ request()->is('onduty') ? 'active-link' : '' }}"
+                            href="{{ route('partials.ondutyList') }}">Onduty Live 0</a>
+                            @endif
+                        </li>
+                    @endif
+                    
                     @if(auth()->user()->isManager())
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 Quản Lý
                             </a>
-                            <ul class="dropdown-menu p-2" aria-labelledby="navbarDropdown" style="width: fit-content !important;">
+                            <ul class="dropdown-menu p-2 lssd-card" aria-labelledby="navbarDropdown" style="width: fit-content !important;">
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('employees') ? 'active-link' : '' }}"
                                         href="{{ route('employees.index') }}"><i class="fa-solid fa-users"></i> Nhân Sự</a>
@@ -188,6 +186,10 @@
 
 @push('scripts')
     <script>
+        // let navGsap = gsap.timeline();
+        // navGsap.from(".main-header, .navbar", {y: -100, duration: 1, opacity: 0 , ease: "power1.inOut"});
+        // navGsap.from(".navbar-nav .nav-item", {y: -30, opacity: 0, duration: 0.5, stagger: 0.1, ease: "power1.inOut"});
+
         document.addEventListener("click", function (e) {
             const popup = document.querySelector(".popup");
             const checkbox = popup.querySelector("input[type=checkbox]");

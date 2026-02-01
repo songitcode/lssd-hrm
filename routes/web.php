@@ -6,6 +6,7 @@ use App\Http\Controllers\{DiscordController, HomeController, EmployeeController,
 use App\Models\Attendance;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+
 // Route::get('/fix-storage-force', function () {
 //     $targetFolder = storage_path('app/public');
 //     $linkFolder = public_path('storage');
@@ -22,9 +23,12 @@ use Illuminate\Support\Facades\Http;
 //     File::link($targetFolder, $linkFolder);
 //     return 'Symlink recreated successfully!';
 // });
-Route::get('/', function () {
-    return view('auth.login');
-});
+
+Route::get('/', function () {return view('auth.login');});
+// Hiển thị trang admin login
+Route::get('/admin', function () {
+    return view('auth.admin.login');
+})->name('admin.login');
 
 Route::get('/employees', function () {
     return view('employees.index');
@@ -32,10 +36,11 @@ Route::get('/employees', function () {
 
 Route::middleware('guest')->group(function () {
     Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
-    // Route::get('/', function () {
-    //     return view('maintenance');
-    // });
+    // Route::get('/', function () { return view('maintenance'); });
     Route::post('/', [LoginController::class, 'login']);
+    // Admin Login Routes
+    Route::post('/admin/login', [LoginController::class, 'loginAdmin'])
+        ->name('admin.login.submit');
 });
 
 /// Liên Kết Discord
@@ -58,7 +63,7 @@ Route::middleware('auth')->group(function () {
 
     // LOGS
     Route::delete('/activity-log/{id}', [EmployeeController::class, 'deleteLog'])->name('logs.delete');
-    Route::delete('/activity-logs/clear', [EmployeeController::class, 'deleteAllLogs'])->name('logs.clear');
+    Route::delete('/activity-logs/clear', [EmployeeController::class, 'deleteLogsActive'])->name('logs.clear');
 
     // TRASH
     Route::delete('/employees/trash/delete/{id}', [EmployeeController::class, 'forceDelete'])->name('employees.force-delete');
@@ -105,9 +110,6 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
 
     Route::get('/salary-configs', [SalaryConfigController::class, 'index'])->name('salary_configs.index');
     Route::post('/salary-configs', [SalaryConfigController::class, 'store'])->name('salary_configs.store');
-    // Route::put('/salary-configs/update-hourly-rate/{id}', [SalaryConfigController::class, 'updateHourlyRate'])->name('salary_configs.update_hourly_rate');
-    // Route::put('/salary_configs/{id}/update-max-hours', [SalaryConfigController::class, 'updateMaxHoursPerDay'])
-    //     ->name('salary_configs.update_max_hours');
     Route::put('/salary_configs/{id}', [SalaryConfigController::class, 'update'])->name('salary_configs.update');
 
     Route::put('/salary-configs/global-hours', [SalaryConfigController::class, 'updateGlobalHours'])->name('salary_configs.updateGlobalHours');

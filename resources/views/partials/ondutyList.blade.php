@@ -26,7 +26,7 @@
                 <thead>
                     <tr>
                         <th>STT</th>
-                        <th>ID</th>
+                        <th>ID_EM</th>
                         <th>Tên Ingame</th>
                         <th>Chức vụ</th>
                         <th>Quân hàm</th>
@@ -64,7 +64,7 @@
                         @endphp
                         <tr class="{{ $isToday ? '' : 'table-danger' }} align-middle">
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $att->user->id }}</td>
+                            <td>{{ $att->user->employee->id }}</td>
                             <td>{{ $att->user->employee->name_ingame ?? '-' }}</td>
                             <td>{{ $att->user->employee->position->name_positions ?? '-' }}</td>
                             <td>{{ $att->user->employee->rank->name_ranks ?? '-' }}</td>
