@@ -603,7 +603,7 @@ class AttendanceController extends Controller
 }
 
 
-// CHECK FUNCTION BACK_KUP
+// CHECK FUNCTION BACK_KUP NOT tienBiTru
 function check_BACKUP(Request $request)
 {
     $user = Auth::user();

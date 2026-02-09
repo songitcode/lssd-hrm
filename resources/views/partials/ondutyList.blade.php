@@ -137,37 +137,36 @@
                                 @endif
                             </td>
                             <td class="profile_function">
-                                @if (auth()->user()->quanLyOnduty())
-                                    <button class="btn_xem_ho_so" data-bs-toggle="modal" data-bs-target="#profileModal"
-                                        data-name="{{ $att->user->employee->name_ingame }}"
-                                        data-position="{{ $att->user->employee->position->name_positions ?? '-' }}"
-                                        data-rank="{{ $att->user->employee->rank->name_ranks ?? '-' }}"
-                                        data-username="{{ $att->user->username }}" data-status="{{ $att->status }}">
-                                        Hồ Sơ</button>
-                                @endif
                                 @if(auth()->user()->isManager())
-                                    <a href="{{ route('payroll.user_attendance', $att->user) }}"
-                                        class="me-1 btn_xem_lich_su_cham_cong" target="_blank">
-                                        Chi Tiết
-                                    </a>
-                                    <form action="{{ route('attendance.force_checkout', $att->id) }}" method="POST"
-                                        class="force-checkout-form" data-name="{{ $att->user->employee->name_ingame }}"
-                                        style="display:inline;">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit" class="btn_ket_thuc_ca">
-                                            <i class="fa-solid fa-triangle-exclamation"></i> Cảnh Báo
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('attendance.huyCheckin', $att->id) }}" method="POST"
-                                        class="force-checkout-form" data-name="{{ $att->user->employee->name_ingame }}"
-                                        style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn_xoa_ca">
-                                            <i class="fa-solid fa-trash"></i> Xóa Onduty
-                                        </button>
-                                    </form>
+                                    @if(auth()->id() !== $att->user->employee->user_id)
+                                        <a href="{{ route('payroll.user_attendance', $att->user) }}"
+                                            class="me-1 btn_xem_lich_su_cham_cong" target="_blank">
+                                            Chi Tiết
+                                        </a>
+                                        <form action="{{ route('attendance.force_checkout', $att->id) }}" method="POST"
+                                            class="force-checkout-form" data-name="{{ $att->user->employee->name_ingame }}"
+                                            style="display:inline;">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="btn_ket_thuc_ca">
+                                                <i class="fa-solid fa-triangle-exclamation"></i> Cảnh Báo
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('attendance.huyCheckin', $att->id) }}" method="POST"
+                                            class="force-checkout-form" data-name="{{ $att->user->employee->name_ingame }}"
+                                            style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn_xoa_ca">
+                                                <i class="fa-solid fa-trash"></i> Xóa Onduty
+                                            </button>
+                                        </form>
+                                    @else
+                                        <a href="{{ route('attendance.index') }}" class="me-1 btn_xem_lich_su_cham_cong"
+                                            target="_blank">
+                                            Xem
+                                        </a>
+                                    @endif
                                 @endif
                             </td>
                         </tr>

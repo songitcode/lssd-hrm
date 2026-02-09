@@ -47,12 +47,14 @@ class LoginController extends Controller
 
         $user = User::where('username', $request->username)->first();
 
-        if ($user->role === 'admin') {
-            return redirect()->back()->with('error', "Đây không phải trang Admin vui lòng truy cập https:://lssdhrtime.com/admin/");
-        }
         if (!$user || !Hash::check($request->password, $user->password)) {
             return back()->withErrors(['login' => 'Tên đăng nhập hoặc mật khẩu không đúng']);
         }
+
+        if ($user->role === 'admin') {
+            return redirect()->back()->with('error', "Đây không phải trang Admin vui lòng truy cập https:://lssdhrtime.com/admin/");
+        }
+
 
         if ($user->employee?->trashed()) {
             $deletedBy = $user->employee->delete_by ?? 'Admin';
@@ -120,7 +122,7 @@ class LoginController extends Controller
         if ($user && $user->role === 'admin') {
             return redirect()->route('admin.login');
         }
-       
+
         // return redirect()->route('login')->with('success', 'Đăng xuất thành công!');
         return redirect()->route('login');
     }

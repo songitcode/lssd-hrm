@@ -2,7 +2,7 @@
     <footer class="d-flex flex-column flex-lg-row justify-content-between align-items-start py-3 my-4 border-top">
         <div class="mb-3 mb-lg-0">
             <span class="text-body-secondary">
-                © 2025 Designed and developed by <a href="https://jebsoon.netlify.app/" target="_blank">@jebsoon</a> -
+                © 2026 Designed and developed by <a href="https://jebsoon.netlify.app/" target="_blank">@jebsoon</a> -
                 version 0.1
             </span>
         </div>
