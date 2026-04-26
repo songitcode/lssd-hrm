@@ -27,6 +27,12 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::table('rank_salary_configs', function (Blueprint $table) {
+            // Drop foreign keys trước (nếu cần rollback an toàn tuyệt đối)
+            $table->dropForeign(['rank_id']);
+            $table->dropForeign(['updated_by']);
+        });
+
         Schema::dropIfExists('rank_salary_configs');
     }
 };

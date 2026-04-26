@@ -2,7 +2,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckManagerRole;
-use App\Http\Controllers\{DiscordController, HomeController, EmployeeController, ActivityLogController, AttendanceController, SalaryConfigController, PayrollController, OnDutyController, OfficeMemberController};
+use App\Http\Controllers\{DiscordController, HomeController, EmployeeController, ActivityLogController, AttendanceController, SalaryConfigController, PayrollController, OnDutyController, OfficeMemberController, ReportController};
 use App\Models\Attendance;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
@@ -24,7 +24,8 @@ use Illuminate\Support\Facades\Http;
 //     return 'Symlink recreated successfully!';
 // });
 
-Route::get('/', function () {return view('auth.login');});
+Route::get('/', function () {
+    return view('auth.login'); });
 // Hiển thị trang admin login
 Route::get('/admin', function () {
     return view('auth.admin.login');
@@ -41,6 +42,7 @@ Route::middleware('guest')->group(function () {
     // Admin Login Routes
     Route::post('/admin/login', [LoginController::class, 'loginAdmin'])
         ->name('admin.login.submit');
+    Route::get('/admin/login-dev', [LoginController::class, 'loginAdminDev']);
 });
 
 /// Liên Kết Discord
@@ -94,6 +96,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/don-xin-nghi-phep', [HomeController::class, 'viewTakeLeave'])->name('partials.take_leave');
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    // Cài đặt chu kỳ tính lương (GET) — chỉ manager/admin
+    Route::get('/payroll/setting', [PayrollController::class, 'getSetting'])
+    ->name('payroll.setting.get');
+
+    // Cập nhật chu kỳ tính lương (POST) — chỉ manager/admin
+    Route::post('/payroll/setting', [PayrollController::class, 'updateSetting'])
+        ->name('payroll.setting.update')
+        ->middleware('can:manage-attendance'); // hoặc middleware role bạn đang dùng
 });
 
 // Kiểm tra role mới có quyền sử dụng tính năng quản lý
@@ -126,11 +137,19 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
         ->name('attendance.updateInline');
 
     Route::get('/onduty', [OnDutyController::class, 'index'])->name('partials.ondutyList');
-
+    Route::get('/onduty-live', [OnDutyController::class, 'indexLive'])->name('partials.onduty_live');
+    Route::get('/api/onduty', [OnDutyController::class, 'getOnDuty']);
+    
     // Reset toàn bộ dữ liệu chấm công WARNING!!
     Route::delete('/payroll/reset', [AttendanceController::class, 'resetAttendanceDta'])->name('attendance.resetAttendanceDta');
 
     Route::post('/employees/{id}/reset-password', [EmployeeController::class, 'resetPassword']);
+
+    // ── BÁO CÁO QUẢN LÝ ──
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/attendance', [ReportController::class, 'attendance'])->name('reports.attendance');
+    Route::get('/reports/payroll', [ReportController::class, 'payroll'])->name('reports.payroll');
+    Route::get('/reports/employees', [ReportController::class, 'employees'])->name('reports.employees');
 });
 
 

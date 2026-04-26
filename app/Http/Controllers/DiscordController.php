@@ -48,8 +48,14 @@ class DiscordController extends Controller
         $discordUser = Http::withToken($accessToken)->get('https://discord.com/api/users/@me')->json();
 
         // Kiểm tra discord_id đã được liên kết với employee khác chưa
+        $user = Auth::user();
+
+        if (!$user || !$user->employee) {
+            return redirect()->route('profile')->with('error', 'Không tìm thấy thông tin nhân viên!');
+        }
+
         $exists = \App\Models\Employee::where('discord_id', $discordUser['id'])
-            ->where('id', '!=', Auth::user()->employee->user_id) // tránh đè chính mình
+            ->where('id', '!=', $user->employee->id) // dùng id employee, không phải user_id
             ->exists();
 
         if ($exists) {
@@ -72,7 +78,6 @@ class DiscordController extends Controller
         );
 
         // 6. Ghi log hoạt động
-        $user = Auth::user();
         ActivityLog::create([
             'user_id' => $user->id,
             'action' => 'logsCustom',
@@ -82,7 +87,6 @@ class DiscordController extends Controller
 
         return redirect()->route('profile')->with('success', 'Liên kết Discord thành công!');
     }
-
     public function unlink(Request $request)
     {
         $user = Auth::user();

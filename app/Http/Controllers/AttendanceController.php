@@ -147,6 +147,16 @@ class AttendanceController extends Controller
         $user = Auth::user();
         $today = Carbon::now()->toDateString();
         $now = Carbon::now();
+        $discord_id = $user->employee->discord_id ?? null;
+
+        // if ($discord_id === null) {
+        //     return back()->with('warning', 'Hình Như Bạn Chưa Liên Kết Tài Khoản Discord');
+        // }
+
+        // Admin không được chấm công
+        if ($user->role === 'admin') {
+            return back()->with('warning', 'Tài khoản ADMIN không thể chấm công.');
+        }
 
         $salaryRate = $user->employee->rank->salaryConfig->hourly_rate ?? 24000;
         $maxHourPerDay = $user->employee?->rank?->salaryConfig?->max_hours_per_day ?? WorkHourConfig::currentMaxHour();
@@ -231,7 +241,7 @@ class AttendanceController extends Controller
             $phanTramTru = 90;
         } elseif ($overTime >= 3) {
             $phanTramTru = 50;
-        } elseif ($overTime >= 1) {
+        } elseif ($overTime >= 2) {
             $phanTramTru = 20;
         } else {
             $phanTramTru = 0;
@@ -309,29 +319,39 @@ class AttendanceController extends Controller
             }
 
             $tinhTienLuong = round($finalDuration * $salaryRate);
-            $tinhWageDu = $overTime > 24 ? round($tinhTienLuong * 0) : round($tinhTienLuong);
+
+            // ==
+            if ($overTime >= 6) {
+                $phanTramTru = 90;
+            } elseif ($overTime >= 3) {
+                $phanTramTru = 50;
+            } elseif ($overTime >= 2) {
+                $phanTramTru = 20;
+            } else {
+                $phanTramTru = 0;
+            }
+
+            $tienBiTru = round($tinhTienLuong * ($phanTramTru / 100));
+
+            $tinhWageDu = $tinhTienLuong - $tienBiTru;
+
+            // $tinhTienLuong = round($finalDuration * $salaryRate);
+            // $tinhWageDu = $overTime > 24 ? round($tinhTienLuong * 0) : round($tinhTienLuong);
 
             $attendance->update([
                 'check_out' => $checkOut,
                 'duration' => $sessionHours,
                 'wage' => round($tinhWageDu),
                 'status' => $sessionHours >= $maxHourPerDay
-                    ? 'Hoàn Thành (Kết Thúc Bởi Quản Lý, Vượt quá ' . $overTime . 'h)'
-                    : 'Còn ' . $remainHours . 'h (Kết Thúc Bởi Quản Lý)',
+                    ? 'Kết Thúc Bởi Quản Lý -' . $phanTramTru . '% (~' . number_format($tienBiTru, 0, ',') . '$ ), Vượt quá ' . $overTime . 'h'
+                    : 'Kết Thúc Bởi Quản Lý (Còn ' . $remainHours . 'h)',
             ]);
-
-            // $attendance->update([
-            //     'check_out' => $checkOut, 
-            //     'duration' => $sessionHours,
-            //     'wage' => round($tinhWageDu),
-            //     'status' => 'Kết thúc bảo trì',
-            // ]);
 
             ActivityLog::create([
                 'user_id' => $manager->id,
                 'action' => 'logsCustom',
                 'target' => $user->username,
-                'detail' => 'Kết thúc ca của ' . $user->employee->name_ingame . ' (ID Ca: ' . $attendance->id . ')',
+                'detail' => 'kết thúc ca của ' . $user->employee->name_ingame . ' (ID Ca: ' . $attendance->id . '\Checkin: ' . $attendance->check_in->format(' H:i:s, d/m') . '\Checkout: ' . $checkOut->format(' H:i:s, d/m') . '\Giờ Làm: ' . $sessionHours . 'h)',
             ]);
 
             return redirect()->back()->with('success', 'Đã kết thúc ca của ' . $user->employee->name_ingame);
@@ -344,7 +364,7 @@ class AttendanceController extends Controller
     //     'check_out' => $checkOut,
     //     'duration' => $finalDuration,
     //     'wage' => round($finalDuration * $salaryRate),
-    //     'status' => ($totalBefore + $finalDuration) >= $maxHourPerDay
+    //     'status' => ($sessionHours + $finalDuration) >= $maxHourPerDay
     //         ? 'Hoàn thành - Kết thúc bảo trì'
     //         : 'Còn ' . $remainHours . 'h' . ' - Kết thúc bảo trì',
     // ]);
@@ -363,6 +383,13 @@ class AttendanceController extends Controller
         } else {
             $attendance->delete();
         }
+
+        ActivityLog::create([
+            'user_id' => $manager->id,
+            'action' => 'logsCustom',
+            'target' => $manager->username,
+            'detail' => 'xóa công của ' . $attendance->user->employee->name_ingame . ' (ID Ca: ' . $attendance->id . '\Checkin Lúc: ' . $attendance->check_in->format(' H:i:s, d/m/Y') . ')',
+        ]);
 
         return redirect()->back()->with('warning', 'Kết thúc ca thành công. Ca này đã bị xóa khỏi hệ thống.');
     }
@@ -428,7 +455,7 @@ class AttendanceController extends Controller
             ->where('month', $month)
             ->where('year', $year)
             ->delete();
-        
+
         return back()->with('success', "Đã xóa lịch sử tháng $month/$year của {$user->name}");
     }
 
@@ -452,32 +479,35 @@ class AttendanceController extends Controller
     public function resetAttendanceDta()
     {
         $user = Auth::user();
-        $attendances = Attendance::all();
-        // Kiểm tra quyền hạn nếu cần (admin, supervisor,...)
-        if (!auth()->user()->isDownAdminRole()) {
+
+        if (!$user->isDownAdminRole()) {
             abort(403, 'Bạn không có quyền thực hiện thao tác này.');
         }
 
-        // Kiểm tra nếu dữ liệu chấm công đã được reset (collection rỗng)
-        if ($attendances->isEmpty()) {
+        if (!Attendance::exists()) {
             return back()->with('warning', 'Dữ liệu chấm công đã được reset trước đó.');
         }
 
-        // Xóa toàn bộ bản ghi chấm công và tổng kết lương tháng
-        Attendance::truncate();
-        // MonthlyAttendanceSummary::truncate();
+        DB::beginTransaction();
 
-        // Ghi log hành động
-        ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'logsCustom',
-            'target' => $user->username,
-            'detail' => 'Reset toàn bộ dữ liệu chấm công trong hệ thống',
-        ]);
+        try {
+            Attendance::query()->delete();
+
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'action' => 'logsCustom',
+                'target' => $user->username,
+                'detail' => 'Reset dữ liệu chấm công hệ thống',
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
 
         return back()->with('success', 'Đã reset toàn bộ dữ liệu chấm công.');
     }
-
 
     public function index_backup_200102026_185500()
     {

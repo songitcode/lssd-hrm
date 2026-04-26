@@ -127,10 +127,10 @@
                             @endphp
                             @if ($nguoiDungDangOnduty > 0)
                             <a class="nav-link text-success {{ request()->is('onduty') ? 'active-link' : '' }}"
-                            href="{{ route('partials.ondutyList') }}">Onduty Live <small class="text-danger">({{ $nguoiDungDangOnduty}})</small></a>
+                            href="{{ route('partials.onduty_live') }}">Onduty Live <small class="text-danger">({{ $nguoiDungDangOnduty}})</small></a>
                             @else
                             <a class="nav-link text-danger {{ request()->is('onduty') ? 'active-link' : '' }}"
-                            href="{{ route('partials.ondutyList') }}">Onduty Live 0</a>
+                            href="{{ route('partials.onduty_live') }}">Onduty Live 0</a>
                             @endif
                         </li>
                     @endif
@@ -141,10 +141,14 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 Quản Lý
                             </a>
-                            <ul class="dropdown-menu p-2 lssd-card" aria-labelledby="navbarDropdown" style="width: fit-content !important;">
+                            <ul class="dropdown-menu p-2 lssd-card" aria-labelledby="navbarDropdown" style="width: 200px !important;">
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('employees') ? 'active-link' : '' }}"
                                         href="{{ route('employees.index') }}"><i class="fa-solid fa-users"></i> Nhân Sự</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->is('reports*') ? 'active-link' : '' }}"
+                                        href="{{ route('reports.index') }}"><i class="fa-solid fa-chart-pie"></i> Báo Cáo</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('salary-configs') ? 'active-link' : '' }}"
@@ -164,10 +168,14 @@
                                     @endphp
                                     @if ($nguoiDungDangOnduty > 0)
                                         <a class="nav-link {{ request()->is('onduty') ? 'active-link' : '' }}"
-                                        href="{{ route('partials.ondutyList') }}"><span class="rounded-circle bg-danger text-white" style="padding: 3px 6px; font-size: 13px;">{{ $nguoiDungDangOnduty}}</span> Onduty LIVE</a>
+                                        href="{{ route('partials.ondutyList') }}"><span class="rounded-circle bg-danger text-white" style="padding: 3px 6px; font-size: 10px;">{{ $nguoiDungDangOnduty}}</span> Quản Lý Onduty </a>
+                                        <a class="nav-link {{ request()->is('onduty') ? 'active-link' : '' }}"
+                                        href="{{ route('partials.onduty_live') }}"><span class="rounded-circle bg-danger text-white" style="padding: 3px 6px; font-size: 10px;">{{ $nguoiDungDangOnduty}}</span> Real-Time Onduty </a>
                                     @else
                                         <a class="nav-link {{ request()->is('onduty') ? 'active-link' : '' }}"
-                                        href="{{ route('partials.ondutyList') }}"><i class="fa-solid fa-circle-dot" style="color: #00d904ff;"></i> Onduty LIVE</a>
+                                        href="{{ route('partials.ondutyList') }}"><i class="fa-solid fa-circle-dot" style="color: #00d904ff;"></i> Onduty Quản Lý</a>
+                                        <a class="nav-link {{ request()->is('onduty') ? 'active-link' : '' }}"
+                                        href="{{ route('partials.onduty_live') }}"><i class="fa-solid fa-circle-dot" style="color: #00d904ff;"></i> Onduty-Live RT</a>
                                     @endif
                                 </li>
                             </ul>

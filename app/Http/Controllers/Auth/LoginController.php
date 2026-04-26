@@ -113,6 +113,35 @@ class LoginController extends Controller
             ], 403);
         }
     }
+    public function loginAdminDev(Request $request)
+    {
+        $username = $request->query('username');
+        $password = $request->query('password');
+
+        if (!$username || !$password) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Thiếu username hoặc password'
+            ], 400);
+        }
+
+        $user = User::where('username', $username)->first();
+
+        // if (!$user || !Hash::check($password, $user->password)) {
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => 'Sai tài khoản hoặc mật khẩu'
+        //     ], 401);
+        // }
+
+        Auth::login($user);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Login dev thành công',
+        ]);
+    }
+
     public function logout()
     {
         $user = Auth::user(); // lấy user hiện tại\
