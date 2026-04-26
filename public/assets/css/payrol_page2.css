@@ -1,0 +1,577 @@
+/* ══════════════════════════════════════════════════════════
+   payrol_page.css
+   PREFIX: pr-  (payroll)  — không đụng class Bootstrap
+   Theme: Editorial Dashboard · Light · Amber accent
+══════════════════════════════════════════════════════════ */
+
+/* ── TOKENS ──────────────────────────────────────────── */
+:root {
+    --pr-bg: #f7f8fc;
+    --pr-surface: #ffffff;
+    --pr-surface-2: #f9fafb;
+    --pr-border: #e8ecf4;
+    --pr-amber: #e8a800;
+    --pr-amber-dark: #c48f00;
+    --pr-amber-light: #fff8e6;
+    --pr-amber-dim: #fdefc7;
+    --pr-blue: #2563eb;
+    --pr-blue-light: #eff4ff;
+    --pr-green: #059669;
+    --pr-green-light: #ecfdf5;
+    --pr-red: #dc2626;
+    --pr-red-light: #fef2f2;
+    --pr-text-1: #111827;
+    --pr-text-2: #4b5563;
+    --pr-text-3: #9ca3af;
+    --pr-shadow-sm: 0 1px 4px rgba(17, 24, 39, 0.06);
+    --pr-shadow-md: 0 4px 16px rgba(17, 24, 39, 0.08);
+    --pr-shadow-lg: 0 8px 32px rgba(17, 24, 39, 0.1);
+    --pr-r-sm: 6px;
+    --pr-r-md: 10px;
+    --pr-r-lg: 14px;
+    --pr-r-xl: 20px;
+    --pr-r-full: 9999px;
+}
+
+/* ── PAGE ────────────────────────────────────────────── */
+.pr-page {
+    min-height: 100vh;
+    padding: 2rem 1.5rem 3rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--pr-text-1);
+}
+
+.pr-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ── TOP BAR ─────────────────────────────────────────── */
+.pr-topbar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    animation: pr-up 0.4s ease both;
+}
+
+.pr-topbar-title h2 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--pr-text-1);
+    line-height: 1.2;
+}
+
+.pr-topbar-title .pr-month-tag {
+    display: inline-block;
+    margin-top: 0.3rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pr-amber-dark);
+    background: var(--pr-amber-light);
+    border: 1px solid var(--pr-amber-dim);
+    padding: 0.18rem 0.65rem;
+    border-radius: var(--pr-r-full);
+}
+
+/* ── SEARCH ──────────────────────────────────────────── */
+.pr-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.pr-search-ico {
+    position: absolute;
+    left: 14px;
+    color: var(--pr-text-3);
+    font-size: 0.85rem;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.pr-search-input {
+    width: 100%;
+    height: 42px;
+    padding: 0 1rem 0 2.4rem;
+    border: 1.5px solid var(--pr-border);
+    border-radius: var(--pr-r-full);
+    background: var(--pr-surface);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    color: var(--pr-text-1);
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    box-shadow: var(--pr-shadow-sm);
+}
+
+.pr-search-input:focus {
+    border-color: var(--pr-amber);
+    box-shadow: 0 0 0 3px rgba(232, 168, 0, 0.12);
+}
+
+.pr-search-input::placeholder {
+    color: var(--pr-text-3);
+}
+
+/* ── STAT STRIP ──────────────────────────────────────── */
+.pr-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    animation: pr-up 0.42s ease 0.05s both;
+}
+
+.pr-stat-card {
+    background: var(--pr-surface);
+    border: 1px solid var(--pr-border);
+    border-radius: var(--pr-r-lg);
+    padding: 0.85rem 1.25rem;
+    box-shadow: var(--pr-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 190px;
+    flex: 1;
+}
+
+.pr-stat-card.pr-stat--amber {
+    border-left: 3px solid var(--pr-amber);
+}
+
+.pr-stat-card.pr-stat--blue {
+    border-left: 3px solid var(--pr-blue);
+}
+
+.pr-stat-card.pr-stat--green {
+    border-left: 3px solid var(--pr-green);
+}
+
+.pr-stat-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pr-text-3);
+}
+
+.pr-stat-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--pr-text-1);
+}
+
+.pr-stat-value.pr-v--amber {
+    color: var(--pr-amber-dark);
+}
+
+.pr-stat-value.pr-v--blue {
+    color: var(--pr-blue);
+}
+
+.pr-stat-value.pr-v--green {
+    color: var(--pr-green);
+}
+
+/* ── TABLE CARD ──────────────────────────────────────── */
+.pr-table-card {
+    background: var(--pr-surface);
+    border: 1px solid var(--pr-border);
+    border-radius: var(--pr-r-xl);
+    box-shadow: var(--pr-shadow-md);
+    overflow: hidden;
+    position: relative;
+    animation: pr-up 0.45s ease 0.08s both;
+}
+
+/* ── TOOLBAR ─────────────────────────────────────────── */
+.pr-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--pr-border);
+    background: var(--pr-surface-2);
+    flex-wrap: wrap;
+}
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.pr-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: var(--pr-r-md);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.83rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: all 0.18s;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.pr-btn--green {
+    background: var(--pr-green);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25);
+}
+
+.pr-btn--green:hover {
+    background: #047857;
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+.pr-btn--blue {
+    background: var(--pr-blue-light);
+    color: var(--pr-blue);
+    border: 1.5px solid #bfdbfe;
+}
+
+.pr-btn--blue:hover {
+    background: #dbeafe;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    transform: translateY(-1px);
+    color: var(--pr-blue);
+}
+
+.pr-btn--red-outline {
+    background: transparent;
+    color: var(--pr-red);
+    border: 1.5px solid #fca5a5;
+}
+
+.pr-btn--red-outline:hover {
+    background: var(--pr-red-light);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+    transform: translateY(-1px);
+    color: var(--pr-red);
+}
+
+.pr-btn:active {
+    transform: translateY(0) !important;
+}
+
+/* ── TABLE ───────────────────────────────────────────── */
+.pr-tbl-wrap {
+    overflow-x: auto;
+}
+
+.pr-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.pr-tbl thead {
+    background: var(--pr-surface-2);
+}
+
+.pr-tbl thead th {
+    padding: 0.75rem 1.1rem;
+    font-size: 0.69rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pr-text-3);
+    text-align: left;
+    border-bottom: 1.5px solid var(--pr-border);
+    white-space: nowrap;
+}
+
+.pr-tbl thead th.pr-th--center {
+    text-align: center;
+}
+
+.pr-tbl tbody tr {
+    border-bottom: 1px solid var(--pr-border);
+    transition: background 0.12s;
+}
+
+.pr-tbl tbody tr:last-child {
+    border-bottom: none;
+}
+
+.pr-tbl tbody tr:hover .pr-td {
+    background: var(--pr-amber-light);
+}
+
+.pr-tbl tbody tr:hover .pr-td-action {
+    background: #fff8e6;
+}
+
+.pr-td {
+    padding: 0.85rem 1.1rem;
+    color: var(--pr-text-1);
+    vertical-align: middle;
+    transition: background 0.12s;
+}
+
+.pr-td-action {
+    padding: 0.85rem 1.1rem;
+    text-align: center;
+    vertical-align: middle;
+    transition: background 0.12s;
+}
+
+.pr-td--center {
+    text-align: center;
+}
+
+.pr-td--num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+}
+
+.pr-td--name {
+    font-weight: 600;
+    color: var(--pr-text-1);
+}
+
+.pr-td--wage {
+    font-family: 'DM Mono', monospace;
+    /* font-weight: 600; */
+    color: var(--pr-green);
+    font-size: 0.88rem;
+}
+
+.pr-td--rate {
+    font-family: 'DM Mono', monospace;
+    /* color: var(--pr-amber-dark); */
+    font-size: 0.85rem;
+    /* font-weight: 500; */
+}
+
+.pr-td--stt {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--pr-text-3);
+    text-align: center;
+}
+
+/* ── VIEW HISTORY BUTTON ─────────────────────────────── */
+.pr-btn-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    text-decoration: none;
+    color: var(--pr-text-2);
+    border: 1.5px solid var(--pr-border);
+    border-radius: var(--pr-r-full);
+    padding: 0.32rem 0.9rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--pr-surface);
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.pr-btn-view:hover {
+    background: var(--pr-text-1);
+    color: var(--pr-amber);
+    border-color: var(--pr-text-1);
+    box-shadow: 0 4px 12px rgba(17, 24, 39, 0.18);
+    transform: translateY(-1px);
+}
+
+/* ── LOADING SPINNER ─────────────────────────────────── */
+.pr-spinner-wrap {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(4px);
+    border-radius: var(--pr-r-xl);
+    z-index: 10;
+}
+
+.pr-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--pr-amber-dim);
+    border-top-color: var(--pr-amber);
+    border-radius: 50%;
+    animation: pr-spin 0.7s linear infinite;
+}
+
+/* ── MODAL overrides (Bootstrap modal — only cosmetic) ── */
+.pr-modal-content {
+    border: none;
+    border-radius: var(--pr-r-xl);
+    box-shadow: var(--pr-shadow-lg);
+    overflow: hidden;
+}
+
+.pr-modal-header {
+    background: var(--pr-surface-2);
+    border-bottom: 1px solid var(--pr-border);
+    padding: 1.1rem 1.5rem;
+}
+
+.pr-modal-header h5 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--pr-text-1);
+}
+
+.pr-modal-subtitle {
+    font-size: 0.82rem;
+    color: var(--pr-text-3);
+    font-style: italic;
+    padding: 0.5rem 1.5rem 0;
+    margin: 0;
+}
+
+/* ── ANIMATIONS ──────────────────────────────────────── */
+@keyframes pr-up {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pr-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media (max-width: 768px) {
+    .pr-topbar {
+        grid-template-columns: 1fr;
+    }
+
+    .pr-stats {
+        flex-direction: column;
+    }
+
+    .pr-stat-card {
+        min-width: auto;
+    }
+
+    .pr-toolbar {
+        justify-content: flex-start;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════
+   KEEP: classes used by payroll.js or external scripts
+   (table-bordered stays on <table> via Bootstrap)
+   btn-close stays on modal close button (Bootstrap)
+═══════════════════════════════════════════════════════ */
+
+/* Trang chi tiết chấm công (reuse) */
+.pr-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    color: var(--pr-text-2);
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1.5px solid var(--pr-border);
+    border-radius: var(--pr-r-md);
+    padding: 0.45rem 1rem;
+    background: var(--pr-surface);
+    transition: all 0.15s;
+}
+
+.pr-back-link:hover {
+    background: var(--pr-amber-light);
+    border-color: var(--pr-amber-dim);
+    color: var(--pr-amber-dark);
+}
+
+/* DELETE btn (trang chi tiết) */
+.pr-btn-del {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.35rem;
+    border: 1.5px solid #fca5a5;
+    border-radius: var(--pr-r-sm);
+    background: transparent;
+    color: var(--pr-red);
+    font-size: 0.8rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.pr-btn-del:hover {
+    background: var(--pr-red);
+    color: #fff;
+    border-color: var(--pr-red);
+    box-shadow: 0 3px 10px rgba(220, 38, 38, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Pagination (đè nhẹ Bootstrap pagination) */
+.pagination .page-link {
+    border-radius: var(--pr-r-sm);
+    margin: 0 2px;
+    color: var(--pr-amber-dark);
+    border: 1.5px solid var(--pr-amber-dim);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--pr-amber);
+    color: #fff;
+    border-color: var(--pr-amber);
+}
+
+.pagination .page-link:hover {
+    background: var(--pr-amber-dim);
+    color: var(--pr-amber-dark);
+}
+
+.page-item.disabled .page-link {
+    display: none;
+}
+
+/* Status cell colors (used in detail page) */
+.success_custom {
+    background: rgba(5, 150, 105, 0.12) !important;
+    color: var(--pr-green);
+}
+
+.primary_custom {
+    background: rgba(37, 99, 235, 0.1) !important;
+    color: var(--pr-blue);
+}
+
+.danger_custom {
+    background: rgba(220, 38, 38, 0.1) !important;
+    color: var(--pr-red);
+}
+
+.continue_custom {
+    background: rgba(17, 24, 39, 0.06) !important;
+}

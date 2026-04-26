@@ -102,8 +102,7 @@
 
                                 @case('sửa')
                                     <div class="history-item text-primary">
-                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> vừa <strong class="_">{{ $log->detail }}</strong> cho <strong>{{ $employeeMap[$log->target] ?? $log->target }}</strong>
-                                        vào lúc <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
+                                        <strong>{{ $employeeMap[$log->user->username] ?? $log->user->username }}</strong> vừa <strong class="_">{{ $log->detail }}</strong> vào lúc <i class="far fa-clock me-1"></i>{{ $log->created_at->format('H:i:s, d/m/Y') }}
                                     </div>
                                 @break
 

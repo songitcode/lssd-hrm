@@ -9,17 +9,9 @@
     <div class="container">
         <div class="group-function row">
             <div class="col-lg-6">
-                <h3>Danh sách On-Duty Trực Tiếp</h3>
+                <h3>Danh sách On-Duty - Cấp Cao Quản Lý</h3>
             </div>
-            {{-- <div class="col-lg-6">
-                <div class="search-box">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="form-control search-input" id="employeeSearchInput"
-                        placeholder="Tìm kiếm ...">
-                </div>
-            </div> --}}
-            <p class="text mb-1">Hiển thị thời gian thực bằng cách nhấn F5 để xem những nhân sự nào đang trực tiếp nhấn
-                On-Duty</p>
+            <p class="text mb-1">Nhấn F5 để xem những nhân sự nào đang trực tiếp nhấn On-Duty</p>
         </div>
         <div class="table-responsive box-employees text-center">
             <table class="table table-bordered table-hover-custom align-items-center">
@@ -40,9 +32,16 @@
                 <tbody>
                     @forelse ($onDutyList as $att)
                         @php
+                            // BACKUP
+                            // $response = Http::get("https://api.lanyard.rest/v1/users/$discordId");
+                            // $data = $response->json()['data'] ?? [];
+                            // 
                             $discordId = $att->user->employee->discord_id ?? 0;
-                            $response = Http::get("https://api.lanyard.rest/v1/users/$discordId");
-                            $data = $response->json()['data'] ?? [];
+                            $response = Cache::remember("discord_$discordId", 10, function () use ($discordId) {
+                                return Http::get("https://api.lanyard.rest/v1/users/$discordId")->json();
+                            });
+
+                            $data = $response['data'] ?? [];
                             $activities = $data['activities'] ?? [];
                             if (!function_exists('formatElapsed')) {
                                 function formatElapsed($startTimestampMs)
@@ -137,37 +136,36 @@
                                 @endif
                             </td>
                             <td class="profile_function">
-                                @if (auth()->user()->quanLyOnduty())
-                                    <button class="btn_xem_ho_so" data-bs-toggle="modal" data-bs-target="#profileModal"
-                                        data-name="{{ $att->user->employee->name_ingame }}"
-                                        data-position="{{ $att->user->employee->position->name_positions ?? '-' }}"
-                                        data-rank="{{ $att->user->employee->rank->name_ranks ?? '-' }}"
-                                        data-username="{{ $att->user->username }}" data-status="{{ $att->status }}">
-                                        Hồ Sơ</button>
-                                @endif
                                 @if(auth()->user()->isManager())
-                                    <a href="{{ route('payroll.user_attendance', $att->user) }}"
-                                        class="me-1 btn_xem_lich_su_cham_cong" target="_blank">
-                                        Chi Tiết
-                                    </a>
-                                    <form action="{{ route('attendance.force_checkout', $att->id) }}" method="POST"
-                                        class="force-checkout-form" data-name="{{ $att->user->employee->name_ingame }}"
-                                        style="display:inline;">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit" class="btn_ket_thuc_ca">
-                                            <i class="fa-solid fa-triangle-exclamation"></i> Cảnh Báo
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('attendance.huyCheckin', $att->id) }}" method="POST"
-                                        class="force-checkout-form" data-name="{{ $att->user->employee->name_ingame }}"
-                                        style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn_xoa_ca">
-                                            <i class="fa-solid fa-trash"></i> Xóa Onduty
-                                        </button>
-                                    </form>
+                                    @if(auth()->id() !== $att->user->employee->user_id)
+                                        <a href="{{ route('payroll.user_attendance', $att->user) }}"
+                                            class="me-1 btn_xem_lich_su_cham_cong" target="_blank">
+                                            Chi Tiết
+                                        </a>
+                                        <form action="{{ route('attendance.force_checkout', $att->id) }}" method="POST"
+                                            class="force-checkout-form" data-name="{{ $att->user->employee->name_ingame }}"
+                                            style="display:inline;">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="btn_ket_thuc_ca">
+                                                <i class="fa-solid fa-triangle-exclamation"></i> Cảnh Báo
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('attendance.huyCheckin', $att->id) }}" method="POST"
+                                            class="force-checkout-form" data-name="{{ $att->user->employee->name_ingame }}"
+                                            style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn_xoa_ca">
+                                                <i class="fa-solid fa-trash"></i> Xóa Onduty
+                                            </button>
+                                        </form>
+                                    @else
+                                        <a href="{{ route('attendance.index') }}" class="me-1 btn_xem_lich_su_cham_cong"
+                                            target="_blank">
+                                            Xem
+                                        </a>
+                                    @endif
                                 @endif
                             </td>
                         </tr>
@@ -178,25 +176,6 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Hồ sơ người dùng</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>Tên Ingame:</strong> <span id="modalName"></span></p>
-                    <p><strong>Chức vụ:</strong> <span id="modalPosition"></span></p>
-                    <p><strong>Quân hàm:</strong> <span id="modalRank"></span></p>
-                    <p><strong>Tài khoản:</strong> <span id="modalUsername"></span></p>
-                    <p><strong>Trạng Thái:</strong> <span id="modalStatus"></span></p>
-                </div>
-            </div>
         </div>
     </div>
     <script>
@@ -277,18 +256,6 @@
                         }
                     });
                 });
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const modal = document.getElementById('profileModal');
-            modal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget;
-                document.getElementById('modalName').textContent = button.getAttribute('data-name');
-                document.getElementById('modalPosition').textContent = button.getAttribute('data-position');
-                document.getElementById('modalRank').textContent = button.getAttribute('data-rank');
-                document.getElementById('modalUsername').textContent = button.getAttribute('data-username');
-                document.getElementById('modalStatus').textContent = button.getAttribute('data-status');
             });
         });
     </script>

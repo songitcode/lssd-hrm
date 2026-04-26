@@ -340,23 +340,18 @@
 @endsection
 
 @section('content')
-    <!-- Background matrix effect -->
+    {{--
     <div class="matrix-bg" id="matrixBg"></div>
-
-    <!-- Scanning line -->
-    <div class="scan-line"></div>
-
-    <!-- Login container -->
+    <div class="scan-line"></div> --}}
     <div class="login-container">
         <div class="login-card">
             <!-- Login header -->
             <div class="login-header">
-                <div class="hacker-icon">
+                <h1>Admin</h1>
+                {{--<div class="hacker-icon">
                     <i class="fas fa-user-secret"></i>
                 </div>
-                <h1>Admin Access</h1>
                 <p>Secure Terminal v0.1.1</p>
-                {{--
                 <div class="mt-4">
                     <div class="terminal-line">> Kiểm tra kết nối...</div>
                     <div class="terminal-line">> Kiểm tra bảo mật...</div>
@@ -399,10 +394,10 @@
                 </button>
             </form>
 
-            <!-- Login footer -->
-            <div class="login-footer">
+            {{-- <div class="login-footer">
                 <p><i class="fas fa-exclamation-triangle me-1"></i> Unauthorized access is prohibited and monitored</p>
             </div>
+            --}}
         </div>
     </div>
 @endsection

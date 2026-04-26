@@ -1,0 +1,1030 @@
+/* ============================================================
+   LSSD HRM — REPORTS MODULE (reports.css)
+   Theme: Clean Light · Professional Analytics
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── CSS Variables (Light Mode) ── */
+:root {
+    --gold: #B8860B;
+    --gold-light: #DAA520;
+    --gold-dim: rgba(184, 134, 11, 0.10);
+    --gold-border: rgba(184, 134, 11, 0.25);
+
+    /* --bg-page: #F4F6FA; */
+    --bg-page: #FFF;
+    --bg-white: #FFFFFF;
+    --bg-subtle: #F9FAFB;
+    --bg-hover: #F0F3F8;
+
+    --border-light: #E5E9F0;
+    --border-medium: #D1D9E6;
+
+    --text-heading: #1A2340;
+    --text-body: #3D4F6B;
+    --text-secondary: #6B7A99;
+    --text-muted: #9AAAC0;
+
+    --shadow-sm: 0 1px 4px rgba(30, 50, 100, 0.07);
+    --shadow-md: 0 4px 16px rgba(30, 50, 100, 0.10);
+    --shadow-lg: 0 8px 32px rgba(30, 50, 100, 0.13);
+    --shadow-gold: 0 4px 16px rgba(184, 134, 11, 0.18);
+
+    --accent-blue: #2563EB;
+    --accent-green: #16A34A;
+    --accent-red: #DC2626;
+    --accent-amber: #B8860B;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+
+    --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Page container ── */
+.report-page {
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 1440px;
+    margin: 0 auto;
+    background: var(--bg-page);
+    min-height: 100vh;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 22px 28px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.report-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--gold-light), var(--accent-blue));
+}
+
+.report-header::after {
+    content: '';
+    position: absolute;
+    bottom: -50px;
+    right: -50px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(184, 134, 11, 0.05), transparent 70%);
+    pointer-events: none;
+}
+
+.report-icon-badge {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, #EBF2FF, #DBEAFE);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: var(--accent-blue);
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.report-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-heading);
+    margin: 0;
+    line-height: 1.25;
+}
+
+.report-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 5px 0 0;
+    font-weight: 400;
+}
+
+/* ── Nav tabs ── */
+.report-nav-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.rtab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 17px;
+    border-radius: 50px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border-medium);
+    background: var(--bg-subtle);
+    transition: var(--transition);
+}
+
+.rtab:hover {
+    color: var(--accent-blue);
+    border-color: rgba(37, 99, 235, 0.35);
+    background: #EBF2FF;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.rtab.active {
+    color: #fff;
+    background: linear-gradient(135deg, #e8e400, #B8860B);
+    border-color: transparent;
+    font-weight: 700;
+    box-shadow: 0 3px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* ============================================================
+   FILTER BAR
+   ============================================================ */
+.report-filter-bar {
+    padding: 16px 22px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-group label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.filter-select {
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border-medium);
+    border-radius: var(--radius-sm);
+    color: var(--text-body);
+    font-size: 13.5px;
+    font-family: 'Inter', sans-serif;
+    padding: 7px 12px;
+    outline: none;
+    transition: var(--transition);
+    cursor: pointer;
+    min-width: 115px;
+}
+
+.filter-select:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    background: var(--bg-white);
+}
+
+.filter-select option {
+    background: var(--bg-white);
+    color: var(--text-body);
+}
+
+.filter-btn {
+    background: linear-gradient(135deg, #2563EB, #B8860B);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    letter-spacing: 0.06em;
+    padding: 8px 22px;
+    cursor: pointer;
+    transition: var(--transition);
+    align-self: flex-end;
+    margin-top: 4px;
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.25);
+}
+
+.filter-btn:hover {
+    background: linear-gradient(135deg, #B8860B, #1E40AF);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+    transform: translateY(-1px);
+}
+
+.filter-btn-outline {
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border-medium);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 8px 18px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition);
+    align-self: flex-end;
+    margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.filter-btn-outline:hover {
+    background: #EBF2FF;
+    border-color: rgba(37, 99, 235, 0.3);
+    color: var(--accent-blue);
+}
+
+/* ============================================================
+   KPI CARDS
+   ============================================================ */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.kpi-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 22px;
+    border-radius: var(--radius-lg);
+    border: 1px solid;
+    background: var(--bg-white);
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.kpi-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    opacity: 0.06;
+    background: currentColor;
+    transform: translate(20px, 20px);
+}
+
+.kpi-gold {
+    border-color: rgba(184, 134, 11, 0.25);
+    color: var(--accent-amber);
+}
+
+.kpi-blue {
+    border-color: rgba(37, 99, 235, 0.2);
+    color: var(--accent-blue);
+}
+
+.kpi-green {
+    border-color: rgba(22, 163, 74, 0.2);
+    color: var(--accent-green);
+}
+
+.kpi-red {
+    border-color: rgba(220, 38, 38, 0.2);
+    color: var(--accent-red);
+}
+
+.kpi-gold::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-amber), #F0CC5A);
+}
+
+.kpi-blue::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #2563EB, #60A5FA);
+}
+
+.kpi-green::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #16A34A, #4ADE80);
+}
+
+.kpi-red::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #DC2626, #F87171);
+}
+
+.kpi-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-md);
+    background: currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    opacity: 0.15;
+    position: relative;
+}
+
+.kpi-icon::after {
+    content: attr(data-icon);
+    position: absolute;
+    font-size: 20px;
+    opacity: 1;
+}
+
+/* Re-do icon approach cleanly */
+.kpi-icon {
+    position: relative;
+    opacity: 1;
+    background: transparent;
+}
+
+.kpi-gold .kpi-icon {
+    background: rgba(184, 134, 11, 0.1);
+    color: var(--accent-amber);
+    border: 1px solid rgba(184, 134, 11, 0.2);
+}
+
+.kpi-blue .kpi-icon {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--accent-blue);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.kpi-green .kpi-icon {
+    background: rgba(22, 163, 74, 0.1);
+    color: var(--accent-green);
+    border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.kpi-red .kpi-icon {
+    background: rgba(220, 38, 38, 0.1);
+    color: var(--accent-red);
+    border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.kpi-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text-heading);
+}
+
+.kpi-unit {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-left: 3px;
+}
+
+.kpi-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+.kpi-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* ============================================================
+   LAYOUT GRIDS
+   ============================================================ */
+.report-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 20px;
+}
+
+/* ============================================================
+   REPORT CARD
+   ============================================================ */
+.report-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.report-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-medium);
+}
+
+.report-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--border-light);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    letter-spacing: 0.06em;
+    color: var(--text-heading);
+    background: var(--bg-subtle);
+    text-transform: uppercase;
+}
+
+/* ── Charts ── */
+.chart-wrap {
+    padding: 18px 22px;
+    height: 290px;
+}
+
+.chart-wrap-sm {
+    height: 265px;
+}
+
+/* ============================================================
+   TOP WORKERS
+   ============================================================ */
+.top-workers {
+    padding: 6px 0;
+}
+
+.top-worker-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 22px;
+    border-bottom: 1px solid var(--border-light);
+    transition: var(--transition);
+}
+
+.top-worker-row:hover {
+    background: var(--bg-hover);
+}
+
+.top-worker-1st {
+    background: linear-gradient(90deg, rgba(184, 134, 11, 0.06), transparent);
+}
+
+.tw-rank {
+    font-size: 18px;
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.tw-avatar {
+    object-fit: cover;
+    border: 2px solid var(--border-medium);
+    flex-shrink: 0;
+}
+
+.top-worker-1st .tw-avatar {
+    border-color: var(--gold-light);
+}
+
+.tw-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.tw-name {
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--text-heading);
+}
+
+.tw-pos {
+    font-size: 11.5px;
+    color: var(--text-muted);
+}
+
+.tw-stats {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.tw-hours {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent-amber);
+}
+
+.tw-wage {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ============================================================
+   ACTIVITY LOG
+   ============================================================ */
+.activity-log {
+    padding: 6px 0;
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.activity-log::-webkit-scrollbar {
+    width: 4px;
+}
+
+.activity-log::-webkit-scrollbar-track {
+    background: var(--bg-subtle);
+}
+
+.activity-log::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 4px;
+}
+
+.log-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 22px;
+    border-bottom: 1px solid var(--border-light);
+    transition: background 0.15s;
+}
+
+.log-item:hover {
+    background: var(--bg-hover);
+}
+
+.log-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    flex-shrink: 0;
+    margin-top: 5px;
+}
+
+.log-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.log-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.log-user {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-heading);
+}
+
+.log-badge-action {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: #EBF2FF;
+    color: var(--accent-blue);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-radius: 20px;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+}
+
+.log-detail {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+    word-break: break-word;
+}
+
+.log-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* ============================================================
+   REPORT TABLE
+   ============================================================ */
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+.report-table thead th {
+    background: var(--bg-subtle);
+    color: var(--text-secondary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+    border-bottom: 2px solid var(--border-medium);
+    white-space: nowrap;
+}
+
+.report-table tbody td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-body);
+    vertical-align: middle;
+}
+
+.report-table tbody tr {
+    transition: background 0.12s;
+}
+
+.report-table tbody tr:hover td {
+    background: var(--bg-hover);
+}
+
+.report-table tfoot td {
+    padding: 12px 16px;
+    border-top: 2px solid var(--border-medium);
+    background: var(--bg-subtle);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+    font-size: 12px;
+}
+
+/* Row highlights */
+.row-highlight-gold td {
+    background: rgba(184, 134, 11, 0.05) !important;
+}
+
+.row-absent td {
+    opacity: 0.6;
+}
+
+.table-total-row td {
+    background: #EBF2FF !important;
+    color: var(--text-heading) !important;
+    font-weight: 700;
+}
+
+/* ============================================================
+   BADGES & TAGS
+   ============================================================ */
+
+/* Position badge */
+.pos-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--accent-blue);
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    white-space: nowrap;
+}
+
+/* Wage value */
+.wage-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent-amber);
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 700;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.status-top {
+    background: #FEF9C3;
+    color: #A16207;
+    border: 1px solid #FDE047;
+}
+
+.status-ok {
+    background: #DCFCE7;
+    color: #15803D;
+    border: 1px solid #86EFAC;
+}
+
+.status-low {
+    background: #FEF3C7;
+    color: #B45309;
+    border: 1px solid #FCD34D;
+}
+
+.status-absent {
+    background: #FEE2E2;
+    color: #B91C1C;
+    border: 1px solid #FCA5A5;
+}
+
+/* Diff badge */
+.diff-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.diff-up {
+    background: #DCFCE7;
+    color: #15803D;
+    border: 1px solid #86EFAC;
+}
+
+.diff-down {
+    background: #FEE2E2;
+    color: #B91C1C;
+    border: 1px solid #FCA5A5;
+}
+
+/* Report badges */
+.report-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.report-badge-gold {
+    background: #FEF9C3;
+    color: #A16207;
+    border: 1px solid #FDE047;
+}
+
+.report-badge-green {
+    background: #DCFCE7;
+    color: #15803D;
+    border: 1px solid #86EFAC;
+}
+
+.report-badge-red {
+    background: #FEE2E2;
+    color: #B91C1C;
+    border: 1px solid #FCA5A5;
+}
+
+.report-badge-blue {
+    background: #DBEAFE;
+    color: #B8860B;
+    border: 1px solid #93C5FD;
+}
+
+/* Date badge */
+.date-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    background: #DBEAFE;
+    color: #B8860B;
+    border: 1px solid #93C5FD;
+    font-weight: 500;
+}
+
+/* ============================================================
+   POSITION BREAKDOWN (bar chart rows)
+   ============================================================ */
+.pos-breakdown {
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.pos-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pos-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-body);
+    min-width: 160px;
+}
+
+.pos-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: var(--border-light);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.pos-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #2563EB, #60A5FA);
+    border-radius: 4px;
+    min-width: 4px;
+    transition: width 0.7s ease;
+}
+
+.pos-count {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    min-width: 80px;
+    text-align: right;
+}
+
+/* ============================================================
+   ABSENT LIST
+   ============================================================ */
+.absent-list {
+    padding: 6px 0;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.absent-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.absent-list::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 4px;
+}
+
+.absent-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 22px;
+    border-bottom: 1px solid var(--border-light);
+    transition: background 0.15s;
+}
+
+.absent-row:hover {
+    background: #FFF5F5;
+}
+
+/* ============================================================
+   MISC
+   ============================================================ */
+.empty-state {
+    text-align: center;
+    padding: 36px;
+    color: var(--text-muted);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.empty-state i {
+    font-size: 20px;
+}
+
+.hours-bar-wrap {
+    display: inline-flex;
+    align-items: center;
+}
+
+.hours-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-heading);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+    .report-page {
+        padding: 14px 12px;
+        gap: 14px;
+    }
+
+    .report-header {
+        flex-direction: column;
+        gap: 14px;
+        padding: 16px 18px;
+    }
+
+    .report-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .report-nav-tabs {
+        gap: 4px;
+    }
+
+    .rtab {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .kpi-value {
+        font-size: 24px;
+    }
+
+    .chart-wrap {
+        height: 230px;
+    }
+
+    .pos-name {
+        min-width: 100px;
+    }
+
+    .report-card-header {
+        font-size: 12px;
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}

@@ -252,7 +252,7 @@ class EmployeeController extends Controller
             'user_id' => auth()->id(),
             'action' => 'tạo',
             'target' => $request->username,
-            'detail' => 'ban phước lành cho'
+            'detail' => 'Tạo nhân sự ' . $request->name_ingame . ' - ' . Position::find($request->position_id)->name_positions . ' - ' . Rank::find($request->rank_id)->name_ranks
         ]);
 
         return redirect()->back()->with('success', 'Tạo nhân sự thành công');
@@ -284,7 +284,7 @@ class EmployeeController extends Controller
             'user_id' => $currentUser->id,
             'action' => 'xóa',
             'target' => $username,
-            'detail' => 'bỏ vào thùng rác'
+            'detail' => 'Đưa ' . $employee->name_ingame . ' vào thùng rác'
         ]);
 
         $msg = 'Đã chuyển nhân sự vào thùng rác.';
@@ -321,7 +321,7 @@ class EmployeeController extends Controller
             'user_id' => auth()->id(),
             'action' => 'khôi phục',
             'target' => $username,
-            'detail' => 'đã hồi sinh '
+            'detail' => 'Khôi phục nhân sự ' . $employee->name_ingame . ' từ thùng rác'
         ]);
         // Xóa bỏ các log xóa trước đó của bản ghi này (nếu muốn)
         ActivityLog::where('action', 'xóa')
@@ -363,31 +363,66 @@ class EmployeeController extends Controller
         //     $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         // }
 
+        // Lưu dữ liệu cũ trước khi update
+        $oldName = $employee->name_ingame;
+        $oldPositionId = $employee->position_id;
+        $oldRankId = $employee->rank_id;
+
+        // Lấy dữ liệu mới
         $newName = $request->input('name_ingame');
         $newPositionId = $request->input('position_id');
         $newRankId = $request->input('rank_id');
-        // So sánh với dữ liệu cũ
+
+        // Kiểm tra thay đổi
         $hasChanged = (
-            $newName !== $employee->name_ingame ||
-            $newPositionId != $employee->position_id ||
-            $newRankId != $employee->rank_id
+            $newName !== $oldName ||
+            $newPositionId != $oldPositionId ||
+            $newRankId != $oldRankId
         );
 
         if (!$hasChanged) {
             return redirect()->back()->with('warning', 'Bạn chưa thay đổi thông tin người này!');
         }
 
-        $employee->update($data);
+        // 👉 Build log BEFORE update
+        $changes = [];
 
-        // Đồng bộ role của User dựa theo chức vụ mới
+        // Tên
+        if ($newName !== $oldName) {
+            $changes[] = "Tên: {$oldName} → {$newName}";
+        }
+
+        // Chức vụ
+        if ($newPositionId != $oldPositionId) {
+            $oldPos = optional($employee->position)->name_positions ?? '—';
+            $newPos = optional(Position::find($newPositionId))->name_positions ?? '—';
+            $changes[] = "Chức vụ: {$oldPos} → {$newPos}";
+        }
+
+        // Quân hàm
+        if ($newRankId != $oldRankId) {
+            $oldRank = optional($employee->rank)->name_ranks ?? '—';
+            $newRank = optional(Rank::find($newRankId))->name_ranks ?? '—';
+            $changes[] = "Quân hàm: {$oldRank} → {$newRank}";
+        }
+
+        // 👉 Update sau khi build log
+        $employee->update([
+            'name_ingame' => $newName,
+            'position_id' => $newPositionId,
+            'rank_id' => $newRankId,
+        ]);
+
+        // Đồng bộ role
         $newRole = $this->mapPositionToRole($newPositionId);
         $employee->user->update([
             'role' => $newRole,
         ]);
 
-        // Ghi log chi tiết
-        $detail = $newPositionId == $hasChanged ? 'cập nhật Quân hàm - Chức vụ' : 'cập nhật thông tin';
+        // Nội dung log
+        $detail = "Cập nhật nhân viên {$employee->user->username}: " . implode(' | ', $changes);
 
+        // Lưu log
         ActivityLog::create([
             'user_id' => auth()->id(),
             'action' => 'sửa',
@@ -485,7 +520,7 @@ class EmployeeController extends Controller
             'user_id' => auth()->id(),
             'action' => 'xóa vĩnh viễn',
             'target' => $user?->username ?? 'Ẩn danh',
-            'detail' => 'xóa vĩnh viễn khỏi hệ thống'
+            'detail' => 'Xóa ' . $employee->name_ingame . ' khỏi hệ thống'
         ]);
 
         return back()->with('success', 'Đã xóa vĩnh viễn nhân sự.');
@@ -514,7 +549,7 @@ class EmployeeController extends Controller
                 'user_id' => auth()->id(),
                 'action' => 'xóa vĩnh viễn',
                 'target' => $user?->username ?? 'Ẩn danh',
-                'detail' => 'đổ rác  tái chế'
+                'detail' => 'Xóa ' . $emp->name_ingame . ' khỏi hệ thống'
             ]);
 
             $emp->forceDelete();

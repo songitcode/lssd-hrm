@@ -1,181 +1,282 @@
-document.getElementById('search-employee').addEventListener('input', function () {
-    const query = this.value.trim();
-    const tbody = document.querySelector('.table-employees tbody');
+/* ══════════════════════════════════════════════════════════
+   payroll.js  —  đồng bộ với pr- CSS classes
+   Cải tiến: debounce search, fade-in rows, empty state đẹp,
+             highlight từ khoá tìm kiếm, modal spinner nhất quán
+══════════════════════════════════════════════════════════ */
+
+/* ── HELPERS ──────────────────────────────────────────── */
+
+/** Debounce: tránh gọi API liên tục mỗi ký tự */
+function debounce(fn, delay) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
+
+/** Hiển thị / ẩn loading overlay của bảng chính */
+function setTableLoading(visible) {
     const loader = document.getElementById('loading-spinner');
+    if (!loader) return;
+    loader.style.display = visible ? 'flex' : 'none';
+}
 
-    loader.style.display = 'block'; // Hiện loading
+/** Tô đậm từ khoá trong chuỗi */
+function highlight(text, query) {
+    if (!query) return text;
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return String(text).replace(
+        new RegExp(`(${escaped})`, 'gi'),
+        '<mark style="background:var(--pr-amber-dim);color:var(--pr-amber-dark);border-radius:3px;padding:0 2px;">$1</mark>'
+    );
+}
 
-    if (query === '') {
-        // Nếu rỗng, fetch lại full table HTML
-        fetch('/payroll')
-            .then(response => response.text())
-            .then(html => {
-                // Tạo 1 thẻ DOM tạm để lấy nội dung tbody
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const newTbody = doc.querySelector('.table-employees tbody');
+/** Fade-in các row mới chèn vào tbody */
+function animateRows(tbody) {
+    tbody.querySelectorAll('tr').forEach(function (tr, i) {
+        tr.style.opacity = '0';
+        tr.style.transform = 'translateY(8px)';
+        tr.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+        setTimeout(function () {
+            tr.style.opacity = '1';
+            tr.style.transform = 'translateY(0)';
+        }, i * 35);
+    });
+}
 
-                if (newTbody) {
-                    tbody.innerHTML = newTbody.innerHTML;
+/** HTML cho trạng thái "không có kết quả" */
+function emptyStateHTML(message) {
+    return `
+        <tr>
+            <td colspan="8" style="padding:2.5rem;text-align:center;color:var(--pr-text-3);">
+                <div style="font-size:2rem;margin-bottom:0.5rem;">🔍</div>
+                <div style="font-size:0.9rem;font-weight:500;">${message}</div>
+            </td>
+        </tr>
+    `;
+}
+
+/** Build 1 row từ object employee (search JSON response) */
+function buildRow(emp, index, query) {
+    const name = emp.name_ingame ?? emp.username ?? '-';
+    const position = emp.position?.name_positions ?? '-';
+    const rank = emp.rank?.name_ranks ?? '-';
+    const minutes = Math.round((emp.user?.total_hours ?? 0) * 60);
+    const hours = emp.user?.total_hours ?? 0;
+    const rate = emp.user?.employee?.position?.salary_config?.hourly_rate ?? 24000;
+    const wage = emp.user?.total_wage ?? 0;
+
+    return `
+        <tr>
+            <td class="pr-td pr-td--stt">${index + 1}</td>
+            <td class="pr-td pr-td--name">${highlight(name, query)}</td>
+            <td class="pr-td">${highlight(position, query)}</td>
+            <td class="pr-td">${rank}</td>
+            <td class="pr-td pr-td--num">${Number(minutes).toLocaleString()} phút ~ ${Number(hours).toLocaleString()}h</td>
+            <td class="pr-td pr-td--rate">${Number(rate).toLocaleString()}$/h</td>
+            <td class="pr-td pr-td--wage">${Number(wage).toLocaleString()}$</td>
+            <td class="pr-td-action">
+                <a href="${emp.attendance_url}" class="pr-btn-view btn_xem_lich_su_cham_cong" target="_parent">
+                    Xem <i class="fa-solid fa-eye"></i>
+                </a>
+            </td>
+        </tr>
+    `;
+}
+
+/* ── SEARCH ───────────────────────────────────────────── */
+
+const searchInput = document.getElementById('search-employee');
+
+if (searchInput) {
+    searchInput.addEventListener('input', debounce(function () {
+        const query = this.value.trim();
+        const tbody = document.querySelector('.pr-tbl tbody');
+        if (!tbody) return;
+
+        setTableLoading(true);
+
+        /* Nếu rỗng → fetch lại full tbody từ server */
+        if (query === '') {
+            fetch('/payroll')
+                .then(function (res) { return res.text(); })
+                .then(function (html) {
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    const newBody = doc.querySelector('.pr-tbl tbody');
+                    if (newBody) {
+                        tbody.innerHTML = newBody.innerHTML;
+                        animateRows(tbody);
+                    }
+                    setTableLoading(false);
+                })
+                .catch(function () { setTableLoading(false); });
+            return;
+        }
+
+        /* Có nội dung → tìm kiếm JSON */
+        fetch(`/payroll/search?query=${encodeURIComponent(query)}`)
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                tbody.innerHTML = '';
+
+                if (!data.data || data.data.length === 0) {
+                    tbody.innerHTML = emptyStateHTML('Không tìm thấy nhân sự nào phù hợp.');
+                    setTableLoading(false);
+                    return;
                 }
 
-                loader.style.display = 'none'; // Ẩn loading
-            });
-        return;
-    }
+                data.data.forEach(function (emp, index) {
+                    tbody.innerHTML += buildRow(emp, index, query);
+                });
 
-    // Nếu có nội dung -> tìm kiếm bằng JSON
-    fetch(`/payroll/search?query=${encodeURIComponent(query)}`)
-        .then(response => response.json())
-        .then(data => {
-            tbody.innerHTML = '';
+                animateRows(tbody);
+                setTableLoading(false);
 
-            if (data.data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="text-center">Không có nhân sự nào.</td></tr>`;
-                loader.style.display = 'none';
-                return;
-            }
+                /* Gắn lại event cho các nút Xem mới render */
+                tbody.querySelectorAll('.btn_xem_lich_su_cham_cong').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        const overlay = document.getElementById('loadingOverlay');
+                        if (overlay) overlay.style.display = 'flex';
+                    });
+                });
+            })
+            .catch(function () { setTableLoading(false); });
 
-            data.data.forEach((emp, index) => {
-                const name = emp.name_ingame ?? emp.username ?? '-';
-                const position = emp.position?.name_positions ?? '-';
-                const rank = emp.rank?.name_ranks ?? '-';
-                const minutes = 60 * (emp.user?.total_hours ?? 0);
-                const hours = emp.user?.total_hours ?? 0;
-                const rate = emp.user?.employee?.position?.salary_config?.hourly_rate ?? 24000;
-                const wage = emp.user?.total_wage ?? '0';
+    }, 300)); /* debounce 300ms */
+}
 
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="hover_1 text-center">${index + 1}</td>
-                        <td class="hover_1">${name}</td>
-                        <td class="hover_1">${position}</td>
-                        <td class="hover_1">${rank}</td>
-                        <td class="hover_1">${Number(minutes).toLocaleString()} phút ~ ${Number(hours).toLocaleString()}h</td>
-                        <td class="hover_1">${Number(rate).toLocaleString()}$/h</td>
-                        <td class="hover_1">${Number(wage).toLocaleString()}$</td>
-                        <td class="text-center history_function">
-                            <a href="${emp.attendance_url}" class="btn_xem_lich_su_cham_cong" target="_parent">
-                                Xem <i class="fa-solid fa-eye"></i>
-                            </a>
-                        </td>
-                    </tr>
-                `;
-            });
+/* ── BẢNG LƯƠNG THÁNG TRƯỚC ───────────────────────────── */
 
-            loader.style.display = 'none';
-        });
-});
+const viewPrevBtn = document.getElementById('viewPrevPayroll');
 
-// Bản lương tháng trước
-document.getElementById('viewPrevPayroll').addEventListener('click', function () {
-    const modal = new bootstrap.Modal(document.getElementById('previousPayrollModal'));
-    const contentDiv = document.getElementById('prevPayrollContent');
+if (viewPrevBtn) {
+    viewPrevBtn.addEventListener('click', function () {
+        const modal = new bootstrap.Modal(document.getElementById('previousPayrollModal'));
+        const contentDiv = document.getElementById('prevPayrollContent');
 
-    contentDiv.innerHTML = `
-        <div class="text-center p-4">
-            <div class="spinner-border text-primary" role="status"></div>
-        </div>
-    `;
+        /* Spinner nhất quán với CSS mới */
+        contentDiv.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:center;padding:3rem;">
+                <div class="pr-spinner"></div>
+            </div>
+        `;
 
-    fetch(`${window.location.origin}/payroll/previous`)
-        .then(res => res.json())
-        .then(response => {
-            const data = response.data;
-            console.log("Dữ liệu tháng trước:", data);
+        fetch(`${window.location.origin}/payroll/previous`)
+            .then(function (res) { return res.json(); })
+            .then(function (response) {
+                const data = response.data;
 
-            if (data.length === 0) {
-                contentDiv.innerHTML = '<p class="text-danger">Không có dữ liệu tháng trước.</p>';
-                return;
-            }
+                if (!data || data.length === 0) {
+                    contentDiv.innerHTML = `
+                        <div style="text-align:center;padding:2rem;color:var(--pr-text-3);">
+                            <div style="font-size:2rem;margin-bottom:0.5rem;">📭</div>
+                            <p style="font-size:0.9rem;">Không có dữ liệu tháng trước.</p>
+                        </div>
+                    `;
+                    return;
+                }
 
-            // HTML bảng hiển thị trong modal
-            let tableHTML = `
-                <div class="mb-2 text-end">
-                    <button id="btnExportPrev" class="btn btn-success">
-                        <i class="fa fa-file-excel"></i> Xuất Excel
-                    </button>
-                </div>
-                <div class="table-responsive">
-                <table class="table table-bordered table-hover submonth-table">
-                    <thead>
+                const totalWageAll = data.reduce(function (sum, item) {
+                    return sum + Number(item.total_wage);
+                }, 0);
+
+                let rowsHTML = '';
+                data.forEach(function (item, index) {
+                    const name = item.user.employee?.name_ingame ?? item.user.username ?? '-';
+                    const pos = item.user.employee?.position?.name_positions || '—';
+                    const rank = item.user.employee?.rank?.name_ranks || '—';
+                    const rate = item.user.employee?.position?.salary_config?.hourly_rate || 24000;
+
+                    rowsHTML += `
                         <tr>
-                            <th>#</th>
-                            <th>Tên</th>
-                            <th>Chức Vụ</th>
-                            <th>Quân Hàm</th>
-                            <th>Thời Gian Làm Việc</th>
-                            <th>Hệ Số</th>
-                            <th>Tổng Lương</th>
+                            <td class="pr-td pr-td--stt">${index + 1}</td>
+                            <td class="pr-td pr-td--name">${name}</td>
+                            <td class="pr-td">${pos}</td>
+                            <td class="pr-td">${rank}</td>
+                            <td class="pr-td pr-td--num">${item.total_hours}h</td>
+                            <td class="pr-td pr-td--rate">${Number(rate).toLocaleString()}$/h</td>
+                            <td class="pr-td pr-td--wage">${Number(item.total_wage).toLocaleString()}$</td>
                         </tr>
-                    </thead>
-                    <tbody>
-            `;
+                    `;
+                });
 
-            data.forEach((item, index) => {
-                const name = item.user.employee?.name_ingame ?? item.user.username ?? '-';
-                const pos = item.user.employee?.position?.name_positions || '—';
-                const rank = item.user.employee?.rank?.name_ranks || '—';
-                const rate = item.user.employee?.position?.salary_config?.hourly_rate || 24000;
+                contentDiv.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+                        <span style="font-size:0.85rem;color:var(--pr-text-2);">
+                            Tổng lương: <strong style="color:var(--pr-green);font-size:1rem;">${totalWageAll.toLocaleString()}$</strong>
+                        </span>
+                        <button id="btnExportPrev" class="pr-btn pr-btn--green">
+                            <i class="fa fa-file-excel"></i> Xuất Excel
+                        </button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table id="prevPayrollTable" class="pr-tbl table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tên</th>
+                                    <th>Chức Vụ</th>
+                                    <th>Quân Hàm</th>
+                                    <th>Thời Gian</th>
+                                    <th>Hệ Số</th>
+                                    <th>Tổng Lương</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rowsHTML}</tbody>
+                        </table>
+                    </div>
+                `;
 
-                tableHTML += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${name}</td>
-                        <td>${pos}</td>
-                        <td>${rank}</td>
-                        <td>${item.total_hours}h</td>
-                        <td>${Number(rate).toLocaleString()}$/h</td>
-                        <td>${Number(item.total_wage).toLocaleString()}$</td>
-                    </tr>
+                /* Animate modal rows */
+                const modalTbody = contentDiv.querySelector('tbody');
+                if (modalTbody) animateRows(modalTbody);
+
+                /* Export button */
+                document.getElementById('btnExportPrev').addEventListener('click', function () {
+                    exportPayrollDataToExcel(data, 'bang-luong-thang-truoc');
+                });
+            })
+            .catch(function () {
+                contentDiv.innerHTML = `
+                    <div style="text-align:center;padding:2rem;color:var(--pr-red);">
+                        <p>Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại.</p>
+                    </div>
                 `;
             });
 
-            tableHTML += `</tbody></table></div>`;
+        modal.show();
+    });
+}
 
-            // Tổng lương toàn bộ
-            const totalWageAll = data.reduce((sum, item) => sum + Number(item.total_wage), 0);
-            tableHTML += `
-                <tfoot>
-                    <tr class="table-light fw-bold">
-                        <td colspan="6" class="text-end">Tổng Lương Toàn Bộ:</td>
-                        <td class="text-success">${totalWageAll.toLocaleString()}$</td>
-                    </tr>
-                </tfoot>
-                <p class="text text-end ms-3 p-0 text-success total-wage-all">Tổng Lương Toàn Bộ: ${totalWageAll.toLocaleString()}$</p>
-            `;
+/* ── XEM LỊCH SỬ → LOADING OVERLAY ───────────────────── */
 
-            // Gắn vào modal
-            contentDiv.innerHTML = tableHTML;
-
-            // Sự kiện export
-            document.getElementById('btnExportPrev').addEventListener('click', function () {
-                exportPayrollDataToExcel(data, 'bang-luong-thang-truoc');
-            });
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn_xem_lich_su_cham_cong').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.style.display = 'flex';
         });
-
-    modal.show();
+    });
 });
 
-// Hàm export Excel từ data (không phụ thuộc DOM)
-function exportPayrollDataToExcel(data, filename = 'export') {
+/* ── EXPORT EXCEL TỪ DATA JSON ────────────────────────── */
+
+function exportPayrollDataToExcel(data, filename) {
+    filename = filename || 'export';
+
     let tableHTML = `
         <table border="1">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Tên</th>
-                    <th>Chức Vụ</th>
-                    <th>Quân Hàm</th>
-                    <th>Thời Gian Làm Việc</th>
-                    <th>Hệ Số</th>
-                    <th>Tổng Lương</th>
+                    <th>#</th><th>Tên</th><th>Chức Vụ</th><th>Quân Hàm</th>
+                    <th>Thời Gian Làm Việc</th><th>Hệ Số</th><th>Tổng Lương</th>
                 </tr>
             </thead>
             <tbody>
     `;
 
-    data.forEach((item, index) => {
+    data.forEach(function (item, index) {
         const name = item.user.employee?.name_ingame ?? item.user.username ?? '-';
         const pos = item.user.employee?.position?.name_positions || '—';
         const rank = item.user.employee?.rank?.name_ranks || '—';
@@ -194,12 +295,22 @@ function exportPayrollDataToExcel(data, filename = 'export') {
         `;
     });
 
-    tableHTML += `</tbody></table>`;
+    const totalWageAll = data.reduce(function (sum, item) {
+        return sum + Number(item.total_wage);
+    }, 0);
 
-    const dataType = 'application/vnd.ms-excel';
-    const blob = new Blob(['\ufeff', tableHTML], { type: dataType });
-    const downloadLink = document.createElement("a");
+    tableHTML += `
+            <tr>
+                <td colspan="6" style="text-align:right;font-weight:bold;">Tổng Lương Toàn Bộ:</td>
+                <td style="font-weight:bold;">${totalWageAll.toLocaleString()}</td>
+            </tr>
+        </tbody></table>
+    `;
+
+    const blob = new Blob(['\ufeff', tableHTML], { type: 'application/vnd.ms-excel' });
+    const downloadLink = document.createElement('a');
     downloadLink.href = URL.createObjectURL(blob);
     downloadLink.download = `${filename}.xls`;
     downloadLink.click();
+    URL.revokeObjectURL(downloadLink.href);
 }
