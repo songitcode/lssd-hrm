@@ -8,7 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 use function PHPUnit\Framework\isEmpty;
 use function Psy\debug;
 
@@ -21,6 +24,15 @@ class AttendanceController extends Controller
             'employee.rank.salaryConfig',
         ]);
 
+        $discordId = optional($user->employee)->discord_id;
+
+        $lanyardStatus = $this->getLanyardStatus($discordId);
+        $isPlayingGame = $lanyardStatus['isPlayingGame'];
+        $gameName = $lanyardStatus['gameName'];
+        $gameDetails = $lanyardStatus['gameDetails'];
+        $gameState = $lanyardStatus['gameState'];
+        $lanyardUnavailable = $lanyardStatus['lanyardUnavailable'];
+
         $lastMonth = Carbon::now()->subMonth();
         $this->storeMonthlySummaryIfNotExists($user->id, $lastMonth->month, $lastMonth->year);
 
@@ -29,7 +41,6 @@ class AttendanceController extends Controller
 
         $maxHourPerDay = (float) ($user->employee->rank?->salaryConfig?->max_hours_per_day ?? WorkHourConfig::currentMaxHour());
         $currentMonth = $now->format('Y-m');
-        // dd(($user->employee->rank?->salaryConfig?->max_hours_per_day), $user->employee->rank?->salaryConfig);
 
         // Auto check-out cho ca từ hôm trước
         $previousOngoing = Attendance::where('user_id', $user->id)
@@ -80,15 +91,20 @@ class AttendanceController extends Controller
             ->filter(fn($att) => $att->check_out !== null)
             ->sum('duration');
 
-        // Truyền attendance history (có thể toàn bộ hoặc chỉ trong tháng)
-        $attendances = Attendance::where('user_id', $user->id)
-            ->orderByDesc('date')
-            ->get();
+        // // Truyền attendance history (có thể toàn bộ hoặc chỉ trong tháng)
+        // $attendances = Attendance::where('user_id', $user->id)
+        //     ->orderByDesc('date')
+        //     ->get();
 
-        // Có phân trang ngày
+        // // Có phân trang ngày
+        // $attendancesPaginated = Attendance::where('user_id', $user->id)
+        //     ->orderByDesc('date')
+        //     ->paginate(10); // 5 ngày mỗi trang
         $attendancesPaginated = Attendance::where('user_id', $user->id)
-            ->orderByDesc('date')
-            ->paginate(10); // 5 ngày mỗi trang
+            ->latest('date')
+            ->paginate(10);
+
+        $attendances = $attendancesPaginated->getCollection();  
 
         // Tính tổng lương ngày
         $dailySummaries = $attendancesPaginated
@@ -106,18 +122,18 @@ class AttendanceController extends Controller
 
         // Tiền lương theo tháng
         $totalLuong = $user->monthly_attendance_summaries->flatten()->sum('total_wage');
-        $monthlyTotal = $attendances
-            ->filter(function ($attendance) use ($now) {
-                return Carbon::parse($attendance->date)->month === $now->month
-                    && Carbon::parse($attendance->date)->year === $now->year;
-            })
-            ->sum('wage');
+        // $monthlyTotal = $attendances
+        //     ->filter(function ($attendance) use ($now) {
+        //         return Carbon::parse($attendance->date)->month === $now->month
+        //             && Carbon::parse($attendance->date)->year === $now->year;
+        //     })
+        //     ->sum('wage');
 
         //// Hoặc gọn hơn nếu query lại (hiệu suất tốt hơn):
-        // $monthlyTotal = Attendance::where('user_id', $user->id)
-        //     ->whereMonth('date', $now->month)
-        //     ->whereYear('date', $now->year)
-        //     ->sum('wage');
+        $monthlyTotal = Attendance::where('user_id', $user->id)
+            ->whereMonth('date', $now->month)
+            ->whereYear('date', $now->year)
+            ->sum('wage');
         ////
 
         $heSoLuong = $user->effectiveSalaryRate();
@@ -138,10 +154,81 @@ class AttendanceController extends Controller
             'totalLuong',
             'attendancesPaginated',
             'monthlySummaries',
-            'heSoLuong'
+            'heSoLuong',
+            // Dữ liệu discord
+            'discordId',
+            'isPlayingGame',
+            'gameName',
+            'gameDetails',
+            'gameState',
+            'lanyardUnavailable'
         ));
     }
 
+    private function getLanyardStatus(?string $discordId): array
+    {
+        $result = [
+            'isPlayingGame' => false,
+            'gameName' => null,
+            'gameDetails' => null,
+            'gameState' => null,
+            'lanyardUnavailable' => false,
+        ];
+
+        if (empty($discordId) || $discordId == '0') {
+            return $result;
+        }
+
+        try {
+
+            $data = Cache::remember(
+                "lanyard_user_$discordId",
+                now()->addSeconds(20),
+                function () use ($discordId) {
+
+                    $response = Http::timeout(2)
+                        ->retry(2, 150)
+                        ->acceptJson()
+                        ->get("https://lanyard.rest/v1/users/$discordId");
+
+                    if (!$response->successful()) {
+                        return null;
+                    }
+
+                    return $response->json()['data'] ?? null;
+                }
+            );
+
+            if (!$data) {
+                $result['lanyardUnavailable'] = true;
+                return $result;
+            }
+
+            $activities = collect($data['activities'] ?? []);
+
+            $game = $activities
+                ->first(function ($activity) {
+                    return ($activity['type'] ?? 0) != 4;
+                });
+
+            if (!$game) {
+                return $result;
+            }
+
+            $result['isPlayingGame'] = true;
+            $result['gameName'] = $game['name'] ?? null;
+            $result['gameDetails'] = $game['details'] ?? null;
+            $result['gameState'] = $game['state'] ?? null;
+
+        } catch (\Throwable $e) {
+
+            report($e);
+
+            $result['lanyardUnavailable'] = true;
+        }
+
+        return $result;
+    }
     public function check(Request $request)
     {
         $user = Auth::user();

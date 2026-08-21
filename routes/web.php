@@ -25,7 +25,8 @@ use Illuminate\Support\Facades\Http;
 // });
 
 Route::get('/', function () {
-    return view('auth.login'); });
+    return view('auth.login');
+});
 // Hiển thị trang admin login
 Route::get('/admin', function () {
     return view('auth.admin.login');
@@ -99,7 +100,7 @@ Route::middleware('auth')->group(function () {
 
     // Cài đặt chu kỳ tính lương (GET) — chỉ manager/admin
     Route::get('/payroll/setting', [PayrollController::class, 'getSetting'])
-    ->name('payroll.setting.get');
+        ->name('payroll.setting.get');
 
     // Cập nhật chu kỳ tính lương (POST) — chỉ manager/admin
     Route::post('/payroll/setting', [PayrollController::class, 'updateSetting'])
@@ -135,11 +136,15 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
     Route::delete('/payroll/user/{id}', [PayrollController::class, 'deleteAttendance'])->name('attendance.destroy');
     Route::post('/payroll/user/{id}', [PayrollController::class, 'updateInline'])
         ->name('attendance.updateInline');
+    // ── Cài đặt chu kỳ tính lương (monthly / biweekly) ──────────────────────
+    Route::get('/payroll/cycle-setting', [PayrollController::class, 'getCycleSetting'])->name('payroll.cycle.get');
+    Route::post('/payroll/cycle-setting', [PayrollController::class, 'updateCycleSetting'])->name('payroll.cycle.update');
+
 
     Route::get('/onduty', [OnDutyController::class, 'index'])->name('partials.ondutyList');
     Route::get('/onduty-live', [OnDutyController::class, 'indexLive'])->name('partials.onduty_live');
     Route::get('/api/onduty', [OnDutyController::class, 'getOnDuty']);
-    
+
     // Reset toàn bộ dữ liệu chấm công WARNING!!
     Route::delete('/payroll/reset', [AttendanceController::class, 'resetAttendanceDta'])->name('attendance.resetAttendanceDta');
 

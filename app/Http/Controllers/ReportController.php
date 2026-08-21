@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{User, Employee, Attendance, MonthlyAttendanceSummary, ActivityLog};
+use App\Models\{User, Employee, Attendance, MonthlyAttendanceSummary, ActivityLog, WorkHourConfig};
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,40 +10,44 @@ use Illuminate\Support\Facades\DB;
 class ReportController extends Controller
 {
     // =====================================================
-    //  TỔNG QUAN — Dashboard chính của module báo cáo
+    //  TỔNG QUAN — Dashboard
     // =====================================================
     public function index()
     {
-        $now = Carbon::now();
-        $month = $now->month;
-        $year = $now->year;
+        // ── Chu kỳ hiện tại ──
+        $config = WorkHourConfig::latestConfig();
+        $period = $config->getCurrentPeriod();
+        $month = $period['month'];
+        $year = $period['year'];
 
-        // ── Chỉ số tháng này ──
+        // ── Chỉ số kỳ này ──
         $totalEmployees = Employee::whereNull('deleted_at')->count();
 
-        $attendancesThisMonth = Attendance::whereMonth('date', $month)
-            ->whereYear('date', $year)->get();
+        $attendancesThisPeriod = Attendance::whereBetween('date', [
+            $period['start']->toDateString(),
+            $period['end']->toDateString(),
+        ])->get();
 
-        $totalHoursThisMonth = round($attendancesThisMonth->sum('duration'), 2);
-        $totalWageThisMonth = $attendancesThisMonth->sum('wage');
-        $totalSessionsThisMonth = $attendancesThisMonth->count();
+        $totalHoursThisMonth = round($attendancesThisPeriod->sum('duration'), 2);
+        $totalWageThisMonth = $attendancesThisPeriod->sum('wage');
+        $totalSessionsThisMonth = $attendancesThisPeriod->count();
 
-        // Nhân viên đã chấm công ít nhất 1 lần trong tháng
-        $activeEmployeesThisMonth = $attendancesThisMonth->pluck('user_id')->unique()->count();
+        $activeEmployeesThisMonth = $attendancesThisPeriod->pluck('user_id')->unique()->count();
 
-        // Nhân viên chưa chấm công tháng này
         $allUserIds = User::whereHas('employee')->pluck('id');
-        $checkedIds = $attendancesThisMonth->pluck('user_id')->unique();
+        $checkedIds = $attendancesThisPeriod->pluck('user_id')->unique();
         $absentCount = $allUserIds->diff($checkedIds)->count();
 
-        // ── Tỉ lệ chấm công ──
         $attendanceRate = $totalEmployees > 0
             ? round(($activeEmployeesThisMonth / $totalEmployees) * 100, 1)
             : 0;
 
-        // ── Top 5 nhân viên nhiều giờ nhất tháng này ──
+        // ── Top 5 ──
         $topWorkers = Attendance::with(['user.employee.position', 'user.employee.rank'])
-            ->whereMonth('date', $month)->whereYear('date', $year)
+            ->whereBetween('date', [
+                $period['start']->toDateString(),
+                $period['end']->toDateString(),
+            ])
             ->select(
                 'user_id',
                 DB::raw('SUM(duration) as total_hours'),
@@ -55,39 +59,41 @@ class ReportController extends Controller
             ->limit(5)
             ->get();
 
-        // ── Biểu đồ: Tổng giờ làm 6 tháng gần nhất ──
+        // ── Biểu đồ 6 kỳ gần nhất (monthly → 6 tháng, biweekly → 6 × 14 ngày) ──
         $last6Months = collect();
-        for ($i = 5; $i >= 0; $i--) {
-            $d = Carbon::now()->subMonths($i);
-            $hrs = Attendance::whereMonth('date', $d->month)
-                ->whereYear('date', $d->year)
-                ->sum('duration');
-            $wage = Attendance::whereMonth('date', $d->month)
-                ->whereYear('date', $d->year)
-                ->sum('wage');
+        foreach ($config->getLast6Periods() as $p) {
+            $hrs = Attendance::whereBetween('date', [
+                $p['start']->toDateString(),
+                $p['end']->toDateString(),
+            ])->sum('duration');
+            $wage = Attendance::whereBetween('date', [
+                $p['start']->toDateString(),
+                $p['end']->toDateString(),
+            ])->sum('wage');
             $last6Months->push([
-                'label' => $d->format('M Y'),
+                'label' => $p['label'],
                 'hours' => round($hrs, 2),
                 'wage' => (int) $wage,
             ]);
         }
 
-        // ── Biểu đồ: Phân bổ nhân sự theo chức vụ ──
+        // ── Phân bổ chức vụ ──
         $byPosition = Employee::whereNull('deleted_at')
-            ->with('position')
-            ->get()
+            ->with('position')->get()
             ->groupBy(fn($e) => $e->position->name_positions ?? 'Khác')
             ->map(fn($g) => $g->count());
 
-        // ── Biểu đồ: Giờ làm theo từng ngày trong tháng ──
-        $dailyHours = Attendance::whereMonth('date', $month)->whereYear('date', $year)
+        // ── Giờ theo ngày trong kỳ ──
+        $dailyHours = Attendance::whereBetween('date', [
+            $period['start']->toDateString(),
+            $period['end']->toDateString(),
+        ])
             ->select(DB::raw('DATE(date) as day'), DB::raw('SUM(duration) as hours'))
             ->groupBy('day')->orderBy('day')->get()
             ->mapWithKeys(fn($r) => [$r->day => round($r->hours, 2)]);
 
-        // ── Hoạt động gần nhất (logs) ──
-        $recentLogs = ActivityLog::with('user.employee')
-            ->latest()->limit(8)->get();
+        // ── Logs ──
+        $recentLogs = ActivityLog::with('user.employee')->latest()->limit(8)->get();
 
         return view('reports.index', compact(
             'totalEmployees',
@@ -103,24 +109,67 @@ class ReportController extends Controller
             'dailyHours',
             'recentLogs',
             'month',
-            'year'
+            'year',
+            'period',    // array chu kỳ — dùng $period['label'] trong view
+            'config'
         ));
     }
 
     // =====================================================
-    //  BÁO CÁO CHẤM CÔNG — Chi tiết theo tháng
+    //  BÁO CÁO CHẤM CÔNG
     // =====================================================
     public function attendance(Request $request)
     {
-        $month = (int) ($request->month ?? Carbon::now()->month);
-        $year = (int) ($request->year ?? Carbon::now()->year);
+        $config = WorkHourConfig::latestConfig();
 
-        $availableMonths = Attendance::select(
-            DB::raw('MONTH(date) as month'),
-            DB::raw('YEAR(date) as year')
-        )->groupBy('year', 'month')
-            ->orderByDesc('year')->orderByDesc('month')
-            ->get();
+        // ── Xác định date range từ request hoặc kỳ hiện tại ──
+        if ($config->cycle_type === 'biweekly') {
+            if ($request->filled('period_start')) {
+                $start = Carbon::parse($request->period_start)->startOfDay();
+                $end = Carbon::parse($request->period_end ?? $request->period_start)->addDays(13)->endOfDay();
+            } else {
+                $cur = $config->getCurrentPeriod();
+                $start = $cur['start'];
+                $end = $cur['end'];
+            }
+            $period = $config->buildBiweeklyFromDay($start);
+            $month = $period['month'];
+            $year = $period['year'];
+        } else {
+            $month = (int) ($request->month ?? Carbon::now()->month);
+            $year = (int) ($request->year ?? Carbon::now()->year);
+            $start = Carbon::create($year, $month, 1)->startOfDay();
+            $end = $start->copy()->endOfMonth()->endOfDay();
+            $period = [
+                'type' => 'monthly',
+                'label' => 'Tháng ' . $month . '/' . $year,
+                'label_prev' => 'Tháng ' . ($month === 1 ? 12 : $month - 1),
+                'start' => $start,
+                'end' => $end,
+                'month' => $month,
+                'year' => $year,
+                'period_start' => null,
+                'period_end' => null,
+            ];
+        }
+
+        // ── Danh sách kỳ cho dropdown ──
+        if ($config->cycle_type === 'biweekly') {
+            $availablePeriods = MonthlyAttendanceSummary::where('period_type', 'biweekly')
+                ->select('period_start', 'period_end')
+                ->groupBy('period_start', 'period_end')
+                ->orderByDesc('period_start')
+                ->get();
+            $availableMonths = collect();
+        } else {
+            $availableMonths = Attendance::select(
+                DB::raw('MONTH(date) as month'),
+                DB::raw('YEAR(date) as year')
+            )->groupBy('year', 'month')
+                ->orderByDesc('year')->orderByDesc('month')
+                ->get();
+            $availablePeriods = collect();
+        }
 
         $positionOrder = $this->positionOrder();
         $users = User::with(['employee.position', 'employee.rank'])
@@ -134,67 +183,63 @@ class ReportController extends Controller
         $summaries = [];
         foreach ($users as $u) {
             $rows = Attendance::where('user_id', $u->id)
-                ->whereMonth('date', $month)
-                ->whereYear('date', $year)
+                ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
                 ->get();
 
             $summaries[$u->id] = (object) [
                 'total_hours' => round($rows->sum('duration'), 2),
                 'total_wage' => (int) $rows->sum('wage'),
                 'sessions' => $rows->count(),
-                'avg_per_day' => $rows->count() > 0 ? round($rows->sum('duration') / $rows->count(), 2) : 0,
+                'avg_per_day' => $rows->count() > 0
+                    ? round($rows->sum('duration') / $rows->count(), 2)
+                    : 0,
             ];
         }
 
-        // ✅ Nếu export thì trả về file CSV
+        // ── Export CSV ──
         if ($request->has('export')) {
-            $filename = "attendance_{$year}_{$month}.csv";
+            $slug = $config->cycle_type === 'biweekly'
+                ? 'bw_' . str_replace(['/', ' ', '–', '—'], ['_', '_', '_', '_'], $period['label'])
+                : "{$year}_{$month}";
+            $filename = "attendance_{$slug}.csv";
 
             $headers = [
                 'Content-Type' => 'text/csv; charset=UTF-8',
                 'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             ];
 
-            $callback = function () use ($users, $summaries, $month, $year) {
+            $callback = function () use ($users, $summaries, $period) {
                 $file = fopen('php://output', 'w');
-
-                // BOM để Excel đọc tiếng Việt tốt hơn
                 fwrite($file, "\xEF\xBB\xBF");
-
-                // Header CSV
-                fputcsv($file, ['STT', 'Nhân viên', 'Chức vụ', 'Tổng giờ', 'Tổng lương', 'Số phiên', 'TB / phiên']);
-
+                fputcsv($file, ['STT', 'Nhân viên', 'Chức vụ', 'Tổng giờ', 'Tổng lương', 'Số phiên', 'TB/phiên', 'Kỳ']);
                 $stt = 1;
                 foreach ($users as $u) {
-                    $summary = $summaries[$u->id];
-
+                    $s = $summaries[$u->id];
                     fputcsv($file, [
                         $stt++,
-                        $u->name ?? $u->employee?->name_ingame ?? 'N/A',
-                        $u->employee->position->name_positions ?? '',
-                        $summary->total_hours,
-                        $summary->total_wage,
-                        $summary->sessions,
-                        $summary->avg_per_day,
+                        $u->employee?->name_ingame ?? $u->username,
+                        $u->employee?->position?->name_positions ?? '',
+                        $s->total_hours,
+                        $s->total_wage,
+                        $s->sessions,
+                        $s->avg_per_day,
+                        $period['label'],
                     ]);
                 }
-
                 fclose($file);
             };
 
             return response()->streamDownload($callback, $filename, $headers);
         }
 
-        $dailyData = Attendance::whereMonth('date', $month)
-            ->whereYear('date', $year)
+        // ── Dữ liệu biểu đồ theo ngày ──
+        $dailyData = Attendance::whereBetween('date', [$start->toDateString(), $end->toDateString()])
             ->select(
                 DB::raw('DATE(date) as day'),
                 DB::raw('SUM(duration) as hours'),
                 DB::raw('COUNT(*) as sessions')
             )
-            ->groupBy('day')
-            ->orderBy('day')
-            ->get();
+            ->groupBy('day')->orderBy('day')->get();
 
         $avgHourPerDay = $dailyData->avg('hours') ?? 0;
 
@@ -219,26 +264,81 @@ class ReportController extends Controller
             'zeroHourCount',
             'avgHourPerDay',
             'availableMonths',
+            'availablePeriods',
             'top3',
-            'bot3'
+            'bot3',
+            'period',
+            'config'
         ));
     }
 
     // =====================================================
-    //  BÁO CÁO LƯƠNG — So sánh tháng, quỹ lương
+    //  BÁO CÁO LƯƠNG
     // =====================================================
     public function payroll(Request $request)
     {
-        $month = (int) ($request->month ?? Carbon::now()->month);
-        $year = (int) ($request->year ?? Carbon::now()->year);
+        $config = WorkHourConfig::latestConfig();
 
-        $availableMonths = MonthlyAttendanceSummary::select('month', 'year')
-            ->groupBy('year', 'month')
-            ->orderByDesc('year')->orderByDesc('month')->get();
+        // ── Xác định kỳ được chọn ──
+        if ($config->cycle_type === 'biweekly') {
+            if ($request->filled('period_start')) {
+                $selStart = Carbon::parse($request->period_start)->startOfDay();
+                $selEnd = Carbon::parse($request->period_end ?? $request->period_start)->addDays(13)->endOfDay();
+                $selectedPeriod = $config->buildBiweeklyFromDay($selStart);
+            } else {
+                $selectedPeriod = $config->getCurrentPeriod();
+                $selStart = $selectedPeriod['start'];
+                $selEnd = $selectedPeriod['end'];
+            }
+        } else {
+            $month = (int) ($request->month ?? Carbon::now()->month);
+            $year = (int) ($request->year ?? Carbon::now()->year);
+            $selStart = Carbon::create($year, $month, 1)->startOfDay();
+            $selEnd = $selStart->copy()->endOfMonth()->endOfDay();
+            $selectedPeriod = [
+                'type' => 'monthly',
+                'label' => 'Tháng ' . $month . '/' . $year,
+                'start' => $selStart,
+                'end' => $selEnd,
+                'month' => $month,
+                'year' => $year,
+                'period_start' => null,
+                'period_end' => null,
+            ];
+        }
+
+        $month = $selectedPeriod['month'];
+        $year = $selectedPeriod['year'];
+
+        // ── Kỳ trước (so sánh) ──
+        $prevPeriod = $config->cycle_type === 'biweekly'
+            ? $config->buildBiweeklyFromDay(Carbon::parse($selectedPeriod['period_start'])->subDay())
+            : (function () use ($month, $year, $config) {
+                $pm = $month === 1 ? 12 : $month - 1;
+                $py = $month === 1 ? $year - 1 : $year;
+                return [
+                    'label' => 'Tháng ' . $pm . '/' . $py,
+                    'start' => Carbon::create($py, $pm, 1)->startOfDay(),
+                    'end' => Carbon::create($py, $pm, 1)->endOfMonth()->endOfDay(),
+                ];
+            })();
+
+        // ── Danh sách kỳ cho dropdown ──
+        if ($config->cycle_type === 'biweekly') {
+            $availablePeriods = MonthlyAttendanceSummary::where('period_type', 'biweekly')
+                ->select('period_start', 'period_end', 'month', 'year')
+                ->groupBy('period_start', 'period_end', 'month', 'year')
+                ->orderByDesc('period_start')->get();
+            $availableMonths = collect();
+        } else {
+            $availableMonths = MonthlyAttendanceSummary::where('period_type', 'monthly')
+                ->select('month', 'year')
+                ->groupBy('year', 'month')
+                ->orderByDesc('year')->orderByDesc('month')->get();
+            $availablePeriods = collect();
+        }
 
         $positionOrder = $this->positionOrder();
-
-        // Dữ liệu lương tháng được chọn (từ bảng tổng hợp tháng trước / trực tiếp từ attendance)
         $users = User::with(['employee.position', 'employee.rank'])
             ->whereHas('employee')->get()
             ->sort(
@@ -250,12 +350,14 @@ class ReportController extends Controller
         $payrollData = [];
         foreach ($users as $u) {
             $rows = Attendance::where('user_id', $u->id)
-                ->whereMonth('date', $month)->whereYear('date', $year)->get();
-            // So sánh với tháng trước
-            $prevMonth = $month == 1 ? 12 : $month - 1;
-            $prevYear = $month == 1 ? $year - 1 : $year;
+                ->whereBetween('date', [$selStart->toDateString(), $selEnd->toDateString()])
+                ->get();
+
             $prevRows = Attendance::where('user_id', $u->id)
-                ->whereMonth('date', $prevMonth)->whereYear('date', $prevYear)->get();
+                ->whereBetween('date', [
+                    $prevPeriod['start']->toDateString(),
+                    $prevPeriod['end']->toDateString(),
+                ])->get();
 
             $curWage = (int) $rows->sum('wage');
             $prevWage = (int) $prevRows->sum('wage');
@@ -273,65 +375,59 @@ class ReportController extends Controller
             ];
         }
 
-        // Tổng quỹ lương
         $totalFund = collect($payrollData)->sum('total_wage');
         $prevFund = collect($payrollData)->sum('prev_wage');
         $fundDiff = $totalFund - $prevFund;
         $fundDiffPct = $prevFund > 0 ? round(($fundDiff / $prevFund) * 100, 1) : null;
 
-        // Biểu đồ lương theo chức vụ
+        // ── Lương theo chức vụ ──
         $wageByPosition = [];
         foreach ($users as $u) {
             $pos = $u->employee?->position?->name_positions ?? 'Khác';
-            $wage = $payrollData[$u->id]->total_wage ?? 0;
-            $wageByPosition[$pos] = ($wageByPosition[$pos] ?? 0) + $wage;
+            $wageByPosition[$pos] = ($wageByPosition[$pos] ?? 0) + ($payrollData[$u->id]->total_wage ?? 0);
         }
 
-        // Biểu đồ quỹ lương 6 tháng
+        // ── Xu hướng 6 kỳ gần nhất ──
         $fundTrend = collect();
-        for ($i = 5; $i >= 0; $i--) {
-            $d = Carbon::create($year, $month)->subMonths($i);
-            $w = Attendance::whereMonth('date', $d->month)
-                ->whereYear('date', $d->year)->sum('wage');
-            $fundTrend->push(['label' => $d->format('M Y'), 'wage' => (int) $w]);
+        foreach ($config->getLast6Periods() as $p) {
+            $w = Attendance::whereBetween('date', [
+                $p['start']->toDateString(),
+                $p['end']->toDateString(),
+            ])->sum('wage');
+            $fundTrend->push(['label' => $p['label'], 'wage' => (int) $w]);
         }
 
-        // ✅ Nếu export thì trả về file CSV
+        // ── Export CSV ──
         if ($request->has('export')) {
-            $filename = "payroll_{$year}_{$month}.csv";
+            $slug = $config->cycle_type === 'biweekly'
+                ? 'bw_' . str_replace(['/', ' ', '–', '—'], ['_', '_', '_', '_'], $selectedPeriod['label'])
+                : "{$year}_{$month}";
+            $filename = "payroll_{$slug}.csv";
 
             $headers = [
                 'Content-Type' => 'text/csv; charset=UTF-8',
                 'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             ];
 
-            $callback = function () use ($users, $payrollData, $totalFund) {
+            $callback = function () use ($users, $payrollData, $totalFund, $selectedPeriod, $prevPeriod) {
                 $file = fopen('php://output', 'w');
-
-                // BOM để Excel đọc tiếng Việt chuẩn
                 fwrite($file, "\xEF\xBB\xBF");
-
-                // Header
                 fputcsv($file, [
                     'STT',
                     'Nhân viên',
                     'Chức vụ',
                     'Hệ số ($/h)',
                     'Giờ làm',
-                    'Lương tháng này',
-                    'Tháng trước',
+                    'Lương kỳ này (' . $selectedPeriod['label'] . ')',
+                    'Kỳ trước (' . $prevPeriod['label'] . ')',
                     'Chênh lệch',
                     'Chênh lệch (%)',
                 ]);
-
                 $stt = 1;
                 foreach ($users as $u) {
                     $p = $payrollData[$u->id];
-
-                    // ❌ Bỏ qua người không có lương
                     if ($p->total_wage <= 0)
                         continue;
-
                     fputcsv($file, [
                         $stt++,
                         $u->employee?->name_ingame ?? $u->username,
@@ -341,22 +437,11 @@ class ReportController extends Controller
                         $p->total_wage,
                         $p->prev_wage,
                         $p->diff,
-                        $p->diff_pct !== null ? $p->diff_pct : '',
+                        $p->diff_pct ?? '',
                     ]);
                 }
-
-                // Thêm dòng trống trước tổng
                 fputcsv($file, []);
-                // ✅ Tổng lương
-                fputcsv($file, [
-                    '',
-                    '',
-                    '',
-                    '',
-                    'TỔNG LƯƠNG THÁNG',
-                    $totalFund,
-                ]);
-
+                fputcsv($file, ['', '', '', '', 'TỔNG', $totalFund]);
                 fclose($file);
             };
 
@@ -374,21 +459,28 @@ class ReportController extends Controller
             'fundDiffPct',
             'wageByPosition',
             'fundTrend',
-            'availableMonths'
+            'availableMonths',
+            'availablePeriods',
+            'selectedPeriod',
+            'prevPeriod',
+            'config'
         ));
     }
 
     // =====================================================
-    //  BÁO CÁO NHÂN SỰ — Hoạt động, tăng giảm quân số
+    //  BÁO CÁO NHÂN SỰ
     // =====================================================
     public function employees(Request $request)
     {
         $month = (int) ($request->month ?? Carbon::now()->month);
         $year = (int) ($request->year ?? Carbon::now()->year);
 
+        // ── Chu kỳ để lọc chấm công (hoursMap, absentEmployees) ──
+        $config = WorkHourConfig::latestConfig();
+        $period = $config->getCurrentPeriod();
+
         $positionOrder = $this->positionOrder();
 
-        // Toàn bộ nhân viên active
         $employees = Employee::whereNull('deleted_at')
             ->with(['user.attendances', 'position', 'rank', 'userCreatedBy'])
             ->get()
@@ -398,34 +490,41 @@ class ReportController extends Controller
                 <=> ($positionOrder[$b->position?->name_positions] ?? 999)
             )->values();
 
-        // Nhân viên mới (gia nhập trong tháng được chọn)
+        // Gia nhập / rời đơn vị vẫn theo tháng dương lịch (vì created_at/deleted_at là sự kiện, không phụ thuộc kỳ lương)
         $newThisMonth = Employee::whereMonth('created_at', $month)
             ->whereYear('created_at', $year)
             ->with(['position', 'rank', 'userCreatedBy'])->get();
 
-        // Nhân viên đã xóa trong tháng (soft delete)
         $deletedThisMonth = Employee::onlyTrashed()
             ->whereMonth('deleted_at', $month)
             ->whereYear('deleted_at', $year)
             ->with(['position', 'rank'])->get();
 
-        // Nhân viên chưa chấm công trong tháng
-        $checkedIds = Attendance::whereMonth('date', $month)
-            ->whereYear('date', $year)->pluck('user_id')->unique();
+        // Vắng và giờ làm: theo kỳ lương hiện tại (biweekly hoặc monthly)
+        $checkedIds = Attendance::whereBetween('date', [
+            $period['start']->toDateString(),
+            $period['end']->toDateString(),
+        ])->pluck('user_id')->unique();
+
         $absentEmployees = $employees->filter(
             fn($e) => !$checkedIds->contains($e->user_id)
         );
 
-        // Giờ làm của từng nhân viên trong tháng
-        $hoursMap = Attendance::whereMonth('date', $month)->whereYear('date', $year)
-            ->select('user_id', DB::raw('SUM(duration) as total_hours'), DB::raw('COUNT(*) as sessions'))
+        $hoursMap = Attendance::whereBetween('date', [
+            $period['start']->toDateString(),
+            $period['end']->toDateString(),
+        ])
+            ->select(
+                'user_id',
+                DB::raw('SUM(duration) as total_hours'),
+                DB::raw('COUNT(*) as sessions')
+            )
             ->groupBy('user_id')->get()->keyBy('user_id');
 
-        // Tổng nhân sự theo chức vụ
         $byPosition = $employees->groupBy(fn($e) => $e->position?->name_positions ?? 'Khác')
             ->map(fn($g) => $g->count());
 
-        // Biểu đồ tăng trưởng nhân sự 6 tháng
+        // Tăng trưởng quân số vẫn theo tháng dương lịch
         $growthTrend = collect();
         for ($i = 5; $i >= 0; $i--) {
             $d = Carbon::create($year, $month)->subMonths($i);
@@ -439,13 +538,9 @@ class ReportController extends Controller
                                 ->whereMonth('deleted_at', '>=', $d->month)
                         )
                 )->count();
-            $growthTrend->push([
-                'label' => $d->format('M Y'),
-                'count' => $count,
-            ]);
+            $growthTrend->push(['label' => $d->format('M Y'), 'count' => $count]);
         }
 
-        // Tổng hoạt động (sessions) theo chức vụ trong tháng
         $sessionsByPosition = [];
         foreach ($employees as $e) {
             $pos = $e->position?->name_positions ?? 'Khác';
@@ -463,7 +558,9 @@ class ReportController extends Controller
             'hoursMap',
             'byPosition',
             'growthTrend',
-            'sessionsByPosition'
+            'sessionsByPosition',
+            'period',
+            'config'
         ));
     }
 
@@ -471,9 +568,6 @@ class ReportController extends Controller
     private function positionOrder(): array
     {
         return [
-            // 'Cục Trưởng' => 1,
-            // 'Phó Cục Trưởng' => 2,
-            // 'Trợ Lý Cục Trưởng' => 3,
             'Thư Ký' => 4,
             'Đội Trưởng' => 5,
             'Đội Phó' => 6,

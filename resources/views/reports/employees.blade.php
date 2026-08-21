@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', 'Báo Cáo Nhân Sự')
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/reports.css') }}">
@@ -73,7 +73,7 @@
                 <div class="kpi-icon"><i class="fa-solid fa-user-clock"></i></div>
                 <div class="kpi-body">
                     <div class="kpi-value">{{ $absentEmployees->count() }}</div>
-                    <div class="kpi-label">Vắng Tháng {{ $month }}</div>
+                    <div class="kpi-label">Vắng Kỳ Này</div>
                     <div class="kpi-sub">Chưa chấm công lần nào</div>
                 </div>
             </div>
@@ -87,8 +87,7 @@
                 <div class="chart-wrap"><canvas id="chartGrowth"></canvas></div>
             </div>
             <div class="report-card">
-                <div class="report-card-header"><span><i class="fa-solid fa-chart-bar me-2"></i>Giờ Làm Theo Chức Vụ Tháng
-                        {{ $month }}</span></div>
+                <div class="report-card-header"><span><i class="fa-solid fa-chart-bar me-2"></i>Giờ Làm Theo Chức Vụ — {{ $period['label'] }}</span></div>
                 <div class="chart-wrap"><canvas id="chartHoursByPos"></canvas></div>
             </div>
         </div>
@@ -115,8 +114,8 @@
             {{-- Nhân viên vắng --}}
             <div class="report-card">
                 <div class="report-card-header">
-                    <span><i class="fa-solid fa-triangle-exclamation me-2" style="color:#E74C3C;"></i>Vắng Chấm Công Tháng
-                        {{ $month }}</span>
+                    <span><i class="fa-solid fa-triangle-exclamation me-2" style="color:#E74C3C;"></i>Vắng Chấm Công Kỳ Này
+                        ({{ $period['label'] }})</span>
                     <span class="report-badge report-badge-red">{{ $absentEmployees->count() }}</span>
                 </div>
                 @if($absentEmployees->isNotEmpty())
@@ -145,7 +144,7 @@
                     </div>
                 @else
                     <div class="empty-state" style="padding:28px;"><i class="fa-solid fa-check-circle"
-                            style="color:#27AE60;"></i> Tất cả đã chấm công tháng này!</div>
+                            style="color:#27AE60;"></i> Tất cả đã chấm công kỳ này!</div>
                 @endif
             </div>
         </div>
@@ -205,8 +204,10 @@
                             <th>Nhân Viên</th>
                             <th>Chức Vụ</th>
                             <th>Cấp Bậc</th>
-                            <th class="text-center">Số Ca T{{ $month }}</th>
-                            <th class="text-center">Giờ T{{ $month }}</th>
+                            <th class="text-center">Số Ca
+                            ({{ $period['label'] }})</th>
+                            <th class="text-center">Giờ Làm
+                            ({{ $period['label'] }})</th>
                             <th class="text-center">Tình Trạng</th>
                         </tr>
                     </thead>

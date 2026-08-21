@@ -42,7 +42,7 @@
             <p></p>
             <div class="row">
                 <div class="col-md-6">
-                    <h6>Mức Độ 1:</h6>
+                    <h6>Khoản 1:</h6>
                     <div class="box-law">
                         <table class="table table-hover">
                             <thead>
@@ -63,17 +63,12 @@
                                 </tr>
                                 <tr>
                                     <td onclick="selectSuggestion(this, 20, 'input-5', 'input-6', 'input-7')">
-                                        Không giao nộp hung khí gây án
+                                        Không giao nộp tang vật trong vụ án
                                     </td>
                                 </tr>
                                 <tr>
                                     <td onclick="selectSuggestion(this, 20, 'input-5', 'input-6', 'input-7')">
-                                        Tàng trữ hoặc sử dụng Giáp trái phép
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td onclick="selectSuggestion(this, 20, 'input-5', 'input-6', 'input-7')">
-                                        Giả dạng, tự xưng là người nhà nước
+                                        Tàng trữ hoặc sử dụng vật phẩm trái phép tại nơi công cộng
                                     </td>
                                 </tr>
                                 <tr>
@@ -83,7 +78,7 @@
                                 </tr>
                                 <tr>
                                     <td onclick="selectSuggestion(this, 20, 'input-5', 'input-6', 'input-7')">
-                                        Trộm cắp tài sản công dân
+                                        Trộm cắp bất hợp pháp tài sản công dân (Nhập Nha Khiên Đồ)
                                     </td>
                                 </tr>
                                 <tr>
@@ -107,7 +102,7 @@
 
                 </div>
                 <div class="col-md-6">
-                    <h6>Mức Độ 2:</h6>
+                    <h6>Khoản 2:</h6>
                     <div class="box-law">
                         <table class="table table-hover">
                             <thead>
@@ -123,17 +118,17 @@
                                 </tr>
                                 <tr>
                                     <td onclick="selectSuggestion(this, 30, 'input-5', 'input-6', 'input-7')">
-                                        Tàng trữ chất cấm trái phép (Cây thảo dược)
+                                        Tàng trữ chất cấm trái phép 
                                     </td>
                                 </tr>
                                 <tr>
                                     <td onclick="selectSuggestion(this, 30, 'input-5', 'input-6', 'input-7')">
-                                        Có lời lẽ xúc phạm đến danh dự, nhân phẩm người khác
+                                        Vu khống người khác
                                     </td>
                                 </tr>
                                 <tr>
                                     <td onclick="selectSuggestion(this, 30, 'input-5', 'input-6', 'input-7')">
-                                        Sử dụng vũ khí thô sơ nơi công cộng
+                                        Lăng mạ, xúc phạm đến người khác
                                     </td>
                                 </tr>
                                 <tr>
@@ -149,20 +144,27 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td id="yet-qs"
+                                        onclick="selectSuggestion(this, 30, 'input-5', 'input-6', 'input-7')">
+                                        Sử dụng vũ khí thô sơ nơi công cộng
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td onclick="selectSuggestion(this, 30, 'input-5', 'input-6', 'input-7')">
                                         Tàng trữ vũ khí nóng
                                     </td>
                                 </tr>
                                 <tr>
                                     <td onclick="selectSuggestion(this, 30, 'input-5', 'input-6', 'input-7')">
-                                        Gây thương tích chưa nghiêm trọng cho người khác
+                                        Lừa đảo chiếm đoạt tài sản người khác 
                                     </td>
                                 </tr>
                                 <tr>
                                     <td onclick="selectSuggestion(this, 30, 'input-5', 'input-6', 'input-7')">
-                                        Xâm nhập trụ sở, nơi làm việc ban ngành nhà nước
+                                        Xâm nhập trụ sở, nơi làm việc thuộc Ban Ngành Nhà Nước 
                                     </td>
                                 </tr>
+                                
                                 <tr>
                                     <td onclick="selectSuggestion(this, 30, 'input-5', 'input-6', 'input-7')">
                                         Sử dụng phương tiện gây thương tích chưa nghiêm trọng

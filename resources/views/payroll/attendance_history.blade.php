@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Lịch Sử')
 
@@ -16,8 +16,17 @@
                     <p class="mb-0">Chức vụ: <strong>{{ $user->employee->position->name_positions }}</strong></p>
                     <p class="mb-0">Quân hàm: <strong>{{ $user->employee->rank->name_ranks }}</strong></p>
                     <p class="mb-0">ID Sĩ Quan: <strong>{{ $user->employee->id }}</strong></p>
-                    <p class="mb-0">Tháng: <strong>{{ $month }} (Lương trực tiếp:
-                            <strong>{{ number_format($monthlyTotal) }}$</strong>)</strong></p>
+                    <p class="mb-0">
+                        Kỳ lương:
+                        <strong>
+                            @if($config->cycle_type === 'biweekly')
+                                {{ $period['label'] }}
+                            @else
+                                Tháng {{ $month }}
+                            @endif
+                        </strong>
+                        (Lương kỳ này: <strong>{{ number_format($monthlyTotal) }}$</strong>)
+                    </p>
                 </div>
                 <div class="col-lg-5 info-center">
                     <p class="mb-0">Hệ số lương: <strong>{{ number_format($heSoLuong) }}$/1h</strong></p>
@@ -188,17 +197,23 @@
                                         {{ number_format($att->wage) }} $
                                     </td>
                                     @if ($att->status == 'Hoàn thành')
-                                        <td class="success_custom editable" data-id="{{ $att->id }}" data-field="status" contenteditable="true">{{ $att->status }}</td>
+                                        <td class="success_custom editable" data-id="{{ $att->id }}" data-field="status"
+                                            contenteditable="true">{{ $att->status }}</td>
                                     @elseif ($att->status == 'Đang On-Duty')
-                                        <td class="primary_custom text-white editable" data-id="{{ $att->id }}" data-field="status" contenteditable="true">{{ $att->status }}</td>
+                                        <td class="primary_custom text-white editable" data-id="{{ $att->id }}" data-field="status"
+                                            contenteditable="true">{{ $att->status }}</td>
                                     @elseif (Str::contains($att->status, 'Quản Lý'))
-                                        <td class="danger_custom text-white editable" data-id="{{ $att->id }}" data-field="status" contenteditable="true">{{ $att->status }}</td>
+                                        <td class="danger_custom text-white editable" data-id="{{ $att->id }}" data-field="status"
+                                            contenteditable="true">{{ $att->status }}</td>
                                     @elseif (Str::contains($att->status, 'Tự Động'))
-                                        <td class="bg-success text-white editable" data-id="{{ $att->id }}" data-field="status" contenteditable="true">{{ $att->status }}</td>
+                                        <td class="bg-success text-white editable" data-id="{{ $att->id }}" data-field="status"
+                                            contenteditable="true">{{ $att->status }}</td>
                                     @elseif(Str::contains($att->status, 'Dư'))
-                                        <td class="bg-danger text-white editable" data-id="{{ $att->id }}" data-field="status" contenteditable="true">{{ $att->status }}</td>
+                                        <td class="bg-danger text-white editable" data-id="{{ $att->id }}" data-field="status"
+                                            contenteditable="true">{{ $att->status }}</td>
                                     @else
-                                        <td class="hover_1 editable" data-id="{{ $att->id }}" data-field="status" contenteditable="true">{{ $att->status }}</td>
+                                        <td class="hover_1 editable" data-id="{{ $att->id }}" data-field="status" contenteditable="true">
+                                            {{ $att->status }}</td>
                                     @endif
                                     <td class="hover_1_custom">
                                         <form action="{{ route('attendance.destroy', $att->id) }}" method="POST"
@@ -234,13 +249,13 @@
         </div>
         @if ($monthlySummaries->isNotEmpty())
             <div class="ket_noi_bang mt-0">
-                <h5 class="p-4"><strong>LỊCH SỬ TỔNG KẾT THÁNG</strong></h5>
+                <h5 class="p-4"><strong>LỊCH SỬ TỔNG KẾT KỲ LƯƠNG</strong></h5>
             </div>
             <div class="box_history_time table-responsive">
                 <table class="tb_total_month">
                     <thead>
                         <tr class="table-info">
-                            <th>Tháng/Năm</th>
+                            <th>Kỳ Lương</th>
                             <th>Tổng giờ</th>
                             <th>Tổng lương</th>
                         </tr>
@@ -248,7 +263,15 @@
                     <tbody>
                         @foreach($monthlySummaries as $summary)
                             <tr>
-                                <td>{{ str_pad($summary->month, 2, '0', STR_PAD_LEFT) }}/{{ $summary->year }}</td>
+                                @if($summary->period_type === 'biweekly' && $summary->period_start)
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($summary->period_start)->format('d/m') }}
+                                        –
+                                        {{ $summary->period_end ? \Carbon\Carbon::parse($summary->period_end)->format('d/m/Y') : '?' }}
+                                    </td>
+                                @else
+                                    <td>{{ str_pad($summary->month, 2, '0', STR_PAD_LEFT) }}/{{ $summary->year }}</td>
+                                @endif
                                 <td>{{ number_format($summary->total_hours, 2) }}h</td>
                                 <td>{{ number_format($summary->total_wage) }}$</td>
                             </tr>
