@@ -46,16 +46,14 @@
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             color: var(--text);
             background:
-                radial-gradient(ellipse at 80% 10%, rgba(105, 193, 255, 0.08), transparent 50%),
-                radial-gradient(ellipse at 20% 90%, rgba(255, 215, 96, 0.08), transparent 50%),
+                radial-gradient(ellipse at 80% 10%, rgba(105, 193, 255, .08), transparent 50%),
+                radial-gradient(ellipse at 20% 90%, rgba(255, 215, 96, .08), transparent 50%),
                 linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
+            padding: 40px 20px;
+            overflow-x: hidden;
             overflow-y: auto;
+            display: block;
         }
 
         body::before {
@@ -90,9 +88,8 @@
 
         .container {
             width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-            animation: fadeIn 0.8s ease-out;
+            max-width: 1200px;
+            margin: 40px auto;
         }
 
         @keyframes fadeIn {
@@ -108,6 +105,8 @@
         }
 
         .maintenance-card {
+            min-height: auto;
+            overflow: visible;
             background: var(--card-bg);
             backdrop-filter: blur(20px) saturate(180%);
             border: 1px solid var(--border);
@@ -292,10 +291,10 @@
         }
 
         .content {
-            padding: 30px 35px;
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1.3fr .7fr;
             gap: 25px;
+            align-items: start;
         }
 
         @media (min-width: 992px) {
@@ -603,6 +602,8 @@
         .service-name {
             font-weight: 600;
             font-size: 15px;
+            color: var(--text-light);
+            width: 100%;
         }
 
         .service-status {
@@ -618,6 +619,7 @@
             background: rgba(245, 158, 11, 0.15);
             color: var(--warning);
             border: 1px solid rgba(245, 158, 11, 0.3);
+            width: 100px;
         }
 
         .service-status.disrupted {
@@ -797,6 +799,29 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        @media (max-width:992px) {
+
+            body {
+                display: block;
+                padding: 20px 15px;
+            }
+
+            .container {
+                margin: 0 auto;
+            }
+
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-section,
+            .contact-section,
+            .services-section,
+            .notes-section {
+                grid-column: auto;
+            }
+        }
     </style>
 </head>
 
@@ -853,17 +878,17 @@
                             </div>
                             <div class="time-item">
                                 <div class="time-label"><i class="far fa-hourglass"></i> Dự kiến hoàn thành</div>
-                                <div class="time-value" id="end-time">18:00, 15/08/2024</div>
+                                <div class="time-value" id="end-time">Ai biết đâu à 🤫, 15/08/2024</div>
                             </div>
                             <div class="time-item">
                                 <div class="time-label"><i class="fas fa-history"></i> Còn lại</div>
-                                <div class="time-value" id="remaining-time">~ 4 giờ 30 phút</div>
+                                <div class="time-value" id="remaining-time">~ Ai biết đâu à 🤫</div>
                             </div>
                         </div>
 
                         <div class="maintenance-code">
                             <span class="code-label">Mã bảo trì:</span>
-                            <span class="code-value">LSSD-MNT-2024-08-015</span>
+                            <span class="code-value">LSSD-MNT202608001</span>
                         </div>
 
                         <div class="terminal-container">
@@ -910,15 +935,15 @@
                                 </div>
                             </a>
 
-                            <a href="tel:+84854112509" class="contact-item">
+                            {{--<a href="tel:+84854112509" class="contact-item">
                                 <div class="contact-icon">
                                     <i class="fas fa-phone"></i>
                                 </div>
-                                <div class="contact-info">
+                                 <div class="contact-info">
                                     <div class="contact-name">Hotline khẩn cấp</div>
                                     <div class="contact-desc">+84 85 411 2509</div>
                                 </div>
-                            </a>
+                            </a>--}}
 
                             <a href="#" class="contact-item">
                                 <div class="contact-icon">
@@ -943,11 +968,11 @@
 
                             <div class="contact-item">
                                 <div class="contact-icon">
-                                    <img src="https://cdn.discordapp.com/avatars/440837500848570376/7c91358d53a77d3651e4c8bb37bb5bac.webp?size=160"
+                                    <img src="https://cdn.discordapp.com/avatars/440837500848570376/977636aa0e1055fb32035c4c9c18c5e7.webp?size=128"
                                         alt="hiimson" style="width: 24px; height: 24px; border-radius: 50%;">
                                 </div>
                                 <div class="contact-info">
-                                    <div class="contact-name">hiimson</div>
+                                    <div class="contact-name">hiimson (Son Myname)</div>
                                     <div class="contact-desc">Quản trị viên hệ thống</div>
                                 </div>
                             </div>
@@ -1074,7 +1099,7 @@
 
             return interval;
         }
-        
+
         // Terminal simulation
         function simulateTerminal() {
             const terminal = document.getElementById('terminal');

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Nhân Sự')
 
@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-    <div class="container group-employee">
+    <div class="container group-employee mb-5">
         <div class="row group-function">
             <div class="col-md-6">
                 <div class="search-wrapper position-relative">

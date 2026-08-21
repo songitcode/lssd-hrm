@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(auth()->user()->isManager() ? 'layouts.admin' : 'layouts.app')
 
 @section('title', auth()->user()->employee->name_ingame ?? 'Hồ Sơ Cá Nhân')@push('styles')
     {{-- Fonts & Icons --}}
@@ -9,8 +9,23 @@
 
 @section('content')
     @php
+    use Carbon\Carbon;
         $highRoles = ['admin', 'thư ký', 'trợ lý cục trưởng', 'phó cục trưởng', 'cục trưởng'];
         $isHighRole = in_array(auth()->user()->role, $highRoles);
+            $discordIdTest = 918149623133143061;
+            $discordId = $employee->discord_id ?? 0;
+            $response = Http::get("https://lanyard.rest/v1/users/$discordId");
+            $data = $response->json()['data'] ?? [];
+            $activities = $data['activities'] ?? [];
+            function formatElapsed($startTimestampMs)
+            {
+                $start = Carbon::createFromTimestamp($startTimestampMs / 1000);
+                $seconds = $start->diffInSeconds(Carbon::now());
+                $hours = floor($seconds / 3600);
+                $minutes = floor(($seconds % 3600) / 60);
+                $secs = $seconds % 60;
+                return sprintf('%d:%02d:%02d', $hours, $minutes, $secs);
+            }
     @endphp
 
     <div class="profile-container">
@@ -70,6 +85,33 @@
                                         <i class="fa fa-trash-alt"></i> Xoá ảnh đại diện
                                     </button>
                                 @endif
+
+                                <div class="status-">
+                                    {{-- Hiển thị Activity từ Lanyard (demo với ID test) --}}
+                                    @if(count($activities))
+                                        <div class="mt-4">
+                                            <h6 style="color: var(--gold-dim);"><i class="fa-solid fa-gamepad me-2"></i>Discord Activities</h6>
+                                            @foreach ($activities as $activity)
+                                                <div class="activity-card" style="width: fit-content; font-size: 11px; font-weight: 100;">
+                                                    @if ($activity['type'] === 4)
+                                                        <span><i class="fa-solid fa-circle text-success"></i> {{ $activity['state'] ?? 'notyet' }}
+                                                    @else
+                                                        <strong>{{ $activity['name'] }}</strong><br>
+                                                        @if (!empty($activity['details']))
+                                                            <span>{{ $activity['details'] }}</span><br>
+                                                        @endif
+                                                        @if (!empty($activity['state']))
+                                                            <span>{{ $activity['state'] }}</span><br>
+                                                        @endif
+                                                        @if (!empty($activity['timestamps']['start']))
+                                                            <span><i class="fa-solid fa-clock"></i> {{ formatElapsed($activity['timestamps']['start']) }}</span>
+                                                        @endif
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
 
@@ -152,8 +194,8 @@
                                             <strong><i class="fa-solid fa-sack-dollar me-1"></i>Tổng tiền sự nghiệp</strong>
                                             <div class="info-value text-success">{{ number_format($tongTienSuNghiep) }}$</div>
                                         </div>
-                                        <div class="info-item text-center salary-details">
-                                            <strong><i class="fa-solid fa-calendar-alt me-1"></i>Lương theo tháng</strong>
+                                        {{--<div class="info-item text-center salary-details">
+                                            <strong><i class="fa-solid fa-calendar-alt me-1"></i>Lương</strong>
                                             <details>
                                                 <summary style="cursor: pointer; color: var(--gold-dim);">Xem chi tiết</summary>
                                                 <table class="mt-2">
@@ -166,7 +208,7 @@
                                                     @endforeach
                                                 </table>
                                             </details>
-                                        </div>
+                                        </div>--}}
                                         <div class="info-item text-center">
                                             <strong><i class="fa-regular fa-calendar-check me-1"></i>Ngày tham gia</strong>
                                             <div>{{ auth()->user()->created_at->format('d/m/Y') }}</div>
@@ -235,47 +277,6 @@
                         </a>
                     @endif
                 </div>
-            </div>
-        @endif
-
-        {{-- Hiển thị Activity từ Lanyard (demo với ID test) --}}
-        @php
-            use Carbon\Carbon;
-            $discordIdTest = 918149623133143061;
-            $response = Http::get("https://api.lanyard.rest/v1/users/$discordIdTest");
-            $data = $response->json()['data'] ?? [];
-            $activities = $data['activities'] ?? [];
-            function formatElapsed($startTimestampMs)
-            {
-                $start = Carbon::createFromTimestamp($startTimestampMs / 1000);
-                $seconds = $start->diffInSeconds(Carbon::now());
-                $hours = floor($seconds / 3600);
-                $minutes = floor(($seconds % 3600) / 60);
-                $secs = $seconds % 60;
-                return sprintf('%d:%02d:%02d', $hours, $minutes, $secs);
-            }
-        @endphp
-        @if(count($activities))
-            <div class="mt-4">
-                <h5 style="color: var(--gold-dim);"><i class="fa-solid fa-gamepad me-2"></i>Hoạt động hiện tại (Discord)</h5>
-                @foreach ($activities as $activity)
-                    <div class="activity-card">
-                        @if ($activity['type'] === 4)
-                            <strong>Trạng thái:</strong> {{ $activity['state'] ?? '' }}
-                        @else
-                            <strong>{{ $activity['name'] }}</strong><br>
-                            @if (!empty($activity['details']))
-                                <span>{{ $activity['details'] }}</span><br>
-                            @endif
-                            @if (!empty($activity['state']))
-                                <span>{{ $activity['state'] }}</span><br>
-                            @endif
-                            @if (!empty($activity['timestamps']['start']))
-                                <span>⏱️ Đã chạy: {{ formatElapsed($activity['timestamps']['start']) }}</span>
-                            @endif
-                        @endif
-                    </div>
-                @endforeach
             </div>
         @endif
     </div>

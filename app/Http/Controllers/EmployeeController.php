@@ -587,7 +587,7 @@ class EmployeeController extends Controller
             'position_id' => 'nullable|exists:positions,id',
             'rank_id' => 'nullable|exists:ranks,id',
         ]);
-
+        
         // ✅ Cập nhật ảnh đại diện và tên
         $employee->name_ingame = $request->name_ingame;
 

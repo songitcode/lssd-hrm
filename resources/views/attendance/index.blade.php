@@ -269,192 +269,175 @@
         }
 
         /* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-    .atd-page {
-        padding: 16px 12px 40px;
-    }
+        @media (max-width: 768px) {
+            .atd-page {
+                padding: 16px 12px 40px;
+            }
 
-    /* Header */
-    .atd-header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 20px 20px;
-        gap: 16px;
-    }
+            /* Header */
+            .atd-header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 20px 20px;
+                gap: 16px;
+            }
 
-    .header-right-group {
-        width: 100%;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        gap: 12px;
-    }
+            .header-right-group {
+                width: 100%;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                gap: 12px;
+            }
 
-    .theme-toggle {
-        margin-left: 0;
-        padding: 6px 12px;
-        font-size: 14px;
-    }
+            .theme-toggle {
+                margin-left: 0;
+                padding: 6px 12px;
+                font-size: 14px;
+            }
 
-    .duty-btn-box {
-        align-items: flex-start;
-        width: 100%;
-    }
+            .duty-btn-box {
+                align-items: flex-start;
+                width: 100%;
+            }
 
-    .btn-on-duty, .btn-off-duty, .btn-locked, .btn-full {
-        padding: 10px 20px;
-        font-size: 13px;
-        letter-spacing: 2px;
-        width: 100%;
-        justify-content: center;
-    }
+            .btn-on-duty, .btn-off-duty, .btn-locked, .btn-full {
+                padding: 10px 20px;
+                font-size: 13px;
+                letter-spacing: 2px;
+                width: 100%;
+                justify-content: center;
+            }
 
-    /* Stats */
-    .atd-stats {
-        gap: 12px;
-    }
+            /* Stats */
+            .atd-stats {
+                gap: 12px;
+            }
 
-    .stat-card {
-        padding: 16px 16px;
-    }
+            .stat-card {
+                padding: 16px 16px;
+            }
 
-    .stat-value {
-        font-size: 20px;
-    }
+            .stat-value {
+                font-size: 20px;
+            }
 
-    /* Control panel */
-    .atd-control-panel {
-        flex-direction: column;
-        gap: 12px;
-    }
+            /* Control panel */
+            .atd-control-panel {
+                flex-direction: column;
+                gap: 12px;
+            }
 
-    .discord-status-box,
-    .overtime-box {
-        min-width: unset;
-        width: 100%;
-    }
+            .discord-status-box,
+            .overtime-box {
+                min-width: unset;
+                width: 100%;
+            }
 
-    /* Table */
-    .atd-table {
-        font-size: 11px;
-    }
+            /* Table */
+            .atd-table {
+                font-size: 11px;
+            }
 
-    .atd-table thead th {
-        padding: 10px 8px;
-        font-size: 9px;
-        letter-spacing: 1.5px;
-    }
+            .atd-table thead th {
+                padding: 10px 8px;
+                font-size: 9px;
+                letter-spacing: 1.5px;
+            }
 
-    .atd-table td {
-        padding: 8px 6px;
-    }
+            .atd-table td {
+                padding: 8px 6px;
+            }
 
-    .badge-status {
-        padding: 2px 8px;
-        font-size: 9px;
-        white-space: normal;
-        line-height: 1.3;
-    }
+            .badge-status {
+                padding: 2px 8px;
+                font-size: 9px;
+                white-space: normal;
+                line-height: 1.3;
+            }
 
-    /* Section heading */
-    .section-heading {
-        font-size: 11px;
-        letter-spacing: 2px;
-    }
+            /* Section heading */
+            .section-heading {
+                font-size: 11px;
+                letter-spacing: 2px;
+            }
 
-    /* Summary table */
-    .summary-table {
-        font-size: 12px;
-    }
+            /* Summary table */
+            .summary-table {
+                font-size: 12px;
+            }
 
-    .summary-table td {
-        padding: 10px 12px;
-    }
-}
+            .summary-table td {
+                padding: 10px 12px;
+            }
+        }
 
-@media (max-width: 480px) {
-    .atd-header-title {
-        font-size: 24px;
-    }
+        @media (max-width: 480px) {
+            .atd-header-title {
+                font-size: 24px;
+            }
 
-    .atd-header-label {
-        font-size: 9px;
-        letter-spacing: 3px;
-    }
+            .atd-header-label {
+                font-size: 9px;
+                letter-spacing: 3px;
+            }
 
-    .theme-toggle span {
-        display: none; /* Chỉ hiện icon trên mobile rất nhỏ */
-    }
+            .theme-toggle span {
+                display: none; /* Chỉ hiện icon trên mobile rất nhỏ */
+            }
 
-    .theme-toggle {
-        padding: 8px;
-        border-radius: 50%;
-    }
+            .theme-toggle {
+                padding: 8px;
+                border-radius: 50%;
+            }
 
-    .stat-card {
-        padding: 14px 12px;
-    }
+            .stat-card {
+                padding: 14px 12px;
+            }
 
-    .stat-label {
-        font-size: 8px;
-        letter-spacing: 1.5px;
-    }
+            .stat-label {
+                font-size: 8px;
+                letter-spacing: 1.5px;
+            }
 
-    .stat-value {
-        font-size: 18px;
-    }
+            .stat-value {
+                font-size: 18px;
+            }
 
-    .btn-discord {
-        padding: 4px 10px;
-        font-size: 11px;
-    }
+            .btn-discord {
+                padding: 4px 10px;
+                font-size: 11px;
+            }
 
-    /* Ẩn bớt text trong bảng nếu cần */
-    .atd-table td.td-time small {
-        display: block;
-        font-size: 9px;
-    }
+            /* Ẩn bớt text trong bảng nếu cần */
+            .atd-table td.td-time small {
+                display: block;
+                font-size: 9px;
+            }
 
-    .pagination .page-link {
-        padding: 4px 8px;
-        font-size: 12px;
-    }
-}
+            .pagination .page-link {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+        }
     </style>
 @endpush
 
 @section('content')
     @php
-        use Illuminate\Support\Facades\Http;
         $isFull = $totalTodayDuration >= $maxHourPerDay;
-        $discordId = auth()->user()->employee->discord_id ?? null;
-        $discordIdTest = '873466377728565299'; 
-        $isPlayingGame = false;
-        $gameName = null;
-        $gameDetails = null;
-        $gameState = null;
-        if ($discordId) {
-            $response = Http::get("https://api.lanyard.rest/v1/users/$discordIdTest");
-            $data = $response->json()['data'] ?? [];
-            $activities = $data['activities'] ?? [];
-            foreach ($activities as $activity) {
-                if (($activity['type'] ?? null) === 0) {
-                    $isPlayingGame = true;
-                    $gameName = $activity['name'] ?? null;
-                    $gameDetails = $activity['details'] ?? null;
-                    $gameState = $activity['state'] ?? null;
-                    break;
-                }
-            }
-        }
+        $maintenance = false;
     @endphp
-
+    @if($maintenance)
+       @include('maintenance_2')
+    @else
+    {{-- Toàn bộ giao diện chấm công hiện tại --}}
     <div class="atd-page">
 
         {{-- ═══ HEADER ═══ --}}
         <div class="atd-header">
             <div>
                 <div class="atd-header-label">Los Santos Sheriff's Department</div>
-                <h1 class="atd-header-title">THEME\ <span>TIME ATTENDANCE</span></h1>
+                <h1 class="atd-header-title">CHẤM CÔNG<span></span></h1>
             </div>
             <div class="header-right-group">
                 {{-- Nút chuyển đổi theme --}}
@@ -465,28 +448,55 @@
                 <div class="duty-btn-box">
                     <form method="POST" action="{{ route('attendance.check') }}">
                         @csrf
-                        @if (!$isPlayingGame)
-                            <span class="btn-locked"><i class="fa-solid fa-lock"></i>&nbsp; Chưa Vào Game</span>
+                        @if ($lanyardUnavailable)
+                            <span class="btn-locked">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                &nbsp; Không Kiểm Tra Được Game
+                            </span>
+
+                        @elseif (!$isPlayingGame)
+                            <span class="btn-locked">
+                                <i class="fa-solid fa-lock"></i>
+                                &nbsp; Chưa Vào Game
+                            </span>
+
                         @elseif ($gameName === 'GTA5VN')
                             @if ($isFull)
-                                <span class="btn-full"><i class="fa-solid fa-circle-check"></i>&nbsp; Đủ Giờ Hôm Nay</span>
+                                <span class="btn-full">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    &nbsp; Đủ Giờ Hôm Nay
+                                </span>
                             @else
-                                <button type="submit" name="action" value="start"
-                                    class="btn-on-duty {{ $ongoing ? 'd-none' : '' }}">
-                                    <i class="fa-solid fa-circle-play"></i> On-Duty
+                                <button
+                                    type="submit"
+                                    name="action"
+                                    value="start"
+                                    class="btn-on-duty {{ $ongoing ? 'd-none' : '' }}"
+                                >
+                                    <i class="fa-solid fa-circle-play"></i>
+                                    On-Duty
                                 </button>
-                                 <button type="submit" name="action" value="stop"
-                                    class="btn-off-duty {{ !$ongoing ? 'd-none' : '' }}">
-                                    <i class="fa-solid fa-circle-stop"></i> Off-Duty
+
+                                <button
+                                    type="submit"
+                                    name="action"
+                                    value="stop"
+                                    class="btn-off-duty {{ !$ongoing ? 'd-none' : '' }}"
+                                >
+                                    <i class="fa-solid fa-circle-stop"></i>
+                                    Off-Duty
                                 </button>
                             @endif
-                            
+
                         @else
-                            <span class="btn-locked"><i class="fa-solid fa-lock"></i>&nbsp; TẠM KHÓA</span>
+                            <span class="btn-locked">
+                                <i class="fa-solid fa-lock"></i>
+                                &nbsp; TẠM KHÓA
+                            </span>
                         @endif
                     </form>
                     {{-- TEST (ẩn) --}}
-                    <form method="POST" action="{{ route('attendance.check') }}" class="test">
+                    <form method="POST" action="{{ route('attendance.check') }}" class="_test">
                         @csrf
                         <button type="submit" name="action" value="start"
                             class="btn-on-duty {{ $isFull || $ongoing ? 'd-none' : '' }}">
@@ -536,36 +546,64 @@
                 @if ($discordId === null)
                     <div class="status-row">
                         <span class="status-dot warn"></span>
+
                         Chưa liên kết Discord —
-                        <a href="{{ route('discord.connect') }}" class="btn-discord ms-2">
-                            <i class="fab fa-discord"></i> Liên Kết Ngay
+
+                        <a href="{{ route('discord.connect') }}"
+                        class="btn-discord ms-2">
+                            <i class="fab fa-discord"></i>
+                            Liên Kết Ngay
                         </a>
                     </div>
-                @else
-                    @if ($isPlayingGame)
-                        <div class="status-row">
-                            <span class="status-dot online"></span>
-                            <b style="color:var(--text-main)">{{ $gameName }}</b>
-                            @if ($gameDetails) &nbsp;/&nbsp; <span>{{ $gameDetails }}</span> @endif
-                            @if ($gameState)   &nbsp;/&nbsp; <span>{{ $gameState }}</span>   @endif
-                        </div>
-                        @if ($gameName !== 'GTA5VN')
-                            <div class="status-row">
-                                <span class="status-dot warn"></span>
-                                Hoạt động <b style="color:#f0a500">{{ $gameName }}</b> không phải GTA5VN — Chấm công bị khoá
-                            </div>
+                @elseif ($lanyardUnavailable)
+                    <div class="status-row">
+                        <span class="status-dot warn"></span>
+                        <span>
+                            Máy chủ trạng thái Discord đang tạm thời không phản hồi.
+                            Vui lòng tải lại trang sau.
+                        </span>
+                    </div>
+                @elseif ($isPlayingGame)
+                    <div class="status-row">
+                        <span class="status-dot online"></span>
+                        <b style="color:var(--text-main)">
+                            {{ $gameName }}
+                        </b>
+                        @if ($gameDetails)
+                            &nbsp;/&nbsp;
+                            <span>{{ $gameDetails }}</span>
                         @endif
-                    @else
+                        @if ($gameState)
+                            &nbsp;/&nbsp;
+                            <span>{{ $gameState }}</span>
+                        @endif
+                    </div>
+                    @if ($gameName !== 'GTA5VN')
                         <div class="status-row">
-                            <span class="status-dot offline"></span>
-                            Chưa phát hiện hoạt động game. Vui lòng bật Activity Status trên Discord và tham gia:
-                        </div>
-                        <div style="margin-top:8px;">
-                            <a href="https://discord.gg/YK3xRYmu" class="btn-discord" id="discord-link" target="_blank">
-                                <i class="fab fa-discord"></i> Tham Gia Lanyard
-                            </a>
+                            <span class="status-dot warn"></span>
+                            Hoạt động
+                            <b style="color:#f0a500">
+                                {{ $gameName }}
+                            </b>
+                            không phải GTA5VN — Chấm công bị khoá
                         </div>
                     @endif
+                @else
+                    <div class="status-row">
+                        <span class="status-dot offline"></span>
+                        Chưa phát hiện hoạt động game.
+                        Vui lòng bật Activity Status trên Discord và tham gia:
+                    </div>
+                    <div style="margin-top:8px;">
+                        <a href="https://discord.gg/JeSrQWvTUy"
+                        class="btn-discord"
+                        id="discord-link"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                            <i class="fab fa-discord"></i>
+                            Tham Gia Lanyard
+                        </a>
+                    </div>
                 @endif
             </div>
 
@@ -593,7 +631,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Sĩ Quan</th>
+                            <th>Tên</th>
                             <th>Ngày</th>
                             <th>On-Duty</th>
                             <th>Off-Duty</th>
@@ -699,29 +737,64 @@
         </div>
 
         {{-- ═══ MONTHLY SUMMARY ═══ --}}
-        <div class="section-heading">Lịch Sử Tổng Kết Tháng</div>
-        <div class="summary-table-wrap">
-            <table class="summary-table">
-                <thead>
-                    <tr>
-                        <th>Tháng / Năm</th>
-                        <th>Tổng Giờ</th>
-                        <th>Tổng Lương</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($monthlySummaries as $summary)
+        @if ($monthlySummaries->isNotEmpty())
+
+            <div class="section-heading">
+                Lịch Sử Tổng Kết Kỳ Lương
+            </div>
+
+            <div class="summary-table-wrap">
+                <table class="summary-table">
+                    <thead>
                         <tr>
-                            <td>{{ str_pad($summary->month, 2, '0', STR_PAD_LEFT) }} / {{ $summary->year }}</td>
-                            <td style="color:var(--text-muted);">{{ number_format($summary->total_hours, 2) }}h</td>
-                            <td>{{ number_format($summary->total_wage) }}$</td>
+                            <th>Kỳ Lương</th>
+                            <th>Tổng Giờ</th>
+                            <th>Tổng Lương</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+
+                    <tbody>
+                        @foreach($monthlySummaries as $summary)
+                            <tr>
+
+                                @if($summary->period_type === 'biweekly' && $summary->period_start)
+
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($summary->period_start)->format('d/m') }}
+                                        -
+                                        {{ $summary->period_end
+                                            ? \Carbon\Carbon::parse($summary->period_end)->format('d/m/Y')
+                                            : '?' }}
+                                    </td>
+
+                                @else
+
+                                    <td>
+                                        {{ str_pad($summary->month,2,'0',STR_PAD_LEFT) }}/{{ $summary->year }}
+                                    </td>
+
+                                @endif
+
+                                <td style="color:var(--text-muted);">
+                                    {{ number_format($summary->total_hours,2) }}h
+                                </td>
+
+                                <td>
+                                    {{ number_format($summary->total_wage) }}$
+                                </td>
+
+                            </tr>
+                        @endforeach
+                    </tbody>
+
+                </table>
+            </div>
+
+        @endif
 
     </div>
+    @endif
+
 @endsection
 
 <script>

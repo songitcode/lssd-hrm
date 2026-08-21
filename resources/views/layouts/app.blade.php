@@ -18,45 +18,55 @@
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     @endif
     @stack('styles')
+    @php
+        $maintenance = false;
+    @endphp
 </head>
 
 <body>
-    @if (!View::hasSection('hide_navbar'))
-        @include('partials.navbar')
-    @endif
+    @if($maintenance && !View::hasSection('hide_maintenance'))
+        @include('maintenance')
+    @else
+        <div class="all-body">
+            @if (!View::hasSection('hide_navbar'))
+                @include('partials.navbar')
+            @endif
 
-    <!-- Custom Loading Overlay -->
-    <div id="loadingOverlay" class="loader-overlay" style="display: none;">
-        <div class="lssd-loader-content">
-            <div class="lssd-badge">
-                <div class="star"></div>
-                <div class="text">LSSD</div>
+            <!-- Custom Loading Overlay -->
+            <div id="loadingOverlay" class="loader-overlay" style="display: none;">
+                <div class="lssd-loader-content">
+                    <div class="lssd-badge">
+                        <div class="star"></div>
+                        <div class="text">LSSD</div>
+                    </div>
+                    <div class="loading-text">Loading Los Santos Sheriff Department...</div>
+                    <div class="loader-clock">
+                        <span class="hour"></span>
+                        <span class="min"></span>
+                        <span class="circel"></span>
+                    </div>
+                </div>
             </div>
-            <div class="loading-text">Loading Los Santos Sheriff Department...</div>
-            <div class="loader-clock">
-                <span class="hour"></span>
-                <span class="min"></span>
-                <span class="circel"></span>
+
+            @yield('content')
+
+            <!-- Thông Báo -->
+            <div class="notifications">
+                <span id="session-success" data-message="{{ session('success') }}"></span>
+                <span id="session-warning" data-message="{{ session('warning') }}"></span>
+                <span id="session-info" data-message="{{ session('info') }}"></span>
+                <!-- <span id="session-warning" data-message="{{ session('error') }}"></span> -->
+                <!-- <span id="session-error" data-message="{{ $errors->first() }}"></span> -->
+                <span id="session-error" data-message="{{ session('error') }}"></span>
             </div>
+
+            {{-- Footer chỉ hiển thị nếu view không có section hide_footer --}}
+            @if (!View::hasSection('hide_footer'))
+                @include('partials.footer')
+            @endif
         </div>
-    </div>
-
-    @yield('content')
-
-    <!-- Thông Báo -->
-    <div class="notifications">
-        <span id="session-success" data-message="{{ session('success') }}"></span>
-        <span id="session-warning" data-message="{{ session('warning') }}"></span>
-        <span id="session-info" data-message="{{ session('info') }}"></span>
-        <!-- <span id="session-warning" data-message="{{ session('error') }}"></span> -->
-        <!-- <span id="session-error" data-message="{{ $errors->first() }}"></span> -->
-        <span id="session-error" data-message="{{ session('error') }}"></span>
-    </div>
-
-    {{-- Footer chỉ hiển thị nếu view không có section hide_footer --}}
-    @if (!View::hasSection('hide_footer'))
-        @include('partials.footer')
     @endif
+
     <script>
         document.querySelector('.loader').addEventListener('submit', function (e) {
             showLoading();

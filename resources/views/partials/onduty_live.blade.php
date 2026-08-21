@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(auth()->user()->isManager() ? 'layouts.admin' : 'layouts.app')
 
 @section('title', 'OnDuty Live')
 @push('styles')
@@ -37,8 +37,8 @@
                         <th>STT</th>
                         <th>ID_EM</th>
                         <th>Tên</th>
-                        <th>Chức vụ</th>
-                        <th>Quân hàm</th>
+                        <!-- <th>Chức vụ</th>
+                        <th>Quân hàm</th> -->
                         <th>Date</th>
                         <th>Giờ bắt đầu</th>
                         <th>Thời gian</th>
@@ -212,14 +212,14 @@
                 newIds.add(id);
 
                 let isNew = !oldIds.has(id);
-
+                            // <td>${item.user.employee.position?.name_positions ?? '-'}</td>
+                            // <td>${item.user.employee.rank?.name_ranks ?? '-'}</td>
                 html += `
                         <tr class="${status.row} align-middle ${isNew ? 'table-success' : ''}">
                             <td>${i + 1}</td>
                             <td>${item.user.employee.id}</td>
                             <td>${item.user.employee.name_ingame ?? '-'}</td>
-                            <td>${item.user.employee.position?.name_positions ?? '-'}</td>
-                            <td>${item.user.employee.rank?.name_ranks ?? '-'}</td>
+                           
                             <td>${d.toLocaleDateString()}</td>
                             <td class="${status.cell}">${d.toLocaleTimeString('en-GB')}</td>
                             <td class="${status.cell}">

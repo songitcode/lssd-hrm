@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Báo Cáo - Tổng Quan')
 
@@ -19,7 +19,8 @@
                     <h1 class="report-title">Báo Cáo Tổng Quan</h1>
                     <p class="report-subtitle">
                         <i class="fa-regular fa-calendar me-1"></i>
-                        Tháng {{ $month }}/{{ $year }} — LSSD Human Resources Management
+                        {{-- ✅ Thay "Tháng X/Y" bằng label kỳ động --}}
+                        {{ $period['label'] }} — LSSD Human Resources Management
                     </p>
                 </div>
             </div>
@@ -39,7 +40,8 @@
                 <div class="kpi-body">
                     <div class="kpi-value">{{ $totalEmployees }}</div>
                     <div class="kpi-label">Tổng Nhân Viên</div>
-                    <div class="kpi-sub">{{ $activeEmployeesThisMonth }} đã chấm công tháng này</div>
+                    {{-- ✅ --}}
+                    <div class="kpi-sub">{{ $activeEmployeesThisMonth }} đã chấm công kỳ này</div>
                 </div>
             </div>
             <div class="kpi-card kpi-blue">
@@ -54,8 +56,9 @@
                 <div class="kpi-icon"><i class="fa-solid fa-dollar-sign"></i></div>
                 <div class="kpi-body">
                     <div class="kpi-value">{{ number_format($totalWageThisMonth) }}<span class="kpi-unit">$</span></div>
-                    <div class="kpi-label">Quỹ Lương Tháng</div>
-                    <div class="kpi-sub">Tổng chi trả tháng {{ $month }}</div>
+                    {{-- ✅ --}}
+                    <div class="kpi-label">Quỹ Lương Kỳ Này</div>
+                    <div class="kpi-sub">Tổng chi trả {{ $period['label'] }}</div>
                 </div>
             </div>
             <div class="kpi-card {{ $attendanceRate >= 70 ? 'kpi-green' : 'kpi-red' }}">
@@ -70,17 +73,19 @@
 
         {{-- ── ROW 1: Charts ── --}}
         <div class="report-grid-2">
-            {{-- Chart: 6 tháng --}}
             <div class="report-card">
                 <div class="report-card-header">
-                    <span><i class="fa-solid fa-chart-line me-2"></i>Tổng Giờ Làm — 6 Tháng Gần Nhất</span>
+                    {{-- ✅ Nhãn động: "6 Tháng" hoặc "6 Kỳ" --}}
+                    <span><i class="fa-solid fa-chart-line me-2"></i>
+                        Tổng Giờ Làm —
+                        {{ $config->cycle_type === 'biweekly' ? '6 Kỳ Gần Nhất' : '6 Tháng Gần Nhất' }}
+                    </span>
                 </div>
                 <div class="chart-wrap">
                     <canvas id="chartHours6M"></canvas>
                 </div>
             </div>
 
-            {{-- Chart: Phân bổ chức vụ --}}
             <div class="report-card">
                 <div class="report-card-header">
                     <span><i class="fa-solid fa-chart-pie me-2"></i>Phân Bổ Nhân Sự Theo Chức Vụ</span>
@@ -93,11 +98,11 @@
 
         {{-- ── ROW 2: Top Workers + Activity Log ── --}}
         <div class="report-grid-2">
-            {{-- Top 5 --}}
             <div class="report-card">
                 <div class="report-card-header">
-                    <span><i class="fa-solid fa-trophy me-2" style="color:#D4AF37;"></i>Top 5 Nhân Viên Tháng
-                        {{ $month }}</span>
+                    {{-- ✅ --}}
+                    <span><i class="fa-solid fa-trophy me-2" style="color:#D4AF37;"></i>Top 5 Nhân Viên —
+                        {{ $period['label'] }}</span>
                 </div>
                 <div class="top-workers">
                     @foreach($topWorkers as $i => $tw)
@@ -108,19 +113,17 @@
                         <div class="top-worker-row {{ $i == 0 ? 'top-worker-1st' : '' }}">
                             <span class="tw-rank">{{ $medals[$i] ?? ($i + 1) }}</span>
                             @if ($tw->user->employee->avatar)
-                                <img id="avatarPreview" src="{{ asset('storage/' . $tw->user->employee->avatar) }}" alt="Avatar"
-                                    class="rounded-circle" width="38" height="38"
+                                <img src="{{ asset('storage/' . $tw->user->employee->avatar) }}" alt="Avatar" class="rounded-circle"
+                                    width="38" height="38"
                                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($tw->user->employee->name_ingame ?? 'NAN') }}&background=random';">
                             @else
-                                <img id="avatarPreview"
-                                    src="https://ui-avatars.com/api/?name={{ urlencode($tw->user->employee->name_ingame ?? 'NAN') }}&background=random"
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($tw->user->employee->name_ingame ?? 'NAN') }}&background=random"
                                     class="rounded-circle" width="38" height="38" alt="Default">
                             @endif
                             <div class="tw-info">
                                 <div class="tw-name">{{ $emp?->name_ingame ?? $tw->user?->username ?? '—' }}</div>
                                 <div class="tw-pos">{{ $emp?->position?->name_positions ?? '' }} ·
-                                    {{ $emp?->rank?->name_ranks ?? '' }}
-                                </div>
+                                    {{ $emp?->rank?->name_ranks ?? '' }}</div>
                             </div>
                             <div class="tw-stats">
                                 <div class="tw-hours">{{ round($tw->total_hours, 1) }}h</div>
@@ -129,12 +132,11 @@
                         </div>
                     @endforeach
                     @if($topWorkers->isEmpty())
-                        <div class="empty-state"><i class="fa-solid fa-inbox"></i> Chưa có dữ liệu tháng này</div>
+                        <div class="empty-state"><i class="fa-solid fa-inbox"></i> Chưa có dữ liệu kỳ này</div>
                     @endif
                 </div>
             </div>
 
-            {{-- Activity Log --}}
             <div class="report-card">
                 <div class="report-card-header">
                     <span><i class="fa-solid fa-bolt me-2" style="color:#F0CC5A;"></i>Hoạt Động Gần Đây</span>
@@ -150,7 +152,6 @@
                                     <span class="log-badge-action">{{ $log->action }}</span>
                                 </div>
                                 @if($log->detail)
-                                    <!-- <div class="log-detail">{{ Str::limit($log->detail, 80) }}</div> -->
                                     <div class="log-detail">{{ $log->detail }}</div>
                                 @endif
                                 <div class="log-time"><i
@@ -168,8 +169,8 @@
         {{-- ── ROW 3: Daily chart ── --}}
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fa-solid fa-chart-column me-2"></i>Tổng Giờ Làm Theo Ngày — Tháng
-                    {{ $month }}/{{ $year }}</span>
+                {{-- ✅ --}}
+                <span><i class="fa-solid fa-chart-column me-2"></i>Tổng Giờ Làm Theo Ngày — {{ $period['label'] }}</span>
             </div>
             <div class="chart-wrap">
                 <canvas id="chartDailyHours"></canvas>
@@ -184,22 +185,20 @@
     <script>
         const gold = '#D4AF37', goldDim = 'rgba(212,175,55,0.15)', blue = '#4A90D9', green = '#27AE60';
         const gridColor = 'rgba(255,255,255,0.06)', textColor = '#8A9BBD';
-
         Chart.defaults.color = textColor;
         Chart.defaults.font.family = "'Inter', sans-serif";
 
-        // ── 6-Month Hours Chart ──
+        // ── 6-Period Chart ──
         const d6 = @json($last6Months);
         new Chart(document.getElementById('chartHours6M'), {
             type: 'line',
             data: {
                 labels: d6.map(x => x.label),
                 datasets: [{
-                    label: 'Giờ làm',
-                    data: d6.map(x => x.hours),
+                    label: 'Giờ làm', data: d6.map(x => x.hours),
                     borderColor: gold, backgroundColor: goldDim,
-                    borderWidth: 2, fill: true,
-                    tension: 0.4, pointBackgroundColor: gold, pointRadius: 5
+                    borderWidth: 2, fill: true, tension: 0.4,
+                    pointBackgroundColor: gold, pointRadius: 5
                 }]
             },
             options: {
@@ -212,35 +211,29 @@
             }
         });
 
-        // ── Position Pie Chart ──
+        // ── Position Pie ──
         const pos = @json($byPosition);
-        const posLabels = Object.keys(pos), posData = Object.values(pos);
         const posColors = ['#D4AF37', '#4A90D9', '#27AE60', '#E74C3C', '#9B59B6', '#E67E22', '#1ABC9C', '#E91E63', '#607D8B'];
         new Chart(document.getElementById('chartPosition'), {
             type: 'doughnut',
             data: {
-                labels: posLabels,
-                datasets: [{ data: posData, backgroundColor: posColors, borderColor: '#111827', borderWidth: 3 }]
+                labels: Object.keys(pos),
+                datasets: [{ data: Object.values(pos), backgroundColor: posColors, borderColor: '#111827', borderWidth: 3 }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false, cutout: '62%',
-                plugins: {
-                    legend: { position: 'right', labels: { boxWidth: 12, padding: 14, color: textColor, font: { size: 12 } } }
-                }
+                plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 14, color: textColor, font: { size: 12 } } } }
             }
         });
 
-        // ── Daily Hours Bar Chart ──
+        // ── Daily Hours Bar ──
         const dd = @json($dailyHours);
-        const ddLabels = Object.keys(dd).map(d => d.slice(5));
-        const ddValues = Object.values(dd);
         new Chart(document.getElementById('chartDailyHours'), {
             type: 'bar',
             data: {
-                labels: ddLabels,
+                labels: Object.keys(dd).map(d => d.slice(5)),
                 datasets: [{
-                    label: 'Giờ làm',
-                    data: ddValues,
+                    label: 'Giờ làm', data: Object.values(dd),
                     backgroundColor: goldDim, borderColor: gold, borderWidth: 1.5, borderRadius: 6
                 }]
             },

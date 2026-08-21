@@ -165,13 +165,21 @@ if (viewPrevBtn) {
         fetch(`${window.location.origin}/payroll/previous`)
             .then(function (res) { return res.json(); })
             .then(function (response) {
-                const data = response.data;
+                const data   = response.data;
+                const period = response.period || '';
+
+                // Cập nhật tiêu đề modal với tên kỳ thực tế
+                const titleEl = document.getElementById('prevModalTitle');
+                if (titleEl) {
+                    titleEl.textContent = 'Bảng Lương Kỳ Trước' + (period ? ': ' + period : '');
+                }
 
                 if (!data || data.length === 0) {
                     contentDiv.innerHTML = `
                         <div style="text-align:center;padding:2rem;color:var(--pr-text-3);">
                             <div style="font-size:2rem;margin-bottom:0.5rem;">📭</div>
-                            <p style="font-size:0.9rem;">Không có dữ liệu tháng trước.</p>
+                            <p style="font-size:0.9rem;">Không có dữ liệu cho kỳ: <strong>${period}</strong>.</p>
+                            <p style="font-size:0.82rem;color:var(--pr-text-3);margin-top:0.4rem;">Chưa có chấm công nào trong kỳ này.</p>
                         </div>
                     `;
                     return;
@@ -184,7 +192,7 @@ if (viewPrevBtn) {
                 let rowsHTML = '';
                 data.forEach(function (item, index) {
                     const name = item.user.employee?.name_ingame ?? item.user.username ?? '-';
-                    const pos = item.user.employee?.position?.name_positions || '—';
+                    const pos  = item.user.employee?.position?.name_positions || '—';
                     const rank = item.user.employee?.rank?.name_ranks || '—';
                     const rate = item.user.employee?.position?.salary_config?.hourly_rate || 24000;
 
@@ -194,7 +202,7 @@ if (viewPrevBtn) {
                             <td class="pr-td pr-td--name">${name}</td>
                             <td class="pr-td">${pos}</td>
                             <td class="pr-td">${rank}</td>
-                            <td class="pr-td pr-td--num">${item.total_hours}h</td>
+                            <td class="pr-td pr-td--num">${Number(item.total_hours).toLocaleString()}h</td>
                             <td class="pr-td pr-td--rate">${Number(rate).toLocaleString()}$/h</td>
                             <td class="pr-td pr-td--wage">${Number(item.total_wage).toLocaleString()}$</td>
                         </tr>
@@ -204,11 +212,14 @@ if (viewPrevBtn) {
                 contentDiv.innerHTML = `
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
                         <span style="font-size:0.85rem;color:var(--pr-text-2);">
+                            Kỳ: <strong>${period}</strong> &nbsp;·&nbsp;
                             Tổng lương: <strong style="color:var(--pr-green);font-size:1rem;">${totalWageAll.toLocaleString()}$</strong>
                         </span>
-                        <button id="btnExportPrev" class="pr-btn pr-btn--green">
-                            <i class="fa fa-file-excel"></i> Xuất Excel
-                        </button>
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                            <button id="btnExportPrev" class="pr-btn pr-btn--green">
+                                <i class="fa fa-file-excel"></i> Xuất Excel
+                            </button>
+                        </div>
                     </div>
                     <div style="overflow-x:auto;">
                         <table id="prevPayrollTable" class="pr-tbl table-bordered">
@@ -233,9 +244,12 @@ if (viewPrevBtn) {
                 if (modalTbody) animateRows(modalTbody);
 
                 /* Export button */
-                document.getElementById('btnExportPrev').addEventListener('click', function () {
-                    exportPayrollDataToExcel(data, 'bang-luong-thang-truoc');
-                });
+                const exportBtn = document.getElementById('btnExportPrev');
+                if (exportBtn) {
+                    exportBtn.addEventListener('click', function () {
+                        exportPayrollDataToExcel(data, 'bang-luong-ky-truoc-' + period.replace(/[^a-zA-Z0-9]/g, '_'));
+                    });
+                }
             })
             .catch(function () {
                 contentDiv.innerHTML = `
