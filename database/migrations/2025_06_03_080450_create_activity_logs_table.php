@@ -16,7 +16,12 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('action'); // tạo, sửa, xoá...
             $table->string('target'); // ví dụ: "Nguyễn Văn A"
-            $table->string('detail'); // ví dụ: "cập nhật chức vụ"
+            $table->string('detail'); // ví dụ: "cập nhật chức vụ"\
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->string('device')->nullable();
+            $table->string('browser')->nullable();
+            $table->string('platform')->nullable();
             $table->timestamps();
 
             // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

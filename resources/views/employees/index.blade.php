@@ -22,8 +22,7 @@
                 <!-- Nút tạo nhân sự -->
                 <div class="d-flex justify-content-end mb-2 gap-2">
                     <button class="btn-action-hr btn-history" data-bs-toggle="modal"
-                        data-bs-target="#historyModal"><strong><i class="fa-solid fa-clock-rotate-left"></i> Lịch
-                            Sử</strong></button>
+                        data-bs-target="#historyModal"><strong><i class="fa-solid fa-clock-rotate-left"></i> Khôi phục </strong></button>
                     @if(auth()->user()->gioiHanRole_1()) 
                      <button class="btn-action-hr btn-trash" data-bs-toggle="modal"
                         data-bs-target="#trashModal">
@@ -45,7 +44,7 @@
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="historyModalLabel">Lịch Sử Thao Tác</h5>
+                        <h5 class="modal-title" id="historyModalLabel">Thao tác</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                     </div>
                     <div class="modal-body">
@@ -67,6 +66,9 @@
                         <!-- Lịch sử mẫu -->
                         <!-- Xóa -->
                         @forelse ($logs as $log)
+                        @if(in_array($log->action, ['login', 'tạo', 'sửa', 'resetPassword', 'deleteAvatar', 'logsCustom', 'logout' ]))
+                            @continue
+                        @endif
                          @switch($log->action)
                                 @case('xóa')
                                     <div class="history-item d-flex justify-content-between align-items-center text-danger">
@@ -470,7 +472,7 @@
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
-                <table class="table table-striped mb-0 table-employees table-radius-custom">
+                <table class="table table-striped mt-3 mb-0 table-employees table-radius-custom_OFF table-hover">
                     <thead>
                         <tr>
                             <th>STT</th>

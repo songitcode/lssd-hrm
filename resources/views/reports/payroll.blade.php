@@ -90,7 +90,7 @@
                 <div class="kpi-body">
                     <div class="kpi-value">{{ number_format($totalFund) }}<span class="kpi-unit">$</span></div>
                     {{-- ✅ --}}
-                    <div class="kpi-label">Quỹ Lương {{ $selectedPeriod['label'] }}</div>
+                    <div class="kpi-label">Quỹ Lương <br> {{ $selectedPeriod['label'] }}</div>
                     <div class="kpi-sub">Tổng chi trả</div>
                 </div>
             </div>
@@ -128,19 +128,19 @@
 
         {{-- Charts --}}
         <div class="report-grid-2">
+            {{--
             <div class="report-card">
-                {{-- ✅ --}}
                 <div class="report-card-header"><span><i class="fa-solid fa-chart-line me-2"></i>Xu Hướng Quỹ Lương —
                     {{ $config->cycle_type === 'biweekly' ? '6 Kỳ Gần Nhất' : '6 Tháng Gần Nhất' }}
                 </span></div>
                 <div class="chart-wrap"><canvas id="chartFundTrend"></canvas></div>
             </div>
+            --}}
             <div class="report-card">
                 <div class="report-card-header"><span><i class="fa-solid fa-chart-bar me-2"></i>Lương Theo Chức Vụ</span></div>
                 <div class="chart-wrap"><canvas id="chartWageByPos"></canvas></div>
             </div>
         </div>
-
         {{-- ✅ Bảng lương chi tiết --}}
         <div class="report-card">
             <div class="report-card-header">
