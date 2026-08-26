@@ -124,6 +124,8 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
     Route::post('/salary-configs', [SalaryConfigController::class, 'store'])->name('salary_configs.store');
     Route::put('/salary_configs/{id}', [SalaryConfigController::class, 'update'])->name('salary_configs.update');
 
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity_logs.index');
+
     Route::put('/salary-configs/global-hours', [SalaryConfigController::class, 'updateGlobalHours'])->name('salary_configs.updateGlobalHours');
 
     Route::get('/payroll', [PayrollController::class, 'index'])->name('payroll.index');

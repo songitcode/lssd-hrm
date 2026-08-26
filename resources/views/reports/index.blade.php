@@ -136,7 +136,7 @@
                     @endif
                 </div>
             </div>
-
+            {{--
             <div class="report-card">
                 <div class="report-card-header">
                     <span><i class="fa-solid fa-bolt me-2" style="color:#F0CC5A;"></i>Hoạt Động Gần Đây</span>
@@ -164,6 +164,7 @@
                     @endif
                 </div>
             </div>
+            --}}
         </div>
 
         {{-- ── ROW 3: Daily chart ── --}}

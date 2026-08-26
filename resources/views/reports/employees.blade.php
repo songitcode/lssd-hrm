@@ -86,10 +86,12 @@
                         Tháng</span></div>
                 <div class="chart-wrap"><canvas id="chartGrowth"></canvas></div>
             </div>
+            {{--
             <div class="report-card">
                 <div class="report-card-header"><span><i class="fa-solid fa-chart-bar me-2"></i>Giờ Làm Theo Chức Vụ — {{ $period['label'] }}</span></div>
                 <div class="chart-wrap"><canvas id="chartHoursByPos"></canvas></div>
             </div>
+            --}}
         </div>
 
         {{-- Phân bổ chức vụ --}}
@@ -165,7 +167,7 @@
                                 <th>Tên In-Game</th>
                                 <th>Chức Vụ</th>
                                 <th>Cấp Bậc</th>
-                                <th>Người Tuyển</th>
+                                <th>Tạo bởi</th>
                                 <th>Ngày Gia Nhập</th>
                             </tr>
                         </thead>
@@ -179,7 +181,7 @@
                                     <td><span class="pos-badge">{{ $e->position?->name_positions ?? '—' }}</span></td>
                                     <td style="color:var(--text-secondary);font-size:13px;">{{ $e->rank?->name_ranks ?? '—' }}</td>
                                     <td style="color:var(--text-secondary);font-size:13px;">
-                                        {{ $e->userCreatedBy?->employee->name_ingame ?? '—' }}</td>
+                                        {{ $e->userCreatedBy?->employee->name_ingame ?? $e->userCreatedBy?->username }}</td>
                                     <td><span class="date-badge">{{ \Carbon\Carbon::parse($e->created_at)->format('d/m/Y') }}</span>
                                     </td>
                                 </tr>

@@ -124,16 +124,16 @@
         </div>
 
         {{-- Chart giờ theo ngày --}}
+        {{--
         <div class="report-card">
             <div class="report-card-header">
-                {{-- ✅ --}}
                 <span><i class="fa-solid fa-chart-column me-2"></i>Giờ Làm Theo Ngày — {{ $period['label'] }}</span>
             </div>
             <div class="chart-wrap">
                 <canvas id="chartDaily"></canvas>
             </div>
         </div>
-
+        --}}
         {{-- Bảng chi tiết --}}
         <div class="report-card">
             <div class="report-card-header d-flex justify-content-between align-items-center">

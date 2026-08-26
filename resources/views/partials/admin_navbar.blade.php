@@ -559,6 +559,12 @@
                     <span class="as-badge-live">Live</span>
                 @endif
             </a>
+            
+            <a class="as-link {{ request()->routeIs('activity_logs.index') ? 'active' : '' }}"
+                href="{{ route('activity_logs.index') }}">
+                <i class="fa-solid fa-list-check as-icon"></i>
+                <span class="as-label">Logs</span>
+            </a>
 
             <div class="as-divider"></div>
 

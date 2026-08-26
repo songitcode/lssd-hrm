@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\ActivityLog;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -55,13 +57,27 @@ class LoginController extends Controller
             return redirect()->back()->with('error', "Đây không phải trang Admin vui lòng truy cập https:://lssdhrtime.com/admin/");
         }
 
-
         if ($user->employee?->trashed()) {
             $deletedBy = $user->employee->delete_by ?? 'Admin';
             return redirect()->back()->with('error', "Tài khoản đã bị vô hiệu hóa bởi $deletedBy.");
         }
 
         Auth::login($user);
+
+        // Log after authentication; auth()->id() is now available.
+       ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => 'login',
+            'target' => $request->username,
+            'detail' => 'Đăng nhập',
+
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'device' => $this->getDeviceType($request->userAgent()),
+            'browser' => $this->getBrowser($request->userAgent()),
+            'platform' => $this->getPlatform($request->userAgent()),
+        ]);
+
         // ✅ Thêm flash message
         return redirect()->route('home')->with('success', 'Đăng nhập thành công!');
     }
@@ -152,7 +168,63 @@ class LoginController extends Controller
             return redirect()->route('admin.login');
         }
 
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => '   ',
+            'target' => $user->username,
+            'detail' => 'Đăng xuất (' . now()->toDateTimeString() . ' )',
+            // 'ip_address' => request()->ip(),
+            // 'user_agent' => request()->userAgent(),
+            // 'device' => $this->getDeviceType(request()->userAgent()),
+            // 'browser' => $this->getBrowser(request()->userAgent()),
+            // 'platform' => $this->getPlatform(request()->userAgent()),
+        ]);
+
         // return redirect()->route('login')->with('success', 'Đăng xuất thành công!');
         return redirect()->route('login');
+    }
+
+    protected function getDeviceType(?string $userAgent): string
+    {
+        if (!$userAgent) {
+            return 'Unknown';
+        }
+
+        return preg_match('/mobile|android|iphone|ipad|tablet/i', $userAgent)
+            ? 'Mobile'
+            : 'Desktop';
+    }
+
+    protected function getBrowser(?string $userAgent): string
+    {
+        if (!$userAgent) {
+            return 'Unknown';
+        }
+
+        return match (true) {
+            preg_match('/edg\//i', $userAgent) === 1 => 'Edge',
+            preg_match('/opr\//i', $userAgent) === 1 => 'Opera',
+            preg_match('/chrome\//i', $userAgent) === 1 => 'Chrome',
+            preg_match('/firefox\//i', $userAgent) === 1 => 'Firefox',
+            preg_match('/safari\//i', $userAgent) === 1 => 'Safari',
+            preg_match('/msie|trident/i', $userAgent) === 1 => 'Internet Explorer',
+            default => 'Unknown',
+        };
+    }
+
+    protected function getPlatform(?string $userAgent): string
+    {
+        if (!$userAgent) {
+            return 'Unknown';
+        }
+
+        return match (true) {
+            preg_match('/windows/i', $userAgent) === 1 => 'Windows',
+            preg_match('/android/i', $userAgent) === 1 => 'Android',
+            preg_match('/iphone|ipad|ipod/i', $userAgent) === 1 => 'iOS',
+            preg_match('/macintosh|mac os/i', $userAgent) === 1 => 'macOS',
+            preg_match('/linux/i', $userAgent) === 1 => 'Linux',
+            default => 'Unknown',
+        };
     }
 }
