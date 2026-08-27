@@ -160,6 +160,7 @@
                     </thead>
                     <tbody>
                         @foreach($users as $i => $u)
+                        @if(in_array($u->employee?->position_id, [9, 8, 7])) @continue @endif 
                             @php $s = $summaries[$u->id]; @endphp
                             <tr class="{{ $top3->contains($u->id) ? 'row-highlight-gold' : '' }} {{ $s->total_hours == 0 ? 'row-absent' : '' }}">
                                 <td class="text-muted">{{ $i + 1 }}</td>

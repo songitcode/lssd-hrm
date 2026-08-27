@@ -3,7 +3,6 @@
 @section('title', 'Chấm Công — LSSD')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/hr_employees.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
     {{-- Font Awesome 6 (nếu chưa có) --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -119,7 +118,7 @@
         @media(max-width:900px){.atd-stats{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:500px){.atd-stats{grid-template-columns:1fr;}}
         .stat-card {
-            background:var(--card-bg); border:1px solid var(--border-light); border-radius:16px;
+            background:var(--card-bg); border:1px solid var(--border-light); 
             padding:20px 22px; position:relative; overflow:hidden; transition:all 0.2s;
             box-shadow: var(--shadow-sm);
         }
@@ -194,7 +193,7 @@
         .section-heading::before { content:''; display:inline-block; width:4px; height:18px; background:var(--gold); border-radius:4px; }
 
         /* ATTENDANCE TABLE */
-        .atd-table-wrap { background:var(--card-bg); border:1px solid var(--border-light); border-radius:16px; overflow:hidden; margin-bottom:28px; box-shadow: var(--shadow-sm); }
+        .atd-table-wrap { background:var(--card-bg); border:1px solid var(--border-light);overflow:hidden; margin-bottom:28px; box-shadow: var(--shadow-sm); }
         .table-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
         .atd-table { width:100%; border-collapse:collapse; font-size:13px; }
         .atd-table thead tr { background:var(--panel-bg); }
@@ -236,7 +235,7 @@
         }
 
         /* MONTHLY SUMMARY */
-        .summary-table-wrap { background:var(--card-bg); border:1px solid var(--border-light); border-radius:16px; overflow:hidden; margin-bottom:28px; box-shadow: var(--shadow-sm); }
+        .summary-table-wrap { background:var(--card-bg); border:1px solid var(--border-light); overflow:hidden; margin-bottom:28px; box-shadow: var(--shadow-sm); }
         .summary-table { width:100%; border-collapse:collapse; font-size:13px; }
         .summary-table thead tr { background:var(--panel-bg); }
         .summary-table thead th {

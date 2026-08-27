@@ -1,6 +1,5 @@
 @extends('layouts.admin')
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/hr_employees.css') }}">
     <link
         href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
         <style>
@@ -10,7 +9,7 @@
                 --sc-surface-2:    #f9fafd;
                 --sc-border:       #e4e8f0;
                 --sc-border-hover: #c9d1e0;
-                --sc-blue:         #2563eb;
+                --sc-blue:         rgb(255, 174, 0);
                 --sc-blue-light:   #eff4ff;
                 --sc-blue-dim:     #dbeafe;
                 --sc-amber:        #d97706;
@@ -79,7 +78,6 @@
             .sc-card {
                 background: var(--sc-surface);
                 border: 1px solid var(--sc-border);
-                border-radius: var(--sc-r-xl);
                 padding: 1.75rem 2rem;
                 box-shadow: var(--sc-shadow-md);
                 margin-bottom: 1.5rem;
@@ -189,7 +187,7 @@
                 box-shadow: 0 2px 8px rgba(37,99,235,0.25);
             }
             .sc-btn--blue:hover {
-                background: #1d4ed8;
+                background: #d8a91d;
                 box-shadow: 0 4px 14px rgba(37,99,235,0.35);
                 transform: translateY(-1px);
             }
@@ -216,10 +214,10 @@
             .sc-table-card {
                 background: var(--sc-surface);
                 border: 1px solid var(--sc-border);
-                border-radius: var(--sc-r-xl);
                 box-shadow: var(--sc-shadow-md);
                 overflow: hidden;
                 animation: sc-up 0.5s ease 0.08s both;
+                text-align: center;
             }
             .sc-table-bar {
                 display: flex;

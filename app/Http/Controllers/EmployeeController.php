@@ -117,7 +117,7 @@ class EmployeeController extends Controller
 
         // ✅ Phân trang thủ công sau khi sort
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 7;
+        $perPage = 3;
         $pagedData = $users->slice(($currentPage - 1) * $perPage, $perPage)->values();
         $paginatedUsers = new LengthAwarePaginator(
             $pagedData,
