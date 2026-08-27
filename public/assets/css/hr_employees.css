@@ -1,243 +1,305 @@
-/* body {
-    background: url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
-    background-size: cover;
-} */
+/* ====================================================
+   HR_EMPLOYEES.CSS — LSSD HRM System v2.0
+   Employee / HR Module Styles
+   ==================================================== */
 
+/* ─── TABLES ─── */
 .table-employees {
-    border-radius: 20px;
+    border-radius: 16px;
 }
 
 .tb-timekeeping {
-    border: 1px solid #e8a800;
+    border: 1px solid rgba(232, 168, 0, 0.3);
 }
 
 .table-radius-custom {
-    border-radius: 25px;
-
-    thead tr th {
-        border-radius: 25px;
-    }
+    border-radius: 20px;
 }
 
-/* BUTTON CSS */
+.table-radius-custom thead tr th {
+    border-radius: 20px;
+}
+
+/* ─── BUTTON BASE ─── */
 .btn-action-hr {
-    color: #6C757D;
+    color: #9A9AB0;
     border-radius: 10px;
-    padding: 8px 16px;
-    margin: 32px 0 16px;
-    font-weight: 300;
-    font-size: 16px;
-    border: 1px solid #e8a800;
-    background: none;
+    padding: 8px 18px;
+    margin: 28px 0 14px;
+    font-weight: 400;
+    font-size: 0.9rem;
+    border: 1px solid rgba(232, 168, 0, 0.35);
+    background: rgba(232, 168, 0, 0.04);
     outline: none;
+    transition: all 0.25s ease;
+    font-family: 'Inter', sans-serif;
 }
 
-.btn-add {
-    i {
-        color: #fdb913;
-    }
-}
+/* ─── BTN ADD ─── */
+.btn-add i { color: #E8A800; }
 
 .btn-add:hover {
-    background-color: #fdb913;
-    color: white;
-
-    i {
-        color: #ffffff;
-    }
+    background-color: #E8A800;
+    border-color: #E8A800;
+    color: #0F1117;
 }
 
+.btn-add:hover i { color: #0F1117; }
+
+/* ─── BTN HISTORY ─── */
 .btn-history {
     border-radius: 20px;
-
-    i {
-        color: #0091ff;
-    }
 }
+
+.btn-history i { color: #3B9EFF; }
 
 .btn-history:hover {
-    background: #0091ff;
-    color: white;
-
-    i {
-        color: white;
-    }
+    background: #3B9EFF;
+    border-color: #3B9EFF;
+    color: #fff;
 }
 
+.btn-history:hover i { color: #fff; }
+
+/* ─── BTN EDIT ─── */
 .btn-edit {
     border: 1px solid #339af0;
     color: #339af0;
     border-radius: 20px;
-    padding: 2px 16px;
+    padding: 3px 16px;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 0.85rem;
     background-color: transparent;
     outline: none;
-    background-color: none;
+    transition: all 0.22s ease;
 }
 
 .btn-edit:hover {
     background-color: #339af0;
-    color: white;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(51, 154, 240, 0.35);
 }
 
+/* ─── BTN DELETE ─── */
 .btn-delete {
-    border: 1px solid red;
-    color: red;
+    border: 1px solid #e05555;
+    color: #e05555;
     border-radius: 20px;
-    padding: 2px 16px;
+    padding: 3px 16px;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 0.85rem;
     background-color: transparent;
+    transition: all 0.22s ease;
 }
 
 .btn-delete:hover {
-    background-color: red;
-    color: white;
+    background-color: #e05555;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(224, 85, 85, 0.35);
 }
 
+/* ─── BTN TRASH ─── */
 .btn-trash {
-    background: none;
-
-    &:hover {
-        background: #6C757D;
-        color: white;
-    }
+    background: transparent;
+    border: none;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    padding: 4px 8px;
+    background: rgba(174, 0, 0);
+    color: #fff;
 }
 
+.btn-trash:hover {
+    background: rgb(255, 41, 41);
+}
+
+/* ─── BTN SELECT ALL ─── */
 .btn-select-all {
     font-weight: 700;
-    color: #0091ff;
+    color: #3B9EFF;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
 }
 
 .btn-select-all:hover {
-    cursor: pointer;
-    scale: 1.05;
+    transform: scale(1.04);
     text-decoration: underline;
 }
 
+/* ─── BTN TIMEKEEPING ON DUTY ─── */
 .btn-timekeeping-onduty {
-    padding: 10px 15px;
+    padding: 10px 18px;
     border-radius: 10px;
-    background: rgba(6, 146, 62, 0.8);
-    color: white;
+    background: rgba(6, 146, 62, 0.85);
+    color: #fff;
     border: none;
-    transition: all 200ms;
-
-    &:hover {
-        background: #06923E;
-        color: white;
-    }
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.22s ease;
 }
 
+.btn-timekeeping-onduty:hover {
+    background: #06923E;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(6, 146, 62, 0.4);
+}
+
+/* ─── BTN TIMEKEEPING OFF DUTY ─── */
 .btn-timekeeping-offduty {
-    padding: 10px 15px;
+    padding: 10px 18px;
     border-radius: 10px;
-    background: rgba(178, 34, 34, 0.7);
-    color: white;
+    background: rgba(180, 34, 34, 0.75);
+    color: #fff;
     border: none;
-    transition: all 200ms;
-
-    &:hover {
-        background: #b01919;
-        color: white;
-    }
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.22s ease;
 }
 
+.btn-timekeeping-offduty:hover {
+    background: #b01919;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(180, 34, 34, 0.4);
+}
+
+/* ─── BTN TIMEKEEPING FULL TIME ─── */
 .btn-timekeeping-fulltime {
-    padding: 10px 15px;
+    padding: 10px 18px;
     border-radius: 10px;
-    background: #DDDDDD;
-    border: none;
-    transition: all 200ms;
+    background: rgba(180, 180, 180, 0.2);
+    border: 1px solid rgba(180, 180, 180, 0.3);
+    color: #6C757D;
+    font-weight: 500;
     cursor: not-allowed;
 }
 
+/* ─── BTN CHECK TRASH DELETE ─── */
 .btn-check-trash-delete {
     width: 30px;
     height: 30px;
     cursor: pointer;
+    accent-color: #E8A800;
 }
 
+/* ─── BTN RESET PASSWORD ─── */
 .btn-resetpassword {
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 5px 12px;
+    border-radius: 7px;
     background: #06923E;
     border: none;
     outline: none;
-    color: white;
-    transition: all 200ms;
-
-    &:hover {
-        background: #07d75a;
-        color: rgb(135, 135, 135);
-        color: white;
-        transform: translateY(-2px);
-    }
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.22s ease;
 }
 
-/* PHÂN TRANG CSS */
+.btn-resetpassword:hover {
+    background: #07d55a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(6, 146, 62, 0.4);
+}
+
+/* ═══════════════════════════════════════════════
+   PAGINATION
+   ═══════════════════════════════════════════════ */
 .pagination .page-link {
-    border-radius: 6px;
+    border-radius: 7px;
     margin: 0 2px;
-    color: #fdb913;
-    border: 1px solid #fdb913;
+    color: #E8A800;
+    border: 1px solid rgba(232, 168, 0, 0.3);
+    background: rgba(232, 168, 0, 0.04);
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
 }
 
 .pagination .page-item.active .page-link {
-    background-color: #fdb913;
-    color: white;
-    border-color: #fdb913;
+    background-color: #E8A800;
+    color: #0F1117;
+    border-color: #E8A800;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(232, 168, 0, 0.4);
 }
 
 .pagination .page-link:hover {
-    background-color: #fdb913;
-    color: white;
+    background-color: rgba(232, 168, 0, 0.18);
+    color: #E8A800;
+    border-color: rgba(232, 168, 0, 0.5);
 }
 
+/* ═══════════════════════════════════════════════
+   BOX EMPLOYEES / TIMER
+   ═══════════════════════════════════════════════ */
 .box-employees th,
-td {
+.box-employees td {
     text-align: center;
     vertical-align: middle !important;
 }
 
 .box-employees,
 .box-timer {
-    border: 1px solid #e8a800;
-    border-radius: 20px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-    padding: .5px;
+    border: 1px solid rgba(232, 168, 0, 0.28);
+    border-radius: 16px;
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.3);
+    padding: 2px;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
+    transition: border-color 0.3s ease;
 }
 
-/* History Modal  */
+.box-employees:hover,
+.box-timer:hover {
+    border-color: rgba(232, 168, 0, 0.5);
+}
 
+/* ═══════════════════════════════════════════════
+   HISTORY MODAL
+   ═══════════════════════════════════════════════ */
 .btn-restore {
-    border: 1px solid green;
-    color: green;
+    border: 1px solid #2DCA73;
+    color: #2DCA73;
     border-radius: 20px;
-    padding: 4px 12px;
+    padding: 4px 14px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 0.82rem;
+    background: transparent;
+    transition: all 0.22s ease;
 }
 
 .btn-restore:hover {
-    background-color: green;
-    color: white;
+    background-color: #2DCA73;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(45, 202, 115, 0.35);
 }
 
 .modal-header {
-    background-color: #fdb913;
-    color: white;
+    background: linear-gradient(135deg, #E8A800 0%, #FFB800 100%);
+    color: #0F1117;
+    border-bottom: none;
+    font-weight: 700;
 }
 
 .history-item {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    padding: 12px 16px;
     margin-bottom: 10px;
+    transition: background 0.2s ease;
 }
 
-/* SEARCH CSS */
+.history-item:hover {
+    background: rgba(232, 168, 0, 0.05);
+}
+
+/* ═══════════════════════════════════════════════
+   SEARCH BAR
+   ═══════════════════════════════════════════════ */
 .search-wrapper {
     max-width: 600px;
     margin: 20px auto;
@@ -245,38 +307,48 @@ td {
 
 .search-box {
     position: relative;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 18px rgba(0, 0, 0, 0.2);
     border-radius: 50px;
     transition: all 0.3s ease;
-    border: 1px solid #ffdf8f;
+    border: 1px solid rgba(232, 168, 0, 0.3);
+    background: rgba(232, 168, 0, 0.03);
 }
 
 .search-box:focus-within {
-    box-shadow: 0 3px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 24px rgba(232, 168, 0, 0.2);
     transform: translateY(-2px);
+    border-color: rgba(232, 168, 0, 0.6);
 }
 
 .search-input {
     border-radius: 50px;
-    padding-left: 45px;
+    padding-left: 48px;
     padding-right: 20px;
     border: 2px solid transparent;
+    background: transparent;
+    color: #EAEAEA;
+    height: 48px;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
-    height: 50px;
 }
 
+.search-input::placeholder { color: #5C5C70; }
+
 .search-input:focus {
-    border-color: #e8a800;
+    border-color: transparent;
     box-shadow: none;
+    background: transparent;
+    color: #EAEAEA;
 }
 
 .search-icon {
     position: absolute;
-    left: 16px;
+    left: 18px;
     top: 50%;
     transform: translateY(-50%);
-    color: #6c757d;
+    color: #E8A800;
     z-index: 10;
+    font-size: 0.95rem;
 }
 
 .search-button {
@@ -285,25 +357,33 @@ td {
     top: 50%;
     transform: translateY(-50%);
     border-radius: 50px;
-    padding: 8px 20px;
-    transition: all 0.3s ease;
-    background: #e8a800;
+    padding: 8px 22px;
+    transition: all 0.25s ease;
+    background: #E8A800;
     border: none;
+    color: #0F1117;
+    font-weight: 700;
+    font-size: 0.85rem;
 }
 
 .search-button:hover {
-    background-color: #e8a800;
-    transform: translateY(-50%) scale(1.05);
+    background-color: #FFD04D;
+    transform: translateY(-50%) scale(1.04);
+    box-shadow: 0 4px 16px rgba(232, 168, 0, 0.4);
 }
 
-/* OTHER KHÁC */
+/* ═══════════════════════════════════════════════
+   GROUP FUNCTION WRAPPER
+   ═══════════════════════════════════════════════ */
 .group-function {
-    margin: 20px 17px 0;
-    border: 1px solid #e8a800;
-    border-radius: 20px 20px 0 0;
-    background: #efc2512c;
+    margin: 20px 30px 0;
+    border: 1px solid rgba(232, 168, 0, 0.25);
+    border-radius: 14px 14px 0 0;
+    background: rgba(232, 168, 0, 0.04);
+    padding: 4px 8px;
 }
 
+/* ─── LOADING SPINNER ─── */
 #loading-spinner {
     position: absolute;
     display: none;
@@ -311,75 +391,83 @@ td {
     justify-content: center;
     width: 100%;
     height: 100%;
-    background: #ffffff3e;
-    border-radius: 20px;
-    backdrop-filter: blur(5px);
-    scale: 1.2;
+    background: rgba(10, 12, 16, 0.55);
+    border-radius: 16px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 100;
 }
 
 .spinner-border {
     position: absolute;
     top: calc(50% - 25px);
+    color: #E8A800 !important;
+    width: 2.5rem;
+    height: 2.5rem;
 }
 
-.employees-position-relative {
-    position: relative;
-}
+.employees-position-relative { position: relative; }
 
 .text-notification {
-    font-weight: 330;
-    font-style: italic
+    font-weight: 300;
+    font-style: italic;
+    color: #7A7A8C;
+    font-size: 0.85rem;
 }
 
-/* BUTTON _ Chấm CÔng, cham cong, timekeeping */
+/* ─── BG SECONDARY ─── */
+.bg_secondary_cus { background-color: rgba(180, 180, 180, 0.15); }
 
-.bg_secondary_cus {
-    background-color: #bababa;
-}
-
-
-/* LOGS TAB */
+/* ═══════════════════════════════════════════════
+   LOG ITEMS
+   ═══════════════════════════════════════════════ */
 .log-item {
-    transition: all 0.3s ease;
-    border-left: 4px solid #dee2e6 !important;
+    transition: all 0.25s ease;
+    border-left: 4px solid rgba(255,255,255,0.1) !important;
+    background: rgba(255,255,255,0.02);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
 }
 
 .log-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .log-item[data-action="xóa"] {
     border-left-color: #dc3545 !important;
-    background-color: rgba(220, 53, 69, 0.05);
+    background-color: rgba(220, 53, 69, 0.06);
 }
 
 .log-item[data-action="tạo"] {
     border-left-color: #0dcaf0 !important;
-    background-color: rgba(13, 202, 240, 0.05);
+    background-color: rgba(13, 202, 240, 0.06);
 }
 
 .log-item[data-action="sửa"] {
-    border-left-color: #ffc107 !important;
-    background-color: rgba(255, 193, 7, 0.05);
+    border-left-color: #E8A800 !important;
+    background-color: rgba(232, 168, 0, 0.06);
 }
 
 .log-item[data-action="khôi phục"] {
-    border-left-color: #198754 !important;
-    background-color: rgba(25, 135, 84, 0.05);
+    border-left-color: #2DCA73 !important;
+    background-color: rgba(45, 202, 115, 0.06);
 }
 
 .log-item[data-action="đổi mật khẩu"],
 .log-item[data-action="resetPassword"] {
     border-left-color: #6c757d !important;
-    background-color: rgba(108, 117, 125, 0.05);
+    background-color: rgba(108, 117, 125, 0.06);
 }
 
+/* ─── FILTER BUTTONS ─── */
 .filter-btn.active {
-    font-weight: bold;
+    font-weight: 700;
     transform: scale(1.05);
+    border-color: #E8A800 !important;
+    color: #E8A800 !important;
 }
 
-.hidden {
-    display: none !important;
-}
+/* ─── HIDDEN UTILITY ─── */
+.hidden { display: none !important; }
