@@ -67,8 +67,18 @@
             </div>
         </div>
     </header>
+@endauth
 
-    <nav class="navbar navbar-expand-lg navbar-custom position-sticky top-0">
+@guest
+    <header class="main-header">
+        <div class="d-flex justify-content-between align-items-center container">
+            <h5 class="lilita-one-regular">LOS SANTOS SHERIFF'S DEPARTMENT</h5>
+            <a href="{{ route('login') }}" class="btn btn-outline-secondary">Đăng nhập</a>
+        </div>
+    </header>
+@endguest
+
+<nav class="navbar navbar-expand-lg navbar-custom position-sticky top-0">
         <div class="container color-white">
             <a class="navbar-brand d-flex align-items-center logo_lssd" href="{{ route('home') }}">
                 <img src="{{ asset('assets/images/Logo_LSCSD.png') }}" alt="Logo" height="50" class="me-3">
@@ -83,63 +93,66 @@
             <div class="collapse navbar-collapse justify-content-between" id="navbarNavDropdown">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('home') ? 'active-link' : '' }}"
+                        <a target="_blank" class="nav-link {{ request()->is('/') || request()->is('home') ? 'active-link' : '' }}"
                             href="{{ route('home') }}">
                             <i class="fa-solid fa-house"></i> Trang Chủ
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('attendance') ? 'active-link' : '' }}"
+                        <a target="_blank" class="nav-link {{ request()->is('attendance') ? 'active-link' : '' }}"
                             href="{{ route('attendance.index') }}">
                             <i class="fa-solid fa-clock"></i> Chấm Công
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('bao-lanh-toi-pham') ? 'active-link' : '' }}"
+                        <a target="_blank" class="nav-link {{ request()->is('bao-lanh-toi-pham') ? 'active-link' : '' }}"
                             href="{{ route('partials.criminal_bail') }}">
                             <i class="fa-solid fa-gavel"></i> Bảo Lãnh Tội Phạm
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('ho-tro-xu-an') ? 'active-link' : '' }}"
+                        <a target="_blank" class="nav-link {{ request()->is('ho-tro-xu-an') ? 'active-link' : '' }}"
                             href="{{ route('partials.proc_records') }}">
                             <i class="fa-solid fa-file-lines"></i> Hỗ Trợ Xử Án
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('ho-tro-truy-na') ? 'active-link' : '' }}"
+                        <a target="_blank" class="nav-link {{ request()->is('ho-tro-truy-na') ? 'active-link' : '' }}"
                             href="{{ route('partials.wanted_support') }}">
                             <i class="fa-solid fa-magnifying-glass"></i> Hỗ Trợ Truy Nã
                         </a>
                     </li>
                     {{--<li class="nav-item">
-                        <a class="nav-link {{ request()->is('don-xin-nghi-phep') ? 'active-link' : '' }}"
+                        <a target="_blank" class="nav-link {{ request()->is('don-xin-nghi-phep') ? 'active-link' : '' }}"
                             href="{{ route('partials.take_leave') }}">
                             Đơn Xin Nghỉ Phép
                         </a>
                     </li>--}}
 
                     {{-- Đội Trưởng / Đội Phó: xem Onduty Live --}}
+                    @auth
                     @if(auth()->user()->quanLyOnduty())
                         <li class="nav-item">
                             @php $nguoiDungDangOnduty = \App\Models\Attendance::where('status', 'Đang On-Duty')->count(); @endphp
                             @if ($nguoiDungDangOnduty > 0)
-                                <a class="nav-link text-success {{ request()->is('onduty-live') ? 'active-link' : '' }}"
+                                <a target="_blank" class="nav-link text-success {{ request()->is('onduty-live') ? 'active-link' : '' }}"
                                     href="{{ route('partials.onduty_live') }}">
                                     <i class="fa-solid fa-circle-dot"></i>
                                     Onduty Live <small class="text-danger">({{ $nguoiDungDangOnduty }})</small>
                                 </a>
                             @else
-                                <a class="nav-link text-danger {{ request()->is('onduty-live') ? 'active-link' : '' }}"
+                                <a target="_blank" class="nav-link text-danger {{ request()->is('onduty-live') ? 'active-link' : '' }}"
                                     href="{{ route('partials.onduty_live') }}">
                                     <i class="fa-solid fa-circle-dot"></i> Onduty Live 0
                                 </a>
                             @endif
                         </li>
                     @endif
+                    @endauth
                 </ul>
 
                 {{-- Nút chuyển sang trang Admin (chỉ hiện với isManager) --}}
+                @auth
                 @if(auth()->user()->isManager())
                     <a href="{{ route('employees.index') }}" class="btn-admin-switch">
                         <i class="fa-solid fa-shield-halved"></i>
@@ -172,12 +185,10 @@
                         }
                     </style>
                 @endif
+                @endauth
             </div>
         </div>
-    </nav>
-@else
-    <a href="{{ route('login') }}">Đăng nhập</a>
-@endauth
+</nav>
 
 @push('scripts')
     <script>

@@ -24,22 +24,18 @@ use Illuminate\Support\Facades\Http;
 //     return 'Symlink recreated successfully!';
 // });
 
-Route::get('/', function () {
-    return view('auth.login');
-});
+// Cmd -> php artisan storage:link --force
+
+Route::get('/', [EmployeeController::class, 'homeDisplay'])->name('home');
+Route::get('/home', [EmployeeController::class, 'homeDisplay']);
 // Hiển thị trang admin login
 Route::get('/admin', function () {
     return view('auth.admin.login');
 })->name('admin.login');
 
-Route::get('/employees', function () {
-    return view('employees.index');
-});
-
 Route::middleware('guest')->group(function () {
-    Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
-    // Route::get('/', function () { return view('maintenance'); });
-    Route::post('/', [LoginController::class, 'login']);
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
     // Admin Login Routes
     Route::post('/admin/login', [LoginController::class, 'loginAdmin'])
         ->name('admin.login.submit');
@@ -54,11 +50,6 @@ Route::post('/discord/unlink', [DiscordController::class, 'unlink'])
     ->middleware('auth');
 
 Route::middleware('auth')->group(function () {
-    // Route::get('/home', function () {
-    //     return view('home');
-    // })->name('home');
-    Route::get('/home', [EmployeeController::class, 'homeDisplay'])->name('home');
-
     // PROFILE
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('profile');
     Route::put('/profile/update', [EmployeeController::class, 'updateProfile'])->name('profile.update');
@@ -158,5 +149,3 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
     Route::get('/reports/payroll', [ReportController::class, 'payroll'])->name('reports.payroll');
     Route::get('/reports/employees', [ReportController::class, 'employees'])->name('reports.employees');
 });
-
-

@@ -581,67 +581,113 @@ class EmployeeController extends Controller
         $user = auth()->user();
         $employee = $user->employee;
 
+        if (!$employee) {
+            return back()->with('error', 'Không tìm thấy hồ sơ nhân sự.');
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Validate
+    |--------------------------------------------------------------------------
+    | name_ingame không bắt buộc phải được gửi lên khi chỉ đổi avatar.
+    */
         $request->validate([
-            'name_ingame' => 'required|string|max:255',
+            'name_ingame' => 'nullable|string|max:255',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'position_id' => 'nullable|exists:positions,id',
             'rank_id' => 'nullable|exists:ranks,id',
         ]);
-        
-        // ✅ Cập nhật ảnh đại diện và tên
-        $employee->name_ingame = $request->name_ingame;
 
+        /*
+    |--------------------------------------------------------------------------
+    | Tên trong game
+    |--------------------------------------------------------------------------
+    */
+        if ($request->filled('name_ingame')) {
+            $employee->name_ingame = $request->name_ingame;
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Avatar
+    |--------------------------------------------------------------------------
+    */
         if ($request->hasFile('avatar')) {
-            if ($employee->avatar && Storage::disk('public')->exists($employee->avatar)) {
+
+            // Xóa avatar cũ
+            if (
+                !empty($employee->avatar) &&
+                Storage::disk('public')->exists($employee->avatar)
+            ) {
                 Storage::disk('public')->delete($employee->avatar);
             }
+
+            // Lưu avatar mới
             $employee->avatar = $request->file('avatar')->store('avatars', 'public');
         }
 
-        if ($request->position_id && auth()->user()->getRoleLevel() > $employee->user->getRoleLevel()) {
-            $employee->position_id = $request->position_id;
-        }
-
-        // Quân hàm thì vẫn cho phép chỉnh nếu có quyền
-        if (auth()->user()->getRoleLevel() >= 1) {
-            $employee->rank_id = $request->rank_id;
-        }
-
-        // 🔐 CHỈ cập nhật chức vụ nếu người dùng có role cao hơn nhân sự đó
+        /*
+    |--------------------------------------------------------------------------
+    | Chức vụ
+    |--------------------------------------------------------------------------
+    */
         if (
             $request->filled('position_id') &&
-            $employee->position_id != $request->position_id // chỉ đổi khi khác
+            auth()->user()->getRoleLevel() > $employee->user->getRoleLevel()
         ) {
             $targetRole = $this->mapPositionToRole($employee->position_id);
             $newRole = $this->mapPositionToRole($request->position_id);
-
             $editorRole = $user->role;
 
             if (
-                $this->getRoleLevel($editorRole) > $this->getRoleLevel($targetRole)
+                $this->getRoleLevel($editorRole) >
+                $this->getRoleLevel($targetRole)
             ) {
                 $employee->position_id = $request->position_id;
 
-                // Đồng bộ luôn role của user nếu chức vụ đổi
+                // Đồng bộ role
                 $employee->user->update([
                     'role' => $newRole
                 ]);
             }
         }
 
+        /*
+    |--------------------------------------------------------------------------
+    | Quân hàm
+    |--------------------------------------------------------------------------
+    */
+        if (
+            $request->filled('rank_id') &&
+            auth()->user()->getRoleLevel() >= 1
+        ) {
+            $employee->rank_id = $request->rank_id;
+        }
+
         $employee->save();
 
+        /*
+    |--------------------------------------------------------------------------
+    | Activity Log
+    |--------------------------------------------------------------------------
+    */
         if ($request->hasFile('avatar')) {
             $detail = 'thay đổi ảnh đại diện';
-        } else {
+        } elseif ($request->filled('name_ingame')) {
             $detail = 'cập nhật thông tin cá nhân';
+        } elseif ($request->filled('position_id')) {
+            $detail = 'cập nhật chức vụ';
+        } elseif ($request->filled('rank_id')) {
+            $detail = 'cập nhật quân hàm';
+        } else {
+            $detail = 'cập nhật hồ sơ';
         }
 
         ActivityLog::create([
             'user_id' => $user->id,
             'action' => 'sửa',
             'target' => $user->username,
-            'detail' => $detail
+            'detail' => $detail,
         ]);
 
         return back()->with('success', 'Cập nhật hồ sơ thành công.');
