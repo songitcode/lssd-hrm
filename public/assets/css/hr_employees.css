@@ -36,15 +36,15 @@
 }
 
 /* ─── BTN ADD ─── */
-.btn-add i { color: #E8A800; }
+.btn-add { color: #E8A800; }
 
 .btn-add:hover {
     background-color: #E8A800;
     border-color: #E8A800;
-    color: #0F1117;
+    color: #fff;
 }
 
-.btn-add:hover i { color: #0F1117; }
+.btn-add:hover i { color: #fff; }
 
 /* ─── BTN HISTORY ─── */
 .btn-history {
@@ -104,13 +104,14 @@
     border: none;
     transition: all 0.2s ease;
     border-radius: 8px;
+    border: 1px solid #e05555;
+    color: #e05555;
     padding: 4px 8px;
-    background: rgba(174, 0, 0);
-    color: #fff;
 }
 
 .btn-trash:hover {
     background: rgb(255, 41, 41);
+    color: #fff;
 }
 
 /* ─── BTN SELECT ALL ─── */
@@ -326,7 +327,7 @@
     padding-right: 20px;
     border: 2px solid transparent;
     background: transparent;
-    color: #EAEAEA;
+    color: #FFB800;
     height: 48px;
     font-size: 0.9rem;
     transition: all 0.3s ease;
@@ -338,7 +339,7 @@
     border-color: transparent;
     box-shadow: none;
     background: transparent;
-    color: #EAEAEA;
+    color: #FFB800;
 }
 
 .search-icon {

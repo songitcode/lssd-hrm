@@ -150,7 +150,7 @@
                                     <div class="mb-4">
                                         <div class="form-label-custom">Tên trong game (GTA5VN)</div>
                                         @if (!in_array(auth()->user()->role, ['cục trưởng', 'phó cục trưởng', 'trợ lý cục trưởng']))
-                                            <input type="text" class="input-custom" value="{{ $employee->name_ingame }}" readonly disabled>
+                                            <input type="text" class="input-custom" value="{{ $employee->name_ingame }}" readonly>
                                         @else
                                             <input type="text" name="name_ingame" class="input-custom" value="{{ $employee->name_ingame }}"
                                                 data-original="{{ $employee->name_ingame }}" required>
@@ -314,8 +314,10 @@
         // Kích hoạt nút cập nhật khi có thay đổi
         const avatarInput = document.querySelector('input[name="avatar"]');
         const btnAvatar = document.getElementById('btnUpdateAvatar');
-        if(avatarInput) {
-            avatarInput.addEventListener('change', () => btnAvatar.disabled = false);
+        if (avatarInput && btnAvatar) {
+            avatarInput.addEventListener('change', function () {
+                btnAvatar.disabled = !this.files.length;
+            });
         }
 
         const nameInput = document.querySelector('input[name="name_ingame"]');
