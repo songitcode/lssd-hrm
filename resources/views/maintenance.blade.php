@@ -847,7 +847,7 @@
                 <div class="status-indicators">
                     <div class="status-tag maintenance">
                         <span class="dot"></span>
-                        <span>Bảo trì định kỳ</span>
+                        <span>Bảo trì</span>
                     </div>
                     <div class="status-tag priority">
                         <span class="dot"></span>
@@ -874,21 +874,21 @@
                         <div class="time-info">
                             <div class="time-item">
                                 <div class="time-label"><i class="far fa-clock"></i> Bắt đầu</div>
-                                <div class="time-value" id="start-time">10:00, 15/08/2024</div>
+                                <div class="time-value" id="start-time">15:54, 15/08/2024</div>
                             </div>
                             <div class="time-item">
                                 <div class="time-label"><i class="far fa-hourglass"></i> Dự kiến hoàn thành</div>
-                                <div class="time-value" id="end-time">Ai biết đâu à 🤫, 15/08/2024</div>
+                                <div class="time-value" id="end-time">---</div>
                             </div>
                             <div class="time-item">
                                 <div class="time-label"><i class="fas fa-history"></i> Còn lại</div>
-                                <div class="time-value" id="remaining-time">~ Ai biết đâu à 🤫</div>
+                                <div class="time-value" id="remaining-time">---</div>
                             </div>
                         </div>
 
                         <div class="maintenance-code">
                             <span class="code-label">Mã bảo trì:</span>
-                            <span class="code-value">LSSD-MNT202608001</span>
+                            <span class="code-value">LSSD-AT2608281555</span>
                         </div>
 
                         <div class="terminal-container">
@@ -913,7 +913,7 @@
                     <div class="contact-card">
                         <h3><i class="fas fa-globe"></i> Hỗ Trợ Xử Án/ Lập Án</h3>
 
-                        <a href="https://jaysonmanager2.github.io/lssd-form/" target="_blank" class="contact-item mb-3">
+                        <a href="https://jaysonmanager2.github.io/lssd-form/pages/ho-tro-xu-an/index.html" target="_blank" class="contact-item mb-3">
                             <div class="contact-icon">
                                 <i class="fas fa-globe"></i>
                             </div>
@@ -1175,10 +1175,10 @@
         function updateTimeInfo() {
             const now = new Date();
             const startTime = new Date(now);
-            startTime.setHours(10, 0, 0);
+            startTime.setHours(15, 55, 0);
 
             const endTime = new Date(startTime);
-            endTime.setHours(endTime.getHours() + 8);
+            endTime.setHours(endTime.getHours() + 1);
 
             // Format dates
             const formatTime = (date) => {
