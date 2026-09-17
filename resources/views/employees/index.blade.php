@@ -23,7 +23,7 @@
                 <div class="d-flex justify-content-end mb-2 gap-2">
                     <button class="btn-action-hr btn-history" data-bs-toggle="modal"
                         data-bs-target="#historyModal"><strong><i class="fa-solid fa-clock-rotate-left"></i> Khôi phục </strong></button>
-                    @if(auth()->user()->gioiHanRole_1()) 
+                    @if(auth()->user()->isManager()) 
                      <button class="btn-action-hr btn-trash" data-bs-toggle="modal"
                         data-bs-target="#trashModal">
                         <strong><i class="fa-solid fa-trash-can"></i> Thùng Rác</strong>
@@ -520,7 +520,7 @@
                                 <td>{{ $emp->userCreatedBy->username ?? 'Người Tàng Hình' }}</td>
                                 <td>
                                     @if(auth()->id() !== $emp->user_id)
-                                        @if(auth()->user()->gioiHanRole_1()) 
+                                        @if(auth()->user()->isManager()) 
                                             <button class="btn btn-delete"
                                                 data-id="{{ Hashids::encode($emp->id) }}">
                                                 <i class="fa-solid fa-trash"></i> Xóa
