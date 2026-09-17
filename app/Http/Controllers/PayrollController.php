@@ -278,55 +278,61 @@ class PayrollController extends Controller
             ->whereHas('employee')
             ->get()
             ->sort(
-                fn($a, $b) =>
-                (self::POSITION_ORDER[$a->employee?->position?->name_positions] ?? 999)
-                <=> (self::POSITION_ORDER[$b->employee?->position?->name_positions] ?? 999)
+                fn($a, $b) => (self::POSITION_ORDER[$a->employee?->position?->name_positions] ?? 999)
+                    <=>
+                    (self::POSITION_ORDER[$b->employee?->position?->name_positions] ?? 999)
             )
             ->values();
 
         $results = [];
 
         foreach ($users as $user) {
-            // Tính từ bảng Attendance (không phụ thuộc summary đã lưu hay chưa)
+
+            // Tính trực tiếp từ bảng Attendance
             $rows = Attendance::where('user_id', $user->id)
                 ->whereBetween('date', [
                     $prev['start']->toDateString(),
                     $prev['end']->toDateString(),
-                ])->get();
+                ])
+                ->get();
 
             $totalHours = round($rows->sum('duration'), 2);
-            $totalWage = (int) $rows->sum('wage');
+            $totalWage  = (int) $rows->sum('wage');
 
-            // Auto-save / cập nhật summary để lần sau nhanh hơn (không bắt buộc)
+            // Chuẩn hóa ngày kỳ lương
+            $periodStart = $prev['period_start'];
+            $periodEnd   = $prev['period_end'];
+
+            // Lưu / cập nhật summary theo đúng kỳ
             MonthlyAttendanceSummary::updateOrCreate(
                 [
-                    'user_id' => $user->id,
-                    'period_type' => $config->cycle_type,
-                    'month' => $prev['month'],
-                    'year' => $prev['year'],
-                    'period_start' => $prev['period_start'],
+                    'user_id'      => $user->id,
+                    'period_type'  => $config->cycle_type,
+                    'period_start' => $periodStart,
+                    'period_end'   => $periodEnd,
                 ],
                 [
+                    'month'       => $prev['month'],
+                    'year'        => $prev['year'],
                     'total_hours' => $totalHours,
-                    'total_wage' => $totalWage,
-                    'period_end' => $prev['period_end'],
+                    'total_wage'  => $totalWage,
                 ]
             );
 
-            // Chỉ trả về user có dữ liệu trong kỳ này
+            // Chỉ trả về user có dữ liệu trong kỳ
             if ($totalHours <= 0 && $totalWage <= 0) {
                 continue;
             }
 
             $results[] = [
-                'user' => $user,
+                'user'        => $user,
                 'total_hours' => $totalHours,
-                'total_wage' => $totalWage,
+                'total_wage'  => $totalWage,
             ];
         }
 
         return response()->json([
-            'data' => $results,
+            'data'   => $results,
             'period' => $prev['label'],
         ]);
     }
