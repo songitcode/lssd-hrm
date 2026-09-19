@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Employee;
 
 class HomeController extends Controller
 {
@@ -25,5 +26,31 @@ class HomeController extends Controller
     public function viewTakeLeave()
     {
         return view('partials.take_leave');
+    }
+    public function viewEmployeeTable()
+    {
+        $cucTruong = Employee::with(['user', 'position', 'rank'])
+            ->where('position_id', 9)
+            ->get();
+
+        $phoCucTruong = Employee::with(['user', 'position', 'rank'])
+            ->where('position_id', 8)
+            ->get();
+
+        $troLy = Employee::with(['user', 'position', 'rank'])
+            ->where('position_id', 7)
+            ->get();
+
+        $thuKy = Employee::with(['user', 'position', 'rank'])
+            ->where('position_id', 6)
+            ->get();
+
+
+        return view('employee_table', compact(
+            'cucTruong',
+            'phoCucTruong',
+            'troLy',
+            'thuKy',
+        ));
     }
 }

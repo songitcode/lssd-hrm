@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckManagerRole;
@@ -149,3 +150,6 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
     Route::get('/reports/payroll', [ReportController::class, 'payroll'])->name('reports.payroll');
     Route::get('/reports/employees', [ReportController::class, 'employees'])->name('reports.employees');
 });
+
+// FORM BẢNG NHÂN VIÊN
+Route::get('/bang-nhan-vien', [HomeController::class, 'viewEmployeeTable'])->name('partials.employee_table');

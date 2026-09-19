@@ -122,6 +122,14 @@
                             <i class="fa-solid fa-magnifying-glass"></i> Hỗ Trợ Truy Nã
                         </a>
                     </li>
+                    
+                    <li class="nav-item">
+                        <a target="_blank" class="nav-link {{ request()->is('bang-nhan-vien') ? 'active-link' : '' }}"
+                            href="{{ route('partials.employee_table') }}">
+                            <i class="fa-solid fa-users"></i> Bảng Nhân Sự
+                        </a>
+                    </li>
+                    
                     {{--<li class="nav-item">
                         <a target="_blank" class="nav-link {{ request()->is('don-xin-nghi-phep') ? 'active-link' : '' }}"
                             href="{{ route('partials.take_leave') }}">
