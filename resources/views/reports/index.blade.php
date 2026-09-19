@@ -71,6 +71,24 @@
             </div>
         </div>
 
+        @if($analytics)
+        {{-- ── WEBSITE ANALYTICS ── --}}
+        <div class="kpi-grid analytics-kpi-grid">
+            <div class="kpi-card kpi-blue"><div class="kpi-icon"><i class="fa-solid fa-eye"></i></div><div class="kpi-body"><div class="kpi-value">{{ number_format($analytics['totalVisits']) }}</div><div class="kpi-label">Tổng Truy Cập</div><div class="kpi-sub">Page view hợp lệ</div></div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-icon"><i class="fa-solid fa-calendar-day"></i></div><div class="kpi-body"><div class="kpi-value">{{ number_format($analytics['todayVisits']) }}</div><div class="kpi-label">Hôm Nay</div><div class="kpi-sub">Lượt truy cập trong ngày</div></div></div>
+            <div class="kpi-card kpi-gold"><div class="kpi-icon"><i class="fa-solid fa-calendar-days"></i></div><div class="kpi-body"><div class="kpi-value">{{ number_format($analytics['monthVisits']) }}</div><div class="kpi-label">Tháng Này</div><div class="kpi-sub">Lượt truy cập trong tháng</div></div></div>
+            <div class="kpi-card kpi-green"><div class="kpi-icon"><i class="fa-solid fa-signal"></i></div><div class="kpi-body"><div class="kpi-value" id="online-count">{{ $analytics['online']['online_count'] }}</div><div class="kpi-label">Đang Online</div><div class="kpi-sub">Hoạt động trong 5 phút</div></div></div>
+            <div class="kpi-card kpi-red"><div class="kpi-icon"><i class="fa-solid fa-chart-line"></i></div><div class="kpi-body"><div class="kpi-value" id="peak-online">{{ $analytics['online']['peak_online'] }}</div><div class="kpi-label">Peak Online</div><div class="kpi-sub">Cao nhất hôm nay</div></div></div>
+        </div>  
+
+        <div class="report-grid-2">
+            <div class="report-card"><div class="report-card-header d-flex justify-content-between"><span><i class="fa-solid fa-chart-column me-2"></i>Lượt Truy Cập</span><div class="btn-group btn-group-sm"><a class="btn btn-outline-secondary {{ $analytics['rangeDays'] === 7 ? 'active' : '' }}" href="{{ request()->fullUrlWithQuery(['days' => 7]) }}">7 ngày</a><a class="btn btn-outline-secondary {{ $analytics['rangeDays'] === 30 ? 'active' : '' }}" href="{{ request()->fullUrlWithQuery(['days' => 30]) }}">30 ngày</a></div></div><div class="chart-wrap"><canvas id="visitChart"></canvas></div></div>
+            <div class="report-card"><div class="report-card-header d-flex justify-content-between"><span><i class="fa-solid fa-ranking-star me-2"></i>Trang Truy Cập Nhiều Nhất</span><a href="{{ route('admin.visits.index') }}" class="small">Lịch sử</a></div><div class="table-responsive p-3"><table class="table table-sm align-middle mb-0"><tbody>@forelse($analytics['topPages'] as $page)<tr><td class="fw-semibold">{{ $loop->iteration }}</td><td><div class="text-break small">{{ parse_url($page->url, PHP_URL_PATH) ?: $page->url }}</div><small class="text-muted">{{ $page->route_name ?? '-' }}</small></td><td class="text-end fw-semibold">{{ number_format($page->total) }}</td></tr>@empty<tr><td class="text-muted">Chưa có dữ liệu.</td></tr>@endforelse</tbody></table></div></div>
+        </div>
+
+        <div class="report-card mb-4"><div class="report-card-header"><span><i class="fa-solid fa-users-viewfinder me-2"></i>Người Đang Online</span></div><div id="online-users" class="p-3 row g-2">@forelse($analytics['online']['users'] as $online)<div class="col-md-4"><div class="d-flex align-items-center gap-2 p-2 border rounded"><span class="text-success">●</span><img src="{{ $online['avatar'] ?? 'https://ui-avatars.com/api/?name='.urlencode($online['name']) }}" width="34" height="34" class="rounded-circle" alt="Avatar"><div><div class="small fw-semibold">{{ $online['name'] }}</div><div class="small text-muted">{{ $online['role'] }} · {{ $online['last_activity'] }}</div></div></div></div>@empty<span class="text-muted small">Chưa có user đăng nhập đang hoạt động.</span>@endforelse</div></div>
+        @endif
+
         {{-- ── ROW 1: Charts ── --}}
         <div class="report-grid-2">
             <div class="report-card">
@@ -247,5 +265,21 @@
                 }
             }
         });
+
+        @if($analytics)
+        const visitData = @json($analytics['chart']);
+        new Chart(document.getElementById('visitChart'), { type: 'bar', data: { labels: visitData.map(x => x.label), datasets: [{ label: 'Lượt truy cập', data: visitData.map(x => x.total), backgroundColor: 'rgba(74,144,217,.35)', borderColor: '#4A90D9', borderWidth: 1.5, borderRadius: 5 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor } }, y: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0 } } } } });
+
+        async function refreshOnlineUsers() {
+            try {
+                const response = await fetch(@json(route('admin.api.online-users')), { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } });
+                const data = await response.json();
+                document.getElementById('online-count').textContent = data.online_count;
+                document.getElementById('peak-online').textContent = data.peak_online;
+                document.getElementById('online-users').innerHTML = data.users.length ? data.users.map(user => `<div class="col-md-4"><div class="d-flex align-items-center gap-2 p-2 border rounded"><span class="text-success">●</span><img src="${user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name)}" width="34" height="34" class="rounded-circle" alt="Avatar"><div><div class="small fw-semibold">${user.name}</div><div class="small text-muted">${user.role} · ${user.last_activity}</div></div></div></div>`).join('') : '<span class="text-muted small">Chưa có user đăng nhập đang hoạt động.</span>';
+            } catch (error) { /* Realtime là phần phụ, không làm gián đoạn dashboard. */ }
+        }
+        window.setInterval(refreshOnlineUsers, 20000);
+        @endif
     </script>
 @endpush

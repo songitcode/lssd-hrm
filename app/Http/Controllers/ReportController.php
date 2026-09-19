@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\{User, Employee, Attendance, MonthlyAttendanceSummary, ActivityLog, WorkHourConfig};
+use App\Services\VisitTrackingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
@@ -14,6 +16,9 @@ class ReportController extends Controller
     // =====================================================
     public function index()
     {
+        $analytics = Auth::user()->isManager()
+            ? app(VisitTrackingService::class)->dashboardData()
+            : null;
         // ── Chu kỳ hiện tại ──
         $config = WorkHourConfig::latestConfig();
         $period = $config->getCurrentPeriod();
@@ -111,7 +116,8 @@ class ReportController extends Controller
             'month',
             'year',
             'period',    // array chu kỳ — dùng $period['label'] trong view
-            'config'
+            'config',
+            'analytics'
         ));
     }
 

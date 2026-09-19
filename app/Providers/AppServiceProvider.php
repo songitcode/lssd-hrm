@@ -42,5 +42,7 @@ class AppServiceProvider extends ServiceProvider
 
         });
 
+        Gate::define('view-analytics', fn ($user) => $user->isManager());
+
     }
 }

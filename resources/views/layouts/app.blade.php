@@ -113,6 +113,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- GSAP animation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    @include('partials.heartbeat')
     @stack('scripts')
 </body>
 
