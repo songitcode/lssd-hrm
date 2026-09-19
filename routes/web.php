@@ -3,7 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckManagerRole;
-use App\Http\Controllers\{DiscordController, HomeController, EmployeeController, ActivityLogController, AttendanceController, SalaryConfigController, PayrollController, OnDutyController, OfficeMemberController, ReportController};
+use App\Http\Controllers\{DiscordController, HomeController, EmployeeController, ActivityLogController, AttendanceController, SalaryConfigController, PayrollController, OnDutyController, OfficeMemberController, ReportController, VisitController};
 use App\Models\Attendance;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
@@ -42,6 +42,9 @@ Route::middleware('guest')->group(function () {
         ->name('admin.login.submit');
     Route::get('/admin/login-dev', [LoginController::class, 'loginAdminDev']);
 });
+
+// Heartbeat dùng được cho cả guest và user đã đăng nhập.
+Route::post('/heartbeat', [VisitController::class, 'heartbeat'])->name('heartbeat');
 
 /// Liên Kết Discord
 Route::get('/discord/connect', [DiscordController::class, 'connect'])->name('discord.connect');
@@ -149,6 +152,12 @@ Route::middleware(['auth', CheckManagerRole::class])->group(function () {
     Route::get('/reports/attendance', [ReportController::class, 'attendance'])->name('reports.attendance');
     Route::get('/reports/payroll', [ReportController::class, 'payroll'])->name('reports.payroll');
     Route::get('/reports/employees', [ReportController::class, 'employees'])->name('reports.employees');
+});
+
+// Dữ liệu IP/lịch sử chỉ dành cho manager và admin.
+Route::middleware(['auth', 'can:view-analytics'])->group(function () {
+    Route::get('/admin/visits', [VisitController::class, 'index'])->name('admin.visits.index');
+    Route::get('/admin/api/online-users', [VisitController::class, 'onlineUsers'])->name('admin.api.online-users');
 });
 
 // FORM BẢNG NHÂN VIÊN

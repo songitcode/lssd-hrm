@@ -563,6 +563,11 @@
             <a class="as-link {{ request()->routeIs('activity_logs.index') ? 'active' : '' }}"
                 href="{{ route('activity_logs.index') }}">
                 <i class="fa-solid fa-list-check as-icon"></i>
+                <span class="as-label">Thao tác nhân sự</span>
+            </a>
+            <a class="as-link {{ request()->routeIs('admin.visits.index') ? 'active' : '' }}"
+                href="{{ route('admin.visits.index') }}">
+                <i class="fa-solid fa-list-check as-icon"></i>
                 <span class="as-label">Logs</span>
             </a>
 
