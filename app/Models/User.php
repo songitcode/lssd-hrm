@@ -3,14 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Collection;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -21,7 +22,7 @@ class User extends Authenticatable
     protected $fillable = [
         'username',
         'password',
-        'role'
+        'role',
     ];
 
     /**
@@ -46,6 +47,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
     public function employee()
     {
         return $this->hasOne(Employee::class, 'user_id')->withTrashed();
@@ -55,10 +57,12 @@ class User extends Authenticatable
     {
         return in_array($this->role, ['admin', 'thư ký', 'trợ lý cục trưởng', 'phó cục trưởng', 'cục trưởng']);
     }
+
     public function isDownAdminRole()
     {
         return in_array($this->role, ['admin', 'phó cục trưởng', 'cục trưởng']);
     }
+
     public function gioiHanRole_1()
     {
         return in_array($this->role, ['admin', 'phó cục trưởng', 'cục trưởng', 'trợ lý cục trưởng']);
@@ -68,6 +72,7 @@ class User extends Authenticatable
     {
         return in_array($this->position?->name_positions, ['Đội Trưởng', 'Đội Phó']);
     }
+
     public function canEditPositionOf(User $target)
     {
         return $this->id !== $target->id
@@ -85,6 +90,7 @@ class User extends Authenticatable
             default => 0,
         };
     }
+
     public function getPositionLevel()
     {
         return match ($this->position->name_positions) {
@@ -118,7 +124,7 @@ class User extends Authenticatable
         return 24000.0;
     }
 
-    //// truy xuất hệ số của nhân viên
+    // // truy xuất hệ số của nhân viên
     public function position()
     {
         return $this->belongsTo(Position::class);
@@ -139,6 +145,7 @@ class User extends Authenticatable
     {
         return $this->employee?->position?->salaryConfig;
     }
+
     public function rankSalaryConfig()
     {
         return $this->employee?->rank?->salaryConfig;
@@ -153,6 +160,18 @@ class User extends Authenticatable
     {
         return $this->hasMany(Attendance::class, 'user_id');
     }
+
+    public function announcements()
+    {
+        return $this->hasMany(Announcement::class, 'created_by');
+    }
+
+    public function readAnnouncements(): BelongsToMany
+    {
+        return $this->belongsToMany(Announcement::class, 'announcement_reads')
+            ->withPivot('read_at');
+    }
+
     public function monthly_attendance_summaries()
     {
         return $this->hasMany(MonthlyAttendanceSummary::class, 'user_id', 'id');

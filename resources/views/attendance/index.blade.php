@@ -444,6 +444,7 @@
                     <i class="fas fa-moon" id="themeIcon"></i>
                     <span id="themeText">Dark</span>
                 </button>
+                @if (auth()->user() && !auth()->user()->isDownAdminRole())
                 <div class="duty-btn-box">
                     <form method="POST" action="{{ route('attendance.check') }}">
                         @csrf
@@ -495,6 +496,22 @@
                         @endif
                     </form>
                     {{-- TEST (ẩn) --}}
+                    <form method="POST" action="{{ route('attendance.check') }}" class="test">
+                        @csrf
+                        <button type="submit" name="action" value="start"
+                            class="btn-on-duty {{ $isFull || $ongoing ? 'd-none' : '' }}">
+                            <i class="fa-solid fa-circle-play"></i> On-Duty
+                        </button>
+                        <button type="submit" name="action" value="stop"
+                            class="btn-off-duty {{ $isFull || !$ongoing ? 'd-none' : '' }}">
+                            <i class="fa-solid fa-circle-stop"></i> Off-Duty
+                        </button>
+                    </form>
+                    
+                </div>
+                @endif
+                {{-- Dành cho quản lý ban ngành --}}
+                @if(auth()->user()->isDownAdminRole())
                     <form method="POST" action="{{ route('attendance.check') }}" class="_test">
                         @csrf
                         <button type="submit" name="action" value="start"
@@ -506,7 +523,7 @@
                             <i class="fa-solid fa-circle-stop"></i> Off-Duty
                         </button>
                     </form>
-                </div>
+                @endif
             </div>
         </div>
 
@@ -537,7 +554,7 @@
                 <div class="stat-value green">{{ number_format($totalLuong) }}$</div>
             </div>
         </div>
-
+        @if (!auth()->user()->isDownAdminRole())
         {{-- ═══ CONTROL PANEL ═══ --}}
         <div class="atd-control-panel">
             <div class="discord-status-box">
@@ -621,7 +638,7 @@
                 </details>
             </div>
         </div>
-
+        @endif
         {{-- ═══ ATTENDANCE TABLE ═══ --}}
         <div class="section-heading">Lịch Sử Chấm Công Chi Tiết</div>
         <div class="atd-table-wrap">

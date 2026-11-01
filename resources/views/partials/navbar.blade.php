@@ -18,6 +18,7 @@
                             <strong>{{ auth()->user()?->employee?->name_ingame ?? auth()->user()?->username ?? 'Admin' }}</strong>
                         </a>
                     </span>
+                    @include('partials.announcement_bell')
                     <div class="nav-avartar">
                         @if (auth()->user()->employee->discord_id ?? false)
                             <img src="{{ auth()->user()->employee->discord_avatar }}"
@@ -96,6 +97,12 @@
                         <a target="_blank" class="nav-link {{ request()->is('/') || request()->is('home') ? 'active-link' : '' }}"
                             href="{{ route('home') }}">
                             <i class="fa-solid fa-house"></i> Trang Chủ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('announcements.index') ? 'active-link' : '' }}"
+                            href="{{ route('announcements.index') }}">
+                            <i class="fa-solid fa-bullhorn"></i> Thông Báo
                         </a>
                     </li>
                     <li class="nav-item">

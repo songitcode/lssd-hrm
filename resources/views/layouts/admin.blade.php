@@ -205,6 +205,8 @@
                     </span>
                 @endif
 
+                @include('partials.announcement_bell')
+
                 <span class="topbar-clock d-none d-md-inline" id="adminClock"></span>
 
                 <div class="d-flex align-items-center gap-2">

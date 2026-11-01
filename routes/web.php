@@ -3,7 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckManagerRole;
-use App\Http\Controllers\{DiscordController, HomeController, EmployeeController, ActivityLogController, AttendanceController, SalaryConfigController, PayrollController, OnDutyController, OfficeMemberController, ReportController, VisitController};
+use App\Http\Controllers\{DiscordController, HomeController, EmployeeController, ActivityLogController, AttendanceController, SalaryConfigController, PayrollController, OnDutyController, OfficeMemberController, ReportController, VisitController, AnnouncementController};
 use App\Models\Attendance;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
@@ -29,6 +29,8 @@ use Illuminate\Support\Facades\Http;
 
 Route::get('/', [EmployeeController::class, 'homeDisplay'])->name('home');
 Route::get('/home', [EmployeeController::class, 'homeDisplay']);
+Route::get('/thong-bao', [AnnouncementController::class, 'index'])->name('announcements.index');
+Route::get('/thong-bao/{announcement}/anh', [AnnouncementController::class, 'image'])->name('announcements.image');
 // Hiển thị trang admin login
 Route::get('/admin', function () {
     return view('auth.admin.login');
@@ -54,6 +56,11 @@ Route::post('/discord/unlink', [DiscordController::class, 'unlink'])
     ->middleware('auth');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/thong-bao/chuong-du-lieu', [AnnouncementController::class, 'notifications'])
+        ->name('announcements.notifications');
+    Route::post('/thong-bao/{announcement}/da-xem', [AnnouncementController::class, 'markAsRead'])
+        ->name('announcements.read');
+
     // PROFILE
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('profile');
     Route::put('/profile/update', [EmployeeController::class, 'updateProfile'])->name('profile.update');
@@ -105,6 +112,18 @@ Route::middleware('auth')->group(function () {
 
 // Kiểm tra role mới có quyền sử dụng tính năng quản lý
 Route::middleware(['auth', CheckManagerRole::class])->group(function () {
+    Route::middleware('can:manage-announcements')
+        ->prefix('admin/announcements')
+        ->name('admin.announcements.')
+        ->controller(AnnouncementController::class)
+        ->group(function () {
+            Route::get('/', 'manage')->name('index');
+            Route::post('/preview', 'preview')->name('preview');
+            Route::post('/', 'store')->name('store');
+            Route::put('/{announcement}', 'update')->name('update');
+            Route::delete('/{announcement}', 'destroy')->name('destroy');
+        });
+
     // EMPLOYEES, NHÂN VIÊN
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');

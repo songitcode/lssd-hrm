@@ -497,8 +497,16 @@
                 <i class="fa-solid fa-users as-icon"></i>
                 <span class="as-label">Quản Lý Nhân Sự</span>
             </a>
+            @can('manage-announcements')
+                <a class="as-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}"
+                    href="{{ route('admin.announcements.index') }}">
+                    <i class="fa-solid fa-bullhorn as-icon"></i>
+                    <span class="as-label">Quản Lý Thông Báo</span>
+                </a>
+            @endcan
 
             <!-- Báo Cáo (collapsible) -->
+             @if (auth()->user()->getRoleLevel() == 5)
             <p class="as-section-label">Báo Cáo & Phân Tích</p>
             <button class="as-link {{ request()->is('reports*') ? 'active' : '' }}" id="asReportToggle" type="button">
                 <i class="fa-solid fa-chart-pie as-icon"></i>
@@ -528,6 +536,9 @@
                     <span class="as-label">Nhân Sự</span>
                 </a>
             </div>
+            @else 
+            
+            @endif
 
             <!-- Tài Chính -->
             <p class="as-section-label">Tài Chính</p>
