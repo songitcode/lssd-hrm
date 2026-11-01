@@ -32,7 +32,8 @@
                 @include('partials.navbar')
             @endif
 
-            <!-- Custom Loading Overlay -->
+            @if (!View::hasSection('hide_overlay'))
+                <!-- Custom Loading Overlay -->
             <div id="loadingOverlay" class="loader-overlay" style="display: none;">
                 <div class="lssd-loader-content">
                     <div class="lssd-badge">
@@ -47,6 +48,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             @yield('content')
 

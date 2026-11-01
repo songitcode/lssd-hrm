@@ -172,8 +172,8 @@
                             @foreach ($users as $user)
                                 @php
                                     $positionName = $user->employee->position->name_positions ?? '';
-                                    if (in_array($positionName, ['Cục Trưởng', 'Phó Cục Trưởng']))
-                                        continue;
+                                    // if (in_array($positionName, ['Cục Trưởng', 'Phó Cục Trưởng']))
+                                    //     continue;
 
                                     $userID = (int) $user->id;
                                     $summary = $summaries[$userID] ?? null;
