@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\Announcement;
 use App\Models\User;
+use App\Notifications\AnnouncementCommentActivity;
 use App\Support\DiscordMarkdownRenderer;
+use Database\Seeders\AnnouncementCommentsDemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -50,6 +52,325 @@ class AnnouncementTest extends TestCase
         $this->get(route('announcements.image', [$announcement, 1]))
             ->assertOk()
             ->assertStreamedContent('second-image');
+    }
+
+    public function test_announcement_reactions_can_be_added_changed_and_removed(): void
+    {
+        $announcement = Announcement::create([
+            'title' => 'Thông báo được quan tâm',
+            'content' => 'Nội dung.',
+        ]);
+        $user = $this->createUser('cảnh sát viên');
+        $this->actingAs($user);
+        $csrfToken = 'announcement-reaction-token';
+        $this->withSession(['_token' => $csrfToken]);
+
+        $this->post(route('announcements.reactions.toggle', $announcement), [
+            '_token' => $csrfToken,
+            'type' => 'like',
+        ])
+            ->assertRedirect(route('announcements.show', $announcement).'#reactions');
+        $this->assertDatabaseHas('announcement_reactions', [
+            'announcement_id' => $announcement->id,
+            'user_id' => $user->id,
+            'type' => 'like',
+        ]);
+
+        $this->get(route('announcements.index'))
+            ->assertOk()
+            ->assertSee('data-list-reactions')
+            ->assertSee('>1</span> cảm xúc', false);
+
+        $this->post(route('announcements.reactions.toggle', $announcement), [
+            '_token' => $csrfToken,
+            'type' => 'love',
+        ]);
+        $this->assertDatabaseHas('announcement_reactions', [
+            'announcement_id' => $announcement->id,
+            'user_id' => $user->id,
+            'type' => 'love',
+        ]);
+        $this->assertDatabaseCount('announcement_reactions', 1);
+
+        $this->post(route('announcements.reactions.toggle', $announcement), [
+            '_token' => $csrfToken,
+            'type' => 'love',
+        ]);
+        $this->assertDatabaseMissing('announcement_reactions', [
+            'announcement_id' => $announcement->id,
+            'user_id' => $user->id,
+        ]);
+    }
+
+    public function test_announcement_comments_are_limited_to_authenticated_users_and_rendered_as_text(): void
+    {
+        $announcement = Announcement::create([
+            'title' => 'Thông báo có bình luận',
+            'content' => 'Nội dung.',
+        ]);
+
+        $this->get(route('announcements.show', $announcement))
+            ->assertOk()
+            ->assertSee('data-total-comments')
+            ->assertSee('Đăng nhập');
+
+        $csrfToken = 'announcement-comment-token';
+        $user = $this->createUser('cảnh sát viên');
+        $this->actingAs($user)->withSession(['_token' => $csrfToken]);
+
+        $this->post(route('announcements.comments.store', $announcement), [
+            '_token' => $csrfToken,
+            'body' => '<script>alert(1)</script> Bình luận hữu ích.',
+        ])->assertRedirect(route('announcements.show', $announcement).'#comments');
+
+        $this->assertDatabaseHas('announcement_comments', [
+            'announcement_id' => $announcement->id,
+            'user_id' => $user->id,
+            'body' => '<script>alert(1)</script> Bình luận hữu ích.',
+        ]);
+
+        $this->get(route('announcements.show', $announcement))
+            ->assertOk()
+            ->assertSee('data-total-comments>1</span>', false)
+            ->assertSee('&lt;script&gt;alert(1)&lt;/script&gt; Bình luận hữu ích.', false)
+            ->assertDontSee('<script>alert(1)</script>', false);
+
+        $this->post(route('announcements.reactions.toggle', $announcement), [
+            '_token' => $csrfToken,
+            'type' => 'unknown',
+        ])
+            ->assertSessionHasErrors('type');
+        $this->post(route('announcements.comments.store', $announcement), [
+            '_token' => $csrfToken,
+            'body' => str_repeat('a', 2001),
+        ])->assertSessionHasErrors('body');
+    }
+
+    public function test_announcement_interaction_state_updates_realtime_summaries_and_threads(): void
+    {
+        $announcement = Announcement::create([
+            'title' => 'Bài đăng realtime',
+            'content' => 'Nội dung.',
+        ]);
+        $author = $this->createUser('cảnh sát viên');
+        $replier = $this->createUser('cảnh sát viên');
+        $comment = $announcement->comments()->create([
+            'user_id' => $author->id,
+            'body' => 'Bình luận gốc.',
+        ]);
+        $csrfToken = 'announcement-reply-token';
+        $this->actingAs($replier)->withSession(['_token' => $csrfToken]);
+
+        $this->post(route('announcements.comments.reply', [$announcement, $comment]), [
+            '_token' => $csrfToken,
+            'body' => 'Phản hồi trực tiếp.',
+        ])->assertRedirect(route('announcements.show', $announcement).'#comment-'.$comment->id);
+
+        $reply = $announcement->comments()->where('parent_id', $comment->id)->firstOrFail();
+        $this->post(route('announcements.reactions.toggle', $announcement), [
+            '_token' => $csrfToken,
+            'type' => 'care',
+        ]);
+
+        $this->getJson(route('announcements.interactions.state', $announcement))
+            ->assertOk()
+            ->assertJsonPath('reactions.care', 1)
+            ->assertJsonPath('reactions_count', 1)
+            ->assertJsonPath('comments_count', 2)
+            ->assertJsonPath('current_reaction', 'care')
+            ->assertJsonPath('comments_html', fn (string $html) => str_contains($html, 'Bình luận gốc.')
+                && str_contains($html, 'Phản hồi trực tiếp.'));
+
+        $this->getJson(route('announcements.interactions.summaries', ['ids' => [$announcement->id]]))
+            ->assertOk()
+            ->assertJsonPath('0.reactions_count', 1)
+            ->assertJsonPath('0.comments_count', 2);
+
+        $this->delete(route('announcements.comments.destroy', [$announcement, $reply]), [
+            '_token' => $csrfToken,
+        ])->assertRedirect(route('announcements.show', $announcement).'#comments');
+        $this->assertDatabaseMissing('announcement_comments', ['id' => $reply->id]);
+    }
+
+    public function test_users_can_delete_their_own_comments_and_admins_can_delete_any_comment(): void
+    {
+        $announcement = Announcement::create([
+            'title' => 'Bài đăng có kiểm soát xóa',
+            'content' => 'Nội dung.',
+        ]);
+        $owner = $this->createUser('cảnh sát viên');
+        $otherUser = $this->createUser('cảnh sát viên');
+        $admin = $this->createUser('admin');
+        $comment = $announcement->comments()->create([
+            'user_id' => $owner->id,
+            'body' => 'Bình luận của chủ bài.',
+        ]);
+        $csrfToken = 'announcement-delete-token';
+        $this->withSession(['_token' => $csrfToken]);
+
+        $this->actingAs($otherUser)
+            ->delete(route('announcements.comments.destroy', [$announcement, $comment]), [
+                '_token' => $csrfToken,
+            ])
+            ->assertForbidden();
+        $this->assertDatabaseHas('announcement_comments', ['id' => $comment->id]);
+
+        $this->actingAs($owner)
+            ->delete(route('announcements.comments.destroy', [$announcement, $comment]), [
+                '_token' => $csrfToken,
+            ])
+            ->assertRedirect(route('announcements.show', $announcement).'#comments');
+        $this->assertDatabaseMissing('announcement_comments', ['id' => $comment->id]);
+
+        $otherComment = $announcement->comments()->create([
+            'user_id' => $owner->id,
+            'body' => 'Bình luận cần quản trị xóa.',
+        ]);
+        $this->actingAs($admin)
+            ->delete(route('announcements.comments.destroy', [$announcement, $otherComment]), [
+                '_token' => $csrfToken,
+            ])
+            ->assertRedirect(route('announcements.show', $announcement).'#comments');
+        $this->assertDatabaseMissing('announcement_comments', ['id' => $otherComment->id]);
+    }
+
+    public function test_comment_notifications_are_sent_to_the_post_author_and_can_be_opened(): void
+    {
+        $author = $this->createUser('thư ký');
+        $commenter = $this->createUser('cảnh sát viên');
+        $announcement = $author->announcements()->create([
+            'title' => 'Bài đăng có thông báo bình luận',
+            'content' => 'Nội dung.',
+        ]);
+        $csrfToken = 'announcement-notification-token';
+
+        $this->actingAs($commenter)->withSession(['_token' => $csrfToken])
+            ->post(route('announcements.comments.store', $announcement), [
+                '_token' => $csrfToken,
+                'body' => 'Tôi đã bình luận.',
+            ])
+            ->assertRedirect(route('announcements.show', $announcement).'#comments');
+
+        $notification = $author->notifications()->firstOrFail();
+        $this->assertSame(AnnouncementCommentActivity::class, $notification->type);
+        $this->assertSame('Tôi đã bình luận.', $notification->data['body']);
+
+        $this->actingAs($author)
+            ->getJson(route('announcements.notifications'))
+            ->assertOk()
+            ->assertJsonPath('count', 2)
+            ->assertJsonFragment([
+                'method' => 'GET',
+                'excerpt' => 'Tôi đã bình luận.',
+            ]);
+
+        $this->get(route('announcements.comment-notifications.open', $notification->id))
+            ->assertRedirect(route('announcements.show', [
+                'announcement' => $announcement,
+                'focus_comment' => $notification->data['comment_id'],
+            ]).'#comment-'.$notification->data['comment_id']);
+        $this->assertNotNull($notification->fresh()->read_at);
+
+        $this->actingAs($author)->withSession(['_token' => $csrfToken])
+            ->post(route('announcements.comments.store', $announcement), [
+                '_token' => $csrfToken,
+                'body' => 'Chủ bài tự bình luận.',
+            ]);
+        $this->assertDatabaseCount('notifications', 1);
+    }
+
+    public function test_replies_can_nest_and_comment_lists_load_three_then_five_more(): void
+    {
+        $announcement = Announcement::create([
+            'title' => 'Bài đăng dạng hội thoại',
+            'content' => 'Nội dung.',
+        ]);
+        $users = collect(range(1, 10))->map(fn () => $this->createUser('cảnh sát viên'));
+        foreach (range(1, 9) as $index) {
+            $announcement->comments()->create([
+                'user_id' => $users[$index - 1]->id,
+                'body' => 'Bình luận thứ '.$index,
+            ]);
+        }
+        $topComment = $announcement->comments()->latest('id')->firstOrFail();
+        $reply = $announcement->comments()->create([
+            'user_id' => $users[9]->id,
+            'parent_id' => $topComment->id,
+            'body' => 'Phản hồi cấp một.',
+        ]);
+        $csrfToken = 'announcement-thread-token';
+
+        $this->actingAs($users[0])->withSession(['_token' => $csrfToken])
+            ->post(route('announcements.comments.reply', [$announcement, $reply]), [
+                '_token' => $csrfToken,
+                'body' => 'Phản hồi cấp hai.',
+            ])
+            ->assertRedirect(route('announcements.show', $announcement).'#comment-'.$reply->id);
+        $this->assertDatabaseHas('notifications', [
+            'notifiable_id' => $users[9]->id,
+            'type' => AnnouncementCommentActivity::class,
+        ]);
+
+        $this->get(route('announcements.show', $announcement))
+            ->assertOk()
+            ->assertSee('Bình luận thứ 9')
+            ->assertSee('Bình luận thứ 8')
+            ->assertSee('Bình luận thứ 7')
+            ->assertDontSee('Bình luận thứ 6')
+            ->assertSee('Phản hồi cấp một.')
+            ->assertSee('Phản hồi cấp hai.');
+        $this->get(route('announcements.show', [
+            'announcement' => $announcement,
+            'focus_comment' => $reply->id,
+        ]))
+            ->assertOk()
+            ->assertSee('Phản hồi cấp hai.');
+
+        $firstPage = $this->getJson(route('announcements.interactions.state', $announcement))
+            ->assertOk()
+            ->json();
+        $this->assertNotNull($firstPage['comments_next_cursor']);
+
+        $this->getJson(route('announcements.interactions.state', [
+            'announcement' => $announcement->id,
+            'comments_limit' => 5,
+            'comments_cursor' => $firstPage['comments_next_cursor'],
+        ]))
+            ->assertOk()
+            ->assertJsonPath('comments_next_cursor', fn ($cursor) => is_string($cursor))
+            ->assertJsonPath('comments_html', fn (string $html) => str_contains($html, 'Bình luận thứ 6')
+                && str_contains($html, 'Bình luận thứ 2'));
+    }
+
+    public function test_long_comments_have_collapsed_preview_and_expand_control(): void
+    {
+        $announcement = Announcement::create([
+            'title' => 'Thông báo có bình luận dài',
+            'content' => 'Nội dung.',
+        ]);
+        $longBody = str_repeat('Nội dung bình luận dài để kiểm tra thu gọn. ', 15);
+        $announcement->comments()->create([
+            'user_id' => $this->createUser('cảnh sát viên')->id,
+            'body' => $longBody,
+        ]);
+
+        $this->get(route('announcements.show', $announcement))
+            ->assertOk()
+            ->assertSee('data-comment-preview')
+            ->assertSee('data-comment-full')
+            ->assertSee('data-comment-expand')
+            ->assertSee('Xem thêm')
+            ->assertSee(mb_substr($longBody, 0, 320).'…', false);
+    }
+
+    public function test_demo_announcement_seeder_is_repeatable(): void
+    {
+        $this->seed(AnnouncementCommentsDemoSeeder::class);
+        $this->seed(AnnouncementCommentsDemoSeeder::class);
+
+        $announcement = Announcement::where('title', '[DEMO] Thông báo với bình luận mẫu')->firstOrFail();
+        $this->assertSame(11, $announcement->comments()->count());
+        $this->assertSame(4, $announcement->reactions()->count());
     }
 
     public function test_secretary_can_create_update_and_delete_announcements(): void

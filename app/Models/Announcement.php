@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Announcement extends Model
 {
@@ -24,6 +25,16 @@ class Announcement extends Model
     {
         return $this->belongsToMany(User::class, 'announcement_reads')
             ->withPivot('read_at');
+    }
+
+    public function reactions(): HasMany
+    {
+        return $this->hasMany(AnnouncementReaction::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(AnnouncementComment::class);
     }
 
     public function getImageDisplayUrlAttribute(): ?string
