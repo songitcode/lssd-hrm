@@ -196,23 +196,9 @@
                                 <tr class="{{ in_array($user->position->name_positions, ['Cục Trưởng', 'Phó Cục Trưởng', 'Trợ Lý Cục Trưởng']) ? 'glow' : '' }}">
                                     <td class="td-num">{{ $index + 1 }}</td>
                                     <td>
-                                        @if($user->employee?->discord_id)
-                                        <img src="{{ $user->employee->discord_avatar }}"
-                                            alt="Avatar"
-                                            class="member-avatar"
-                                            onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($user->employee->name_ingame ?? 'Admin') }}&background=2a2a35&color=E8A800';">
-                                        @else
-                                        @if ($user->employee?->avatar)
-                                        <img src="{{ asset('storage/' . $user->employee->avatar) }}"
-                                            alt="Avatar"
-                                            class="member-avatar"
-                                            onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($user->employee->name_ingame ?? 'Admin') }}&background=2a2a35&color=E8A800';">
-                                        @else
-                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($user->employee->name_ingame ?? 'Admin') }}&background=2a2a35&color=E8A800"
-                                            class="member-avatar"
-                                            alt="Avatar">
-                                        @endif
-                                        @endif
+                                        <img src="{{ $user->employee?->display_avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->employee?->name_ingame ?? 'Admin') . '&background=2a2a35&color=E8A800' }}"
+                                            alt="Avatar" class="member-avatar"
+                                            onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($user->employee?->name_ingame ?? 'Admin') }}&background=2a2a35&color=E8A800';">
                                     </td>
                                     <td class="td-name">{{ $user->employee?->name_ingame ?? 'N/A' }}</td>
                                     <td>

@@ -593,10 +593,31 @@ class EmployeeController extends Controller
     */
         $request->validate([
             'name_ingame' => 'nullable|string|max:255',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'avatar_source' => 'nullable|in:discord,custom',
             'position_id' => 'nullable|exists:positions,id',
             'rank_id' => 'nullable|exists:ranks,id',
+        ], [
+            'avatar.max' => 'Ảnh đại diện vượt quá dung lượng tối đa 5 MB. Vui lòng chọn ảnh nhỏ hơn.',
+            'avatar.image' => 'Tệp đã chọn không phải là ảnh hợp lệ.',
+            'avatar.mimes' => 'Ảnh đại diện chỉ hỗ trợ định dạng JPG hoặc PNG.',
         ]);
+
+        if ($request->input('avatar_source') === 'discord' && !$employee->discord_id) {
+            throw ValidationException::withMessages([
+                'avatar_source' => 'Bạn cần liên kết Discord trước khi sử dụng avatar Discord.',
+            ]);
+        }
+
+        if (
+            $request->input('avatar_source') === 'custom' &&
+            !$employee->avatar &&
+            !$request->hasFile('avatar')
+        ) {
+            throw ValidationException::withMessages([
+                'avatar' => 'Vui lòng chọn ảnh tự chọn trước khi chuyển sang sử dụng ảnh này.',
+            ]);
+        }
 
         /*
     |--------------------------------------------------------------------------
@@ -624,6 +645,11 @@ class EmployeeController extends Controller
 
             // Lưu avatar mới
             $employee->avatar = $request->file('avatar')->store('avatars', 'public');
+            $employee->avatar_source = 'custom';
+        }
+
+        if ($request->filled('avatar_source')) {
+            $employee->avatar_source = $request->input('avatar_source');
         }
 
         /*
@@ -778,11 +804,7 @@ class EmployeeController extends Controller
                     'position_id' => $emp->position->id ?? '-',
                     'created_at' => $emp->created_at,
                     'user_created_by' => $emp->userCreatedBy->username ?? 'Admin',
-                    'avatar' => $emp->discord_avatar
-                        ? $emp->discord_avatar
-                        : ($emp->avatar
-                            ? asset('storage/' . $emp->avatar)
-                            : asset('/assets/images/user_preview_logo.png')),
+                    'avatar' => $emp->display_avatar ?? asset('/assets/images/user_preview_logo.png'),
                 ];
             })
         ]);

@@ -169,16 +169,10 @@
                                 <td class="text-muted">{{ $i + 1 }}</td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
-                                        @if ($u->employee->avatar)
-                                            <img src="{{ asset('storage/' . $u->employee->avatar) }}" alt="Avatar"
-                                                class="rounded-circle" width="32" height="32"
-                                                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($u->employee->name_ingame ?? 'NAN') }}&background=random';"
-                                                style="border:1.5px solid rgba(212,175,55,0.4);">
-                                        @else
-                                            <img src="https://ui-avatars.com/api/?name={{ urlencode($u->employee->name_ingame ?? 'NAN') }}&background=random"
-                                                class="rounded-circle" width="32" height="32" alt="Default"
-                                                style="border:1.5px solid rgba(212,175,55,0.4);">
-                                        @endif
+                                        <img src="{{ $u->employee->display_avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($u->employee->name_ingame ?? 'NAN') . '&background=random' }}"
+                                            alt="Avatar" class="rounded-circle" width="32" height="32"
+                                            onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($u->employee->name_ingame ?? 'NAN') }}&background=random';"
+                                            style="border:1.5px solid rgba(212,175,55,0.4);">
                                         <div>
                                             <div style="font-weight:600;font-size:13.5px;">{{ $u->employee?->name_ingame ?? $u->username }}</div>
                                             <div style="font-size:11px;color:var(--text-muted);">{{ $u->username }} - {{ $u->employee->rank?->name_ranks ?? '—' }}</div>

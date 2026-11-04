@@ -148,13 +148,7 @@
         $asRank           = $asEmp?->rank?->name_ranks ?? $asRole;
         $asAvatarFallback = 'https://ui-avatars.com/api/?name=' . urlencode($asName) . '&background=d4af37&color=0f1117';
 
-        if ($asEmp?->discord_id) {
-            $asAvatarSrc = $asEmp->discord_avatar;
-        } elseif ($asEmp?->avatar) {
-            $asAvatarSrc = asset('storage/' . $asEmp->avatar);
-        } else {
-            $asAvatarSrc = $asAvatarFallback;
-        }
+        $asAvatarSrc = $asEmp?->display_avatar ?? $asAvatarFallback;
 
         $asOndutyCount = \App\Models\Attendance::where('status', 'Đang On-Duty')->count();
     @endphp

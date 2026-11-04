@@ -30,7 +30,10 @@ use Illuminate\Support\Facades\Http;
 Route::get('/', [EmployeeController::class, 'homeDisplay'])->name('home');
 Route::get('/home', [EmployeeController::class, 'homeDisplay']);
 Route::get('/thong-bao', [AnnouncementController::class, 'index'])->name('announcements.index');
-Route::get('/thong-bao/{announcement}/anh', [AnnouncementController::class, 'image'])->name('announcements.image');
+Route::get('/thong-bao/{announcement}/anh/{imageIndex?}', [AnnouncementController::class, 'image'])->name('announcements.image');
+Route::middleware('auth')->get('/thong-bao/chuong-du-lieu', [AnnouncementController::class, 'notifications'])
+    ->name('announcements.notifications');
+Route::get('/thong-bao/{announcement}', [AnnouncementController::class, 'show'])->name('announcements.show');
 // Hiển thị trang admin login
 Route::get('/admin', function () {
     return view('auth.admin.login');
@@ -56,8 +59,6 @@ Route::post('/discord/unlink', [DiscordController::class, 'unlink'])
     ->middleware('auth');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/thong-bao/chuong-du-lieu', [AnnouncementController::class, 'notifications'])
-        ->name('announcements.notifications');
     Route::post('/thong-bao/{announcement}/da-xem', [AnnouncementController::class, 'markAsRead'])
         ->name('announcements.read');
 

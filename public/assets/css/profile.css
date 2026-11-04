@@ -161,6 +161,66 @@ body {
     color: white;
 }
 
+.avatar-source-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.avatar-source-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    background: var(--panel-bg);
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 14px;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.avatar-source-option.is-selected {
+    border-color: var(--gold);
+    background: var(--hover-bg);
+    color: var(--gold-dim);
+}
+
+.avatar-source-option input {
+    accent-color: var(--gold);
+}
+
+.avatar-help-text {
+    max-width: 310px;
+    margin: 4px 0 10px;
+    color: var(--text-muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+.avatar-upload-error {
+    max-width: 320px;
+    margin: 8px 0;
+    padding: 10px 14px;
+    border: 1px solid rgba(220, 53, 69, 0.35);
+    border-radius: 12px;
+    background: rgba(220, 53, 69, 0.08);
+    color: var(--danger);
+    font-size: 13px;
+    text-align: center;
+}
+
+.avatar-file-name {
+    max-width: 300px;
+    overflow-wrap: anywhere;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-align: center;
+}
+
 /* ==== FORM INPUTS ==== */
 .form-label-custom {
     font-family: 'Oswald', sans-serif;

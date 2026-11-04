@@ -53,13 +53,15 @@
             position:relative; overflow:hidden; border:1px solid var(--ah-line);
             border-radius:18px; background:#fff; box-shadow:0 6px 20px rgba(26,39,61,.045);
             transition:transform .2s ease, box-shadow .2s ease;
+            margin-bottom: 20px;
             /* scale: 0.985; */
         }
         .ah-card:hover { transform:translateY(-2px); box-shadow:0 14px 32px rgba(26,39,61,.09); }
         .ah-card:before { content:""; position:absolute; inset:0 auto 0 0; width:4px; background:linear-gradient(#e9bd52,#c78f27); }
-        .ah-media { display:block; overflow:hidden; background:#e9edf3; }
+        .ah-media { position:relative; display:block; overflow:hidden; background:#e9edf3; }
         .ah-media img { display:block; width:100%; max-height:fit-content; aspect-ratio: 20 / 5; object-fit:cover; transition:transform .35s ease; }
         .ah-card:hover .ah-media img { transform:scale(1.015); }
+        .ah-media-count { position:absolute; right:1rem; bottom:1rem; padding:.35rem .65rem; border-radius:999px; color:#fff; background:rgba(23,32,51,.82); font-size:.75rem; font-weight:700; }
         .ah-card-body { padding:clamp(1.2rem, 3vw, 1.8rem); padding-left:calc(clamp(1.2rem, 3vw, 1.8rem) + 4px); }
         .ah-card-top { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
         .ah-author { display:flex; align-items:center; gap:.7rem; min-width:0; }
@@ -133,9 +135,12 @@
                     @forelse ($announcements as $announcement)
                         <article class="ah-card" id="announcement-{{ $announcement->id }}">
                             @if ($announcement->image_display_url)
-                                <a class="ah-media" href="{{ $announcement->image_display_url }}" target="_blank" rel="noopener noreferrer">
+                                <a class="ah-media" href="{{ route('announcements.show', $announcement) }}" aria-label="Xem chi tiết: {{ $announcement->title }}">
                                     <img src="{{ $announcement->image_display_url }}" alt="Ảnh minh họa: {{ $announcement->title }}"
                                         loading="lazy" decoding="async" onerror="this.closest('.ah-media').remove()">
+                                    @if (count($announcement->image_display_urls) > 1)
+                                        <span class="ah-media-count"><i class="fa-regular fa-images me-1"></i>{{ count($announcement->image_display_urls) }} ảnh</span>
+                                    @endif
                                 </a>
                             @endif
                             <div class="ah-card-body">
@@ -158,8 +163,11 @@
                                         <span class="ah-badge">THÔNG BÁO</span>
                                     @endif
                                 </div>
-                                <h2>{{ $announcement->title }}</h2>
+                                <h2><a class="text-decoration-none text-reset" href="{{ route('announcements.show', $announcement) }}">{{ $announcement->title }}</a></h2>
                                 <div class="ah-content">{!! $announcement->rendered_content !!}</div>
+                                <a class="btn btn-sm btn-outline-secondary mt-3" href="{{ route('announcements.show', $announcement) }}">
+                                    <i class="fa-regular fa-eye me-1"></i>Xem chi tiết
+                                </a>
                             </div>
                         </article>
                     @empty

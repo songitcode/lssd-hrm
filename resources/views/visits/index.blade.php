@@ -28,7 +28,7 @@
         @forelse($visits as $visit)
             @php($employee = $visit->user?->employee)
             <tr>
-                <td><div class="d-flex align-items-center gap-2"><img src="{{ $employee?->avatar ? asset('storage/'.$employee->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($employee?->name_ingame ?? $visit->user?->username ?? 'Guest') }}" width="32" height="32" class="rounded-circle" alt="Avatar"><span>{{ $employee?->name_ingame ?? $visit->user?->username ?? 'Guest' }}</span></div></td>
+                <td><div class="d-flex align-items-center gap-2"><img src="{{ $employee?->display_avatar ?? 'https://ui-avatars.com/api/?name='.urlencode($employee?->name_ingame ?? $visit->user?->username ?? 'Guest') }}" width="32" height="32" class="rounded-circle" alt="Avatar"><span>{{ $employee?->name_ingame ?? $visit->user?->username ?? 'Guest' }}</span></div></td>
                 <td class="font-monospace small">{{ $visit->ip_address ?? '-' }}</td>
                 <td><div class="text-break small">{{ $visit->url }}</div><small class="text-muted">{{ $visit->route_name ?? '-' }}</small></td>
                 <td>{{ ucfirst($visit->device_type ?? '-') }}</td><td>{{ $visit->browser ?? '-' }}</td>

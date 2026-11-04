@@ -130,14 +130,9 @@
                         @endphp
                         <div class="top-worker-row {{ $i == 0 ? 'top-worker-1st' : '' }}">
                             <span class="tw-rank">{{ $medals[$i] ?? ($i + 1) }}</span>
-                            @if ($tw->user->employee->avatar)
-                                <img src="{{ asset('storage/' . $tw->user->employee->avatar) }}" alt="Avatar" class="rounded-circle"
-                                    width="38" height="38"
-                                    onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($tw->user->employee->name_ingame ?? 'NAN') }}&background=random';">
-                            @else
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode($tw->user->employee->name_ingame ?? 'NAN') }}&background=random"
-                                    class="rounded-circle" width="38" height="38" alt="Default">
-                            @endif
+                            <img src="{{ $emp?->display_avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($emp?->name_ingame ?? 'NAN') . '&background=random' }}"
+                                alt="Avatar" class="rounded-circle" width="38" height="38"
+                                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($emp?->name_ingame ?? 'NAN') }}&background=random';">
                             <div class="tw-info">
                                 <div class="tw-name">{{ $emp?->name_ingame ?? $tw->user?->username ?? '—' }}</div>
                                 <div class="tw-pos">{{ $emp?->position?->name_positions ?? '' }} ·

@@ -54,35 +54,58 @@
                             <div class="avatar-section">
                                 <div class="avatar-wrapper">
                                     <div class="avatar-frame">
-                                        @if ($employee->discord_id ?? false)
-                                            <img id="avatarPreview" src="{{ $employee->discord_avatar }}" alt="Avatar" class="avatar-img"
-                                                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($employee->name_ingame ?? 'User') }}&background=random';">
-                                        @elseif ($employee->avatar)
-                                            <img id="avatarPreview" src="{{ asset('storage/' . $employee->avatar) }}" alt="Avatar" class="avatar-img"
-                                                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($employee->name_ingame ?? 'User') }}&background=random';">
-                                        @else
-                                            <img id="avatarPreview" src="https://ui-avatars.com/api/?name={{ urlencode($employee->name_ingame ?? 'User') }}&background=random"
-                                                class="avatar-img" alt="Avatar">
-                                        @endif
+                                        <img id="avatarPreview"
+                                            src="{{ $employee->display_avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($employee->name_ingame ?? 'User') . '&background=random' }}"
+                                            data-discord-avatar="{{ $employee->discord_avatar }}"
+                                            data-custom-avatar="{{ $employee->avatar ? asset('storage/' . $employee->avatar) : '' }}"
+                                            data-fallback-avatar="https://ui-avatars.com/api/?name={{ urlencode($employee->name_ingame ?? 'User') }}&background=random"
+                                            alt="Ảnh đại diện" class="avatar-img">
                                     </div>
                                     {{-- Trang trí overlay (tuỳ chọn) --}}
                                     <div class="avatar-overlay-decoration"></div>
                                 </div>
 
-                                @if (!$employee->discord_id ?? false)
-                                    <input type="file" name="avatar" accept="image/*" class="d-none" id="avatarInput" onchange="previewAvatar(event)">
-                                    <label for="avatarInput" class="btn-upload-avatar">
-                                        <i class="fa fa-camera"></i> Chọn ảnh đại diện
-                                    </label>
+                                @if($employee->discord_id)
+                                    <div class="avatar-source-options" role="radiogroup" aria-label="Nguồn ảnh đại diện">
+                                        <label class="avatar-source-option">
+                                            <input type="radio" name="avatar_source_choice" value="discord"
+                                                {{ ($employee->avatar_source ?? 'discord') === 'discord' ? 'checked' : '' }}>
+                                            <span><i class="fab fa-discord"></i> Dùng ảnh Discord</span>
+                                        </label>
+                                        <label class="avatar-source-option">
+                                            <input type="radio" name="avatar_source_choice" value="custom"
+                                                {{ ($employee->avatar_source ?? 'discord') === 'custom' ? 'checked' : '' }}>
+                                            <span><i class="fa fa-camera"></i> Dùng ảnh tự chọn</span>
+                                        </label>
+                                    </div>
+                                    <p class="avatar-help-text">Ảnh Discord sẽ tự cập nhật theo tài khoản đã liên kết. Chọn ảnh tự chọn nếu bạn muốn dùng ảnh riêng.</p>
                                 @else
-                                    <p class="btn-upload-avatar" style="border-style: solid; background: var(--panel-bg); cursor: default;">
-                                        <i class="fab fa-discord"></i> {{ $employee->discord_username }}
-                                    </p>
+                                    <div class="avatar-source-options avatar-source-single">
+                                        <span class="avatar-source-option is-selected">
+                                            <i class="fa fa-camera"></i> Ảnh tự chọn
+                                        </span>
+                                    </div>
+                                    <p class="avatar-help-text">Bạn chưa liên kết Discord. Ảnh tải lên sẽ được dùng làm ảnh đại diện.</p>
                                 @endif
+
+                                <input type="hidden" name="avatar_source" id="avatarSourceInput" value="" disabled>
+                                <input type="file" name="avatar" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="d-none" id="avatarInput">
+                                <label for="avatarInput" class="btn-upload-avatar" id="chooseAvatarButton">
+                                    <i class="fa fa-camera"></i> Chọn ảnh JPG hoặc PNG
+                                </label>
+                                <p class="avatar-help-text">Dung lượng tối đa 5 MB. Ảnh lớn hơn sẽ không được tải lên.</p>
+                                <div id="avatarUploadError" class="avatar-upload-error" role="alert" aria-live="polite" hidden></div>
+                                @error('avatar')
+                                    <div class="avatar-upload-error" role="alert">{{ $message }}</div>
+                                @enderror
+                                @error('avatar_source')
+                                    <div class="avatar-upload-error" role="alert">{{ $message }}</div>
+                                @enderror
+                                <div id="avatarFileName" class="avatar-file-name" aria-live="polite"></div>
 
                                 @if($employee->avatar)
                                     <button type="button" onclick="confirmDeleteAvatar()" class="btn-remove-avatar">
-                                        <i class="fa fa-trash-alt"></i> Xoá ảnh đại diện
+                                        <i class="fa fa-trash-alt"></i> Xoá ảnh tự chọn
                                     </button>
                                 @endif
 
@@ -285,14 +308,6 @@
 @push('scripts')
     {{-- Các script giữ nguyên --}}
     <script>
-        function previewAvatar(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                document.getElementById('avatarPreview').src = reader.result;
-            }
-            reader.readAsDataURL(event.target.files[0]);
-        }
-
         function confirmDeleteAvatar() {
             Swal.fire({
                 title: 'Xác nhận xoá?',
@@ -311,14 +326,102 @@
             });
         }
 
-        // Kích hoạt nút cập nhật khi có thay đổi
         const avatarInput = document.querySelector('input[name="avatar"]');
         const btnAvatar = document.getElementById('btnUpdateAvatar');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const avatarSourceInput = document.getElementById('avatarSourceInput');
+        const avatarSourceChoices = document.querySelectorAll('input[name="avatar_source_choice"]');
+        const avatarUploadError = document.getElementById('avatarUploadError');
+        const avatarFileName = document.getElementById('avatarFileName');
+        const chooseAvatarButton = document.getElementById('chooseAvatarButton');
+        const maxAvatarSize = 5 * 1024 * 1024;
+        const initialAvatarSource = @json($employee?->discord_id ? ($employee->avatar_source ?? 'discord') : 'custom');
+        let avatarSourceChanged = false;
+        let avatarFileSelected = false;
+
+        function selectedAvatarSource() {
+            return document.querySelector('input[name="avatar_source_choice"]:checked')?.value || 'custom';
+        }
+
+        function updateAvatarSource() {
+            if (!avatarInput || !avatarPreview || !avatarSourceInput || !chooseAvatarButton || !avatarFileName) {
+                return;
+            }
+
+            const source = selectedAvatarSource();
+            const useCustomAvatar = source === 'custom';
+            chooseAvatarButton.hidden = !useCustomAvatar;
+            avatarInput.disabled = !useCustomAvatar;
+            avatarSourceChoices.forEach((choice) => {
+                choice.closest('.avatar-source-option')?.classList.toggle('is-selected', choice.checked);
+            });
+
+            if (source !== 'custom') {
+                avatarPreview.src = avatarPreview.dataset.discordAvatar || avatarPreview.dataset.customAvatar || avatarPreview.dataset.fallbackAvatar;
+                avatarFileName.textContent = '';
+            } else if (!avatarFileSelected) {
+                avatarPreview.src = avatarPreview.dataset.customAvatar || avatarPreview.dataset.fallbackAvatar;
+            }
+
+            const sourceChanged = source !== initialAvatarSource || avatarSourceChanged;
+            avatarSourceInput.value = sourceChanged ? source : '';
+            avatarSourceInput.disabled = !sourceChanged;
+            if (btnAvatar) {
+                btnAvatar.disabled = !(sourceChanged || avatarFileSelected);
+            }
+        }
+
+        avatarSourceChoices.forEach((choice) => {
+            choice.addEventListener('change', () => {
+                avatarSourceChanged = true;
+                updateAvatarSource();
+            });
+        });
+
         if (avatarInput && btnAvatar) {
             avatarInput.addEventListener('change', function () {
-                btnAvatar.disabled = !this.files.length;
+                avatarUploadError.hidden = true;
+                avatarUploadError.textContent = '';
+                avatarFileSelected = false;
+
+                const file = this.files[0];
+                if (!file) {
+                    updateAvatarSource();
+                    return;
+                }
+
+                if (file.size > maxAvatarSize) {
+                    avatarUploadError.textContent = 'Ảnh vượt quá 5 MB. Vui lòng chọn ảnh nhỏ hơn trước khi cập nhật.';
+                    avatarUploadError.hidden = false;
+                    this.value = '';
+                    avatarFileName.textContent = '';
+                    updateAvatarSource();
+                    return;
+                }
+
+                if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                    avatarUploadError.textContent = 'Định dạng không được hỗ trợ. Vui lòng chọn ảnh JPG hoặc PNG.';
+                    avatarUploadError.hidden = false;
+                    this.value = '';
+                    avatarFileName.textContent = '';
+                    updateAvatarSource();
+                    return;
+                }
+
+                avatarFileSelected = true;
+                avatarSourceChanged = true;
+                avatarSourceInput.value = 'custom';
+                avatarSourceInput.disabled = false;
+                avatarFileName.textContent = `${file.name} · ${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    avatarPreview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+                updateAvatarSource();
             });
         }
+        updateAvatarSource();
 
         const nameInput = document.querySelector('input[name="name_ingame"]');
         const rankSelect = document.querySelector('select[name="rank_id"]');
