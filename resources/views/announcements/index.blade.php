@@ -80,6 +80,9 @@
         .ah-content pre { overflow:auto; padding:1rem; border-radius:12px; color:#e7edf5; background:#172033; font-size:.87rem; }
         .ah-content code { padding:.12em .35em; border-radius:5px; background:#edf1f6; color:#35445a; font-size:.88em; }
         .ah-content pre code { padding:0; color:inherit; background:none; }
+        .ah-engagement { display:flex; align-items:center; gap:1rem; margin-top:1.1rem; padding-top:.85rem; border-top:1px solid #edf0f4; color:#718096; font-size:.82rem; }
+        .ah-engagement a { color:inherit; text-decoration:none; }
+        .ah-engagement a:hover { color:#315f9b; }
         .discord-emoji { width:1.5em; height:1.5em; object-fit:contain; vertical-align:middle; }
         .discord-timestamp { border-radius:5px; padding:.1rem .35rem; background:#edf1f6; color:#4c5c72; font-size:.88em; white-space:nowrap; }
         .discord-spoiler { border-radius:4px; padding:0 .18em; color:transparent; background:#222b3a; cursor:pointer; transition:color .15s ease; }
@@ -131,9 +134,10 @@
             </form>
 
             <div class="ah-layout">
-                <section class="ah-feed- " aria-label="Danh sách thông báo">
+                <section class="ah-feed-" aria-label="Danh sách thông báo"
+                    data-interactions-url="{{ route('announcements.interactions.summaries') }}">
                     @forelse ($announcements as $announcement)
-                        <article class="ah-card" id="announcement-{{ $announcement->id }}">
+                        <article class="ah-card" id="announcement-{{ $announcement->id }}" data-announcement-id="{{ $announcement->id }}">
                             @if ($announcement->image_display_url)
                                 <a class="ah-media" href="{{ route('announcements.show', $announcement) }}" aria-label="Xem chi tiết: {{ $announcement->title }}">
                                     <img src="{{ $announcement->image_display_url }}" alt="Ảnh minh họa: {{ $announcement->title }}"
@@ -165,6 +169,15 @@
                                 </div>
                                 <h2><a class="text-decoration-none text-reset" href="{{ route('announcements.show', $announcement) }}">{{ $announcement->title }}</a></h2>
                                 <div class="ah-content">{!! $announcement->rendered_content !!}</div>
+                                <div class="ah-engagement" aria-label="Mức độ tương tác">
+                                    <a href="{{ route('announcements.show', $announcement) }}#reactions">
+                                        <span aria-hidden="true">👍 ❤️ 😂</span>
+                                        <span data-list-reactions>{{ number_format($announcement->reactions_count) }}</span> cảm xúc
+                                    </a>
+                                    <a href="{{ route('announcements.show', $announcement) }}#comments">
+                                        <i class="fa-regular fa-comment me-1"></i><span data-list-comments>{{ number_format($announcement->comments_count) }}</span> bình luận
+                                    </a>
+                                </div>
                                 <a class="btn btn-sm btn-outline-secondary mt-3" href="{{ route('announcements.show', $announcement) }}">
                                     <i class="fa-regular fa-eye me-1"></i>Xem chi tiết
                                 </a>
@@ -204,6 +217,31 @@
 
 @push('scripts')
     <script>
+        const announcementFeed = document.querySelector('.ah-feed-');
+        const refreshAnnouncementCounts = async () => {
+            if (!announcementFeed || document.hidden) return;
+            const ids = [...announcementFeed.querySelectorAll('[data-announcement-id]')]
+                .map(card => card.dataset.announcementId);
+            if (!ids.length) return;
+
+            try {
+                const url = new URL(announcementFeed.dataset.interactionsUrl, window.location.origin);
+                ids.forEach(id => url.searchParams.append('ids[]', id));
+                const response = await fetch(url, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+                if (!response.ok) throw new Error(`Tải số liệu tương tác thất bại (${response.status}).`);
+                (await response.json()).forEach(item => {
+                    const card = announcementFeed.querySelector(`[data-announcement-id="${item.id}"]`);
+                    if (!card) return;
+                    card.querySelector('[data-list-reactions]').textContent = new Intl.NumberFormat('vi-VN').format(item.reactions_count);
+                    card.querySelector('[data-list-comments]').textContent = new Intl.NumberFormat('vi-VN').format(item.comments_count);
+                });
+            } catch (error) {
+                console.error('Không thể cập nhật số liệu tương tác thông báo:', error);
+            }
+        };
+        refreshAnnouncementCounts();
+        window.setInterval(refreshAnnouncementCounts, 5000);
+
         document.addEventListener('click', event => {
             const spoiler = event.target.closest('.discord-spoiler');
             if (spoiler) spoiler.classList.toggle('is-revealed');

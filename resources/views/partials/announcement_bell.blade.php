@@ -28,6 +28,11 @@
             display:block; width:100%; padding:12px 16px; border:0; text-align:left; background:#fff;
             transition:background .16s ease;
         }
+        .announcement-bell-link {
+            display:block; width:100%; padding:12px 16px; color:inherit; text-align:left; text-decoration:none; background:#fff;
+            transition:background .16s ease;
+        }
+        .announcement-bell-link:hover { background:#f7f9fc; }
         .announcement-bell-item button:hover { background:#f7f9fc; }
         .announcement-bell-title { display:block; overflow:hidden; color:#202d42; font-size:.82rem; font-weight:750; text-overflow:ellipsis; white-space:nowrap; }
         .announcement-bell-excerpt { display:-webkit-box; overflow:hidden; margin-top:3px; color:#748096; font-size:.73rem; line-height:1.45; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
@@ -113,15 +118,24 @@
                 data.items.forEach(item => {
                     const wrapper = document.createElement('div');
                     wrapper.className = 'announcement-bell-item';
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = item.url;
-                    const token = document.createElement('input');
-                    token.type = 'hidden';
-                    token.name = '_token';
-                    token.value = csrfToken;
-                    const button = document.createElement('button');
-                    button.type = 'submit';
+                    const isPost = item.method === 'POST';
+                    const action = document.createElement(isPost ? 'button' : 'a');
+                    if (isPost) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = item.url;
+                        const token = document.createElement('input');
+                        token.type = 'hidden';
+                        token.name = '_token';
+                        token.value = csrfToken;
+                        action.type = 'submit';
+                        form.append(token, action);
+                        wrapper.append(form);
+                    } else {
+                        action.href = item.url;
+                        action.className = 'announcement-bell-link';
+                        wrapper.append(action);
+                    }
                     const title = document.createElement('span');
                     title.className = 'announcement-bell-title';
                     title.textContent = item.title;
@@ -135,9 +149,7 @@
                     const time = document.createElement('time');
                     time.textContent = item.time;
                     meta.append(author, time);
-                    button.append(title, excerpt, meta);
-                    form.append(token, button);
-                    wrapper.append(form);
+                    action.append(title, excerpt, meta);
                     items.append(wrapper);
                 });
             };
@@ -155,6 +167,7 @@
                 }
             };
 
+            refresh();
             window.setInterval(refresh, 30000);
         })();
     </script>

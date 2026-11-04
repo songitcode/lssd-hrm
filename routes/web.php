@@ -31,8 +31,14 @@ Route::get('/', [EmployeeController::class, 'homeDisplay'])->name('home');
 Route::get('/home', [EmployeeController::class, 'homeDisplay']);
 Route::get('/thong-bao', [AnnouncementController::class, 'index'])->name('announcements.index');
 Route::get('/thong-bao/{announcement}/anh/{imageIndex?}', [AnnouncementController::class, 'image'])->name('announcements.image');
+Route::get('/thong-bao/tuong-tac', [AnnouncementController::class, 'interactionSummaries'])
+    ->name('announcements.interactions.summaries');
+Route::get('/thong-bao/{announcement}/tuong-tac', [AnnouncementController::class, 'interactionState'])
+    ->name('announcements.interactions.state');
 Route::middleware('auth')->get('/thong-bao/chuong-du-lieu', [AnnouncementController::class, 'notifications'])
     ->name('announcements.notifications');
+Route::middleware('auth')->get('/thong-bao/hoat-dong/{notification}', [AnnouncementController::class, 'openCommentNotification'])
+    ->name('announcements.comment-notifications.open');
 Route::get('/thong-bao/{announcement}', [AnnouncementController::class, 'show'])->name('announcements.show');
 // Hiển thị trang admin login
 Route::get('/admin', function () {
@@ -61,6 +67,14 @@ Route::post('/discord/unlink', [DiscordController::class, 'unlink'])
 Route::middleware('auth')->group(function () {
     Route::post('/thong-bao/{announcement}/da-xem', [AnnouncementController::class, 'markAsRead'])
         ->name('announcements.read');
+    Route::post('/thong-bao/{announcement}/cam-xuc', [AnnouncementController::class, 'toggleReaction'])
+        ->name('announcements.reactions.toggle');
+    Route::post('/thong-bao/{announcement}/binh-luan', [AnnouncementController::class, 'storeComment'])
+        ->name('announcements.comments.store');
+    Route::post('/thong-bao/{announcement}/binh-luan/{comment}/tra-loi', [AnnouncementController::class, 'storeReply'])
+        ->name('announcements.comments.reply');
+    Route::delete('/thong-bao/{announcement}/binh-luan/{comment}', [AnnouncementController::class, 'destroyComment'])
+        ->name('announcements.comments.destroy');
 
     // PROFILE
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('profile');
