@@ -27,6 +27,31 @@ class AnnouncementTest extends TestCase
             ->assertSee('Cuộc họp bắt đầu lúc 09:00.');
     }
 
+    public function test_announcement_detail_page_shows_full_post_and_all_images(): void
+    {
+        Storage::fake('public');
+        $imagePaths = ['announcements/first.png', 'announcements/second.png'];
+        Storage::disk('public')->put($imagePaths[0], 'first-image');
+        Storage::disk('public')->put($imagePaths[1], 'second-image');
+        $announcement = Announcement::create([
+            'title' => 'Thông báo có nhiều ảnh',
+            'content' => 'Nội dung đầy đủ của bài đăng.',
+            'image_path' => $imagePaths[0],
+            'image_paths' => $imagePaths,
+        ]);
+
+        $this->get(route('announcements.show', $announcement))
+            ->assertOk()
+            ->assertSee('Thông báo có nhiều ảnh')
+            ->assertSee('Nội dung đầy đủ của bài đăng.')
+            ->assertSee(route('announcements.image', [$announcement, 0], false))
+            ->assertSee(route('announcements.image', [$announcement, 1], false));
+
+        $this->get(route('announcements.image', [$announcement, 1]))
+            ->assertOk()
+            ->assertStreamedContent('second-image');
+    }
+
     public function test_secretary_can_create_update_and_delete_announcements(): void
     {
         $secretary = $this->createUser('thư ký');
@@ -188,6 +213,7 @@ class AnnouncementTest extends TestCase
         $announcement->refresh();
         $this->assertSame('https://example.com/notice.jpg', $announcement->image_url);
         $this->assertNull($announcement->image_path);
+        $this->assertNull($announcement->image_paths);
         Storage::disk('public')->assertMissing($replacementPath);
 
         $this->put(route('admin.announcements.update', $announcement), [
@@ -199,6 +225,52 @@ class AnnouncementTest extends TestCase
 
         $this->assertNull($announcement->fresh()->image_url);
         $this->assertNull($announcement->fresh()->image_path);
+        $this->assertNull($announcement->fresh()->image_paths);
+    }
+
+    public function test_secretary_can_upload_multiple_announcement_images_and_replace_them(): void
+    {
+        Storage::fake('public');
+        $csrfToken = 'announcement-multiple-images-token';
+        $pngContent = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADUlEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC');
+        $this->actingAs($this->createUser('thư ký'));
+        $this->withSession(['_token' => $csrfToken]);
+
+        $this->post(route('admin.announcements.store'), [
+            '_token' => $csrfToken,
+            'title' => 'Bộ ảnh thông báo',
+            'content' => 'Nội dung.',
+            'image_files' => [
+                UploadedFile::fake()->createWithContent('first.png', $pngContent),
+                UploadedFile::fake()->createWithContent('second.png', $pngContent),
+            ],
+        ])->assertRedirect(route('admin.announcements.index'));
+
+        $announcement = Announcement::firstOrFail();
+        $originalPaths = $announcement->image_paths;
+        $this->assertCount(2, $originalPaths);
+        $this->assertSame($originalPaths[0], $announcement->image_path);
+        foreach ($originalPaths as $path) {
+            Storage::disk('public')->assertExists($path);
+        }
+        $this->get(route('announcements.show', $announcement))
+            ->assertOk()
+            ->assertSee(route('announcements.image', [$announcement, 0], false))
+            ->assertSee(route('announcements.image', [$announcement, 1], false));
+
+        $this->put(route('admin.announcements.update', $announcement), [
+            '_token' => $csrfToken,
+            'title' => $announcement->title,
+            'content' => $announcement->content,
+            'image_files' => [UploadedFile::fake()->createWithContent('replacement.png', $pngContent)],
+        ])->assertRedirect(route('admin.announcements.index'));
+
+        $announcement->refresh();
+        $this->assertCount(1, $announcement->image_paths);
+        foreach ($originalPaths as $path) {
+            Storage::disk('public')->assertMissing($path);
+        }
+        Storage::disk('public')->assertExists($announcement->image_paths[0]);
     }
 
     public function test_invalid_announcement_images_are_rejected(): void
@@ -259,7 +331,7 @@ class AnnouncementTest extends TestCase
         $csrfToken = 'announcement-read-token';
         $this->withSession(['_token' => $csrfToken]);
         $this->post(route('announcements.read', $announcement), ['_token' => $csrfToken])
-            ->assertRedirect(route('announcements.index').'#announcement-'.$announcement->id);
+            ->assertRedirect(route('announcements.show', $announcement));
 
         $this->assertDatabaseHas('announcement_reads', [
             'announcement_id' => $announcement->id,

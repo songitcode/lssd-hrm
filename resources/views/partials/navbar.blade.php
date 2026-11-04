@@ -20,18 +20,9 @@
                     </span>
                     @include('partials.announcement_bell')
                     <div class="nav-avartar">
-                        @if (auth()->user()->employee->discord_id ?? false)
-                            <img src="{{ auth()->user()->employee->discord_avatar }}"
-                                alt="Avatar" class="rounded-circle user-avatar" width="46" height="46"
-                                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->employee?->name_ingame ?? auth()->user()?->username ?? 'Admin') }}&background=random';">
-                        @elseif (auth()->user()->employee && auth()->user()->employee->avatar)
-                            <img src="{{ asset('storage/' . auth()->user()->employee->avatar) }}"
-                                alt="Avatar" class="rounded-circle user-avatar" width="46" height="46"
-                                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->employee?->name_ingame ?? auth()->user()?->username ?? 'Admin') }}&background=random';">
-                        @else
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->employee?->name_ingame ?? auth()->user()?->username ?? 'Admin') }}&background=random"
-                                class="rounded-circle user-avatar" alt="Avatar" width="46" height="46">
-                        @endif
+                        <img src="{{ auth()->user()->employee?->display_avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()?->employee?->name_ingame ?? auth()->user()?->username ?? 'Admin') . '&background=random' }}"
+                            alt="Avatar" class="rounded-circle user-avatar" width="46" height="46"
+                            onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()?->employee?->name_ingame ?? auth()->user()?->username ?? 'Admin') }}&background=random';">
                     </div>
                     <div class="dropdown">
                         <button class="btn-drop-custom {{ request()->is('profile') ? 'active-link-popup' : '' }}"

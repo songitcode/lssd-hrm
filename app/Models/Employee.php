@@ -51,8 +51,27 @@ class Employee extends Model
         'position_id',
         'rank_id',
         'avatar',
+        'avatar_source',
         'created_by',
     ];
+
+    public function getDisplayAvatarAttribute(): ?string
+    {
+        if ($this->avatar_source === 'custom') {
+            return $this->avatar ? asset('storage/' . $this->avatar) : null;
+        }
+
+        if ($this->avatar_source === 'discord' && $this->discord_avatar) {
+            return $this->discord_avatar;
+        }
+
+        if ($this->avatar) {
+            return asset('storage/' . $this->avatar);
+        }
+
+        return $this->discord_avatar;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

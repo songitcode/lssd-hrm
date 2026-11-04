@@ -124,17 +124,11 @@
                     <div class="absent-list">
                         @foreach($absentEmployees as $e)
                             <div class="absent-row">
-                                @if ($e->avatar)
-                                    <img id="avatarPreview" src="{{ asset('storage/' . $e->avatar) }}" alt="Avatar"
-                                        class="rounded-circle" width="34" height="34"
-                                        onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($e->name_ingame ?? 'NAN') }}&background=random';"
-                                        style="border:1.5px solid rgba(231,76,60,0.4);">
-                                @else
-                                    <img id="avatarPreview"
-                                        src="https://ui-avatars.com/api/?name={{ urlencode($e->name_ingame ?? 'NAN') }}&background=random"
-                                        class="rounded-circle" width="34" height="34" alt="Default"
-                                        style="border:1.5px solid rgba(231,76,60,0.4);">
-                                @endif
+                                <img id="avatarPreview"
+                                    src="{{ $e->display_avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($e->name_ingame ?? 'NAN') . '&background=random' }}"
+                                    alt="Avatar" class="rounded-circle" width="34" height="34"
+                                    onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($e->name_ingame ?? 'NAN') }}&background=random';"
+                                    style="border:1.5px solid rgba(231,76,60,0.4);">
                                 <div>
                                     <div style="font-weight:600;font-size:13.5px;">{{ $e->name_ingame }}</div>
                                     <div style="font-size:11px;color:var(--text-muted);">{{ $e->position?->name_positions }} ·
@@ -224,17 +218,11 @@
                                 <td class="text-muted">{{ $i + 1 }}</td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
-                                         @if ($e->avatar)
-                                            <img id="avatarPreview" src="{{ asset('storage/' . $e->avatar) }}" alt="Avatar"
-                                                class="rounded-circle" width="34" height="34"
-                                                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($e->name_ingame ?? 'NAN') }}&background=random';"
-                                                style="border:1.5px solid rgba(231,76,60,0.4);">
-                                        @else
-                                            <img id="avatarPreview"
-                                                src="https://ui-avatars.com/api/?name={{ urlencode($e->name_ingame ?? 'NAN') }}&background=random"
-                                                class="rounded-circle" width="34" height="34" alt="Default"
-                                                style="border:1.5px solid rgba(231,76,60,0.4);">
-                                        @endif
+                                        <img id="avatarPreview"
+                                            src="{{ $e->display_avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($e->name_ingame ?? 'NAN') . '&background=random' }}"
+                                            alt="Avatar" class="rounded-circle" width="34" height="34"
+                                            onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($e->name_ingame ?? 'NAN') }}&background=random';"
+                                            style="border:1.5px solid rgba(231,76,60,0.4);">
                                         <span style="font-weight:600;font-size:13.5px;">{{ $e->name_ingame }}</span>
                                     </div>
                                 </td>

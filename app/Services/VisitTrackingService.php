@@ -89,9 +89,7 @@ class VisitTrackingService
                 'name' => $session->user?->employee?->name_ingame ?? $session->user?->username ?? 'Unknown',
                 'role' => $session->user?->employee?->position?->name_positions
                     ?? $session->user?->role ?? '',
-                'avatar' => $session->user?->employee?->avatar
-                    ? asset('storage/' . $session->user->employee->avatar)
-                    : null,
+                'avatar' => $session->user?->employee?->display_avatar,
                 'last_activity' => $session->last_activity?->diffForHumans(),
                 'last_activity_iso' => $session->last_activity?->toIso8601String(),
             ]);

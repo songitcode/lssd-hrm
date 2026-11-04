@@ -367,13 +367,8 @@
 
                             <div class="row">
                                 <div class="col-md-4 text-center">
-                                    @if (auth()->user()->employee->discord_id ?? false)
-                                        <img id="edit_avatar_preview" src="{{ auth()->user()->employee->discord_avatar }}" width="100%" class="img-thumbnail rounded-circle mb-3 shadow-sm"
-                                            style="width: 220px; height: 220px; object-fit: cover;">
-                                    @else
-                                        <img id="edit_avatar_preview" src="{{ asset('assets/images/user_preview_logo.png') }}" width="100%" class="img-thumbnail rounded-circle mb-3 shadow-sm"
+                                    <img id="edit_avatar_preview" src="{{ auth()->user()->employee?->display_avatar ?? asset('assets/images/user_preview_logo.png') }}" width="100%" class="img-thumbnail rounded-circle mb-3 shadow-sm"
                                         style="width: 220px; height: 220px; object-fit: cover;">
-                                    @endif
                                 </div>
                                 <div class="col-md-8 row g-3">
                                     <div class="col-md-6">
@@ -493,21 +488,10 @@
                             <tr>
                                 <td>{{ $loop->iteration + ($paginated->currentPage() - 1) * $paginated->perPage() }}</td>
                                 <td> 
-                                   @if($emp?->discord_id)
-                                        <img id="avatarPreview" src="{{ $emp->discord_avatar }}" alt="Avatar"
-                                            class="rounded-circle" width="40" height="40"
-                                            onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($emp->name_ingame ?? 'NAN') }}&background=random';">
-                                    @else
-                                        @if ($emp?->avatar)
-                                            <img id="avatarPreview" src="{{ asset('storage/' . $emp->avatar) }}"
-                                                alt="Avatar" class="rounded-circle" width="40" height="40"
-                                                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($emp->name_ingame ?? 'NAN') }}&background=random';">
-                                        @else
-                                            <img id="avatarPreview"
-                                                src="https://ui-avatars.com/api/?name={{ urlencode($emp->name_ingame ?? 'NAN') }}&background=random"
-                                                class="rounded-circle" width="40" height="40" alt="Default">
-                                        @endif
-                                    @endif
+                                    <img id="avatarPreview"
+                                        src="{{ $emp?->display_avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($emp?->name_ingame ?? 'NAN') . '&background=random' }}"
+                                        alt="Avatar" class="rounded-circle" width="40" height="40"
+                                        onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($emp?->name_ingame ?? 'NAN') }}&background=random';">
                                 </td>
                                 <td>{{ $emp->name_ingame ?? '-' }}</td>
                                 <td><span>{{ $emp->user->username ?? '-' }}</span>
@@ -535,7 +519,7 @@
                                             data-position="{{ $emp->position_id }}"
                                             data-rank="{{ $emp->rank_id }}"
                                             data-username="{{ $emp->user->username }}"
-                                            data-avatar="{{ $emp->discord_avatar ?? asset('storage/' . $emp->avatar) }}">
+                                            data-avatar="{{ $emp->display_avatar ?? asset('assets/images/user_preview_logo.png') }}">
                                             <i class="fa-solid fa-user-pen"></i> Sửa
                                         </button>
                                     @else
@@ -547,7 +531,7 @@
                                             data-position="{{ $emp->position_id }}"
                                             data-rank="{{ $emp->rank_id }}"
                                             data-username="{{ $emp->user->username }}"
-                                            data-avatar="{{ $emp->discord_avatar ?? asset('storage/' . $emp->avatar) }}">
+                                            data-avatar="{{ $emp->display_avatar ?? asset('assets/images/user_preview_logo.png') }}">
                                             <i class="fa-solid fa-user-pen"></i> Đổi Mật Khẩu
                                         </button>
                                     @endif

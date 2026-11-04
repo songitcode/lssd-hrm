@@ -122,12 +122,15 @@
                                         value="{{ old('image_url') }}" placeholder="https://example.com/image.jpg">
                                     @error('image_url')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                     <div class="text-center text-muted small my-2">hoặc</div>
-                                    <label for="announcement-image-file" class="form-label small fw-semibold">Tải ảnh từ thiết bị</label>
-                                    <input id="announcement-image-file" name="image_file" type="file"
-                                        class="form-control aa-form-control @error('image_file') is-invalid @enderror"
+                                    <label for="announcement-image-files" class="form-label small fw-semibold">Tải ảnh từ thiết bị</label>
+                                    <input id="announcement-image-files" name="image_files[]" type="file" multiple
+                                        class="form-control aa-form-control @error('image_files') is-invalid @enderror"
                                         accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
                                     @error('image_file')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                                    <div class="aa-image-hint mt-2">JPG, PNG hoặc WebP · tối đa 5 MB. Chỉ chọn URL hoặc tải tệp lên.</div>
+                                    @error('image_files')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    @error('image_files.*')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    <div class="aa-image-hint mt-2">JPG, PNG hoặc WebP · tối đa 5 MB mỗi ảnh, tối đa 10 ảnh. Chỉ chọn URL hoặc tải tệp lên.</div>
+                                    <div class="aa-image-hint" data-image-count aria-live="polite"></div>
                                     <div class="aa-image-error mt-2" data-image-error role="alert"></div>
                                 </div>
                                 <div class="aa-image-preview is-visible" data-image-preview>
@@ -216,6 +219,12 @@
                                     <time datetime="{{ $announcement->created_at->toIso8601String() }}">{{ $announcement->created_at->format('d/m/Y · H:i') }}</time>
                                 </div>
                                 <div class="aa-item-preview">{{ strip_tags($announcement->rendered_content) }}</div>
+                                <a class="small fw-semibold text-decoration-none" href="{{ route('announcements.show', $announcement) }}" target="_blank">
+                                    <i class="fa-regular fa-eye me-1"></i>Xem chi tiết
+                                    @if (count($announcement->image_display_urls) > 1)
+                                        · {{ count($announcement->image_display_urls) }} ảnh
+                                    @endif
+                                </a>
                             </div>
                             <form action="{{ route('admin.announcements.destroy', $announcement) }}" method="POST"
                                 onsubmit="return confirm('Bạn có chắc muốn xóa thông báo này?')">
@@ -248,12 +257,22 @@
                                                 value="{{ old('image_url') }}" placeholder="https://example.com/image.jpg">
                                             @error('image_url')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                             <div class="text-center text-muted small my-2">hoặc</div>
-                                            <label for="image-file-{{ $announcement->id }}" class="form-label small fw-semibold">Tải ảnh mới từ thiết bị</label>
-                                            <input id="image-file-{{ $announcement->id }}" name="image_file" type="file"
-                                                class="form-control aa-form-control @error('image_file') is-invalid @enderror"
+                                            <label for="image-files-{{ $announcement->id }}" class="form-label small fw-semibold">Tải ảnh mới từ thiết bị (thay toàn bộ ảnh hiện tại)</label>
+                                            <input id="image-files-{{ $announcement->id }}" name="image_files[]" type="file" multiple
+                                                class="form-control aa-form-control @error('image_files') is-invalid @enderror"
                                                 accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
                                             @error('image_file')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                                            <div class="aa-image-hint mt-2">JPG, PNG hoặc WebP · tối đa 5 MB. Để nguyên nếu không muốn thay đổi.</div>
+                                            @error('image_files')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                            @error('image_files.*')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                            <div class="aa-image-hint mt-2">JPG, PNG hoặc WebP · tối đa 5 MB mỗi ảnh, tối đa 10 ảnh. Để nguyên nếu không muốn thay đổi.</div>
+                                            <div class="aa-image-hint" data-image-count aria-live="polite"></div>
+                                            @if (count($announcement->image_display_urls) > 1)
+                                                <div class="d-flex flex-wrap gap-2 mt-2" aria-label="Ảnh hiện tại">
+                                                    @foreach ($announcement->image_display_urls as $imageUrl)
+                                                        <img class="aa-item-thumb" src="{{ $imageUrl }}" alt="" loading="lazy">
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                             <div class="form-check mt-2">
                                                 <input class="form-check-input" type="checkbox" name="remove_image" value="1"
                                                     id="remove-image-{{ $announcement->id }}">
@@ -335,7 +354,7 @@
             const status = form.querySelector('.aa-preview-status');
             const counter = form.querySelector('[data-char-count]');
             const imageUrlInput = form.querySelector('input[name="image_url"]');
-            const imageFileInput = form.querySelector('input[name="image_file"]');
+            const imageFileInput = form.querySelector('input[name="image_files[]"]');
             const imagePreview = form.querySelector('[data-image-preview]');
             const imageElement = imagePreview?.querySelector('[data-image-element]');
             const imagePlaceholder = imagePreview?.querySelector('.aa-image-placeholder');
@@ -360,6 +379,8 @@
 
             imageUrlInput?.addEventListener('input', () => {
                 if (imageFileInput) imageFileInput.value = '';
+                const countLabel = form.querySelector('[data-image-count]');
+                if (countLabel) countLabel.textContent = '';
                 if (imageObjectUrl) {
                     URL.revokeObjectURL(imageObjectUrl);
                     imageObjectUrl = null;
@@ -392,15 +413,21 @@
                 imageError.style.display = 'none';
                 if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
 
-                const file = imageFileInput.files?.[0];
+                const files = Array.from(imageFileInput.files || []);
+                const countLabel = form.querySelector('[data-image-count]');
+                if (countLabel) countLabel.textContent = files.length ? `Đã chọn ${files.length} ảnh.` : '';
+                const file = files[0];
                 if (!file) {
                     setImagePreview(imagePreview.dataset.currentImage || '');
                     return;
                 }
-                if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+                if (files.length > 10 || files.some(selected =>
+                    !['image/jpeg', 'image/png', 'image/webp'].includes(selected.type) || selected.size > 5 * 1024 * 1024
+                )) {
                     imageFileInput.value = '';
+                    if (countLabel) countLabel.textContent = '';
                     setImagePreview(imagePreview.dataset.currentImage || '');
-                    imageError.textContent = 'Chọn ảnh JPG, PNG hoặc WebP có dung lượng tối đa 5 MB.';
+                    imageError.textContent = 'Chọn tối đa 10 ảnh JPG, PNG hoặc WebP, mỗi ảnh tối đa 5 MB.';
                     imageError.style.display = 'block';
                     return;
                 }

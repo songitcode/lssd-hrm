@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Announcement extends Model
 {
-    protected $fillable = ['title', 'content', 'image_url', 'image_path', 'created_by'];
+    protected $fillable = ['title', 'content', 'image_url', 'image_path', 'image_paths', 'created_by'];
+
+    protected function casts(): array
+    {
+        return ['image_paths' => 'array'];
+    }
 
     public function author(): BelongsTo
     {
@@ -23,10 +28,35 @@ class Announcement extends Model
 
     public function getImageDisplayUrlAttribute(): ?string
     {
-        if ($this->image_path) {
-            return route('announcements.image', $this, false);
+        return $this->image_display_urls[0] ?? null;
+    }
+
+    public function getImageDisplayUrlsAttribute(): array
+    {
+        $paths = $this->storedImagePaths();
+
+        if ($paths !== []) {
+            if (count($paths) === 1) {
+                return [route('announcements.image', $this, false)];
+            }
+
+            return array_map(
+                fn (int $index) => route('announcements.image', [$this, $index], false),
+                array_keys($paths)
+            );
         }
 
-        return $this->image_url;
+        return $this->image_url ? [$this->image_url] : [];
+    }
+
+    public function storedImagePaths(): array
+    {
+        $paths = $this->image_paths ?? [];
+
+        if ($paths !== []) {
+            return $paths;
+        }
+
+        return $this->image_path ? [$this->image_path] : [];
     }
 }

@@ -71,17 +71,8 @@
                                 @foreach ($contacts as $contact)
                                     <tr class="mb-5">
                                         <td>
-                                            @if ($contact->employee->discord_id)
-                                                <img src="{{ $contact->employee->discord_avatar }}" alt="Avatar" class="avatar_contact">
-                                            @else
-                                                @if ($contact->employee->avatar)
-                                                    <img src="{{ asset('storage/' . $contact->employee->avatar) }}" alt="Avatar"
-                                                        class="avatar_contact">
-                                                @else
-                                                    <img src="{{ asset('assets/images/user_preview_logo.png') }}" alt="Default"
-                                                        class="avatar_contact">
-                                                @endif
-                                            @endif
+                                            <img src="{{ $contact->employee->display_avatar ?? asset('assets/images/user_preview_logo.png') }}"
+                                                alt="Avatar" class="avatar_contact">
                                         </td>
                                         <td>
                                             <strong>{{ $contact->employee->name_ingame }}</strong>

@@ -406,26 +406,11 @@ $quockhanh2026 = false;
                             <td class="tt26-td-index">{{ $index + 1 }}</td>
 
                             <td>
-                                @if($user->employee?->discord_id)
                                 <img
-                                    src="{{ $user->employee->discord_avatar }}"
+                                    src="{{ $user->employee?->display_avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->employee?->name_ingame ?? 'Admin') . '&background=2b1713&color=FFD86B&bold=true' }}"
                                     alt="Avatar"
                                     class="tt26-avatar"
-                                    onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($user->employee->name_ingame ?? 'Admin') }}&background=2b1713&color=FFD86B&bold=true';">
-                                @else
-                                @if($user->employee?->avatar)
-                                <img
-                                    src="{{ asset('storage/' . $user->employee->avatar) }}"
-                                    alt="Avatar"
-                                    class="tt26-avatar"
-                                    onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($user->employee->name_ingame ?? 'Admin') }}&background=2b1713&color=FFD86B&bold=true';">
-                                @else
-                                <img
-                                    src="https://ui-avatars.com/api/?name={{ urlencode($user->employee->name_ingame ?? 'Admin') }}&background=2b1713&color=FFD86B&bold=true"
-                                    alt="Avatar"
-                                    class="tt26-avatar">
-                                @endif
-                                @endif
+                                    onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($user->employee?->name_ingame ?? 'Admin') }}&background=2b1713&color=FFD86B&bold=true';">
                             </td>
 
                             <td class="tt26-td-name">
